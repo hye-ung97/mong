@@ -1,0 +1,41 @@
+/* mong design tokens — same values as the Doan board (.doan/assets/mong.css). */
+:root {
+  /* text & glass over scenes (the product is always dark) */
+  --ui-ink: #f6f1ea;
+  --ui-ink-on-light: #141210;
+  --ui-dim: rgba(246, 241, 234, 0.68);
+  --ui-faint: rgba(246, 241, 234, 0.44);
+  --ui-glass: rgba(16, 14, 13, 0.42);
+  --ui-glass-strong: rgba(20, 18, 17, 0.8);
+  --ui-line: rgba(255, 255, 255, 0.14);
+  --ui-fill: rgba(255, 255, 255, 0.07);
+  --ui-active: rgba(255, 255, 255, 0.18);
+  --ui-scrim: rgba(4, 6, 10, 0.5);
+  --ui-blur: blur(16px) saturate(140%);
+
+  /* scene accents */
+  --fire-500: #ff8a3d;
+  --fire-300: #ffc27a;
+  --fire-900: #2a1208;
+  --rain-500: #8fb3d9;
+  --rain-300: #c4daf2;
+  --rain-900: #0b1420;
+  --water-500: #4fd1c0;
+  --water-300: #a6efe5;
+  --water-900: #04212b;
+
+  /* shape, type, motion */
+  --r-pill: 999px;
+  --r-card: 24px;
+  --r-sheet: 36px;
+  --font: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  --accent: var(--ui-ink);
+  --accent-soft: var(--ui-ink);
+  --accent-ink: var(--ui-ink-on-light);
+}
+
+.theme-fire { --accent: var(--fire-500); --accent-soft: var(--fire-300); --accent-ink: var(--fire-900); }
+.theme-rain { --accent: var(--rain-500); --accent-soft: var(--rain-300); --accent-ink: var(--rain-900); }
+.theme-water { --accent: var(--water-500); --accent-soft: var(--water-300); --accent-ink: var(--water-900); }

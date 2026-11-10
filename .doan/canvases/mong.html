@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="doan:canvas" content="mong">
+<meta name="doan:width" content="2800">
+<title>mong 디자인 시안</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/mong.css">
+</head>
+<body class="board">
+
+<!-- icon sprite (lucide-style strokes) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-timer" viewBox="0 0 24 24"><path d="M10 2h4"/><path d="m12 14 3-3"/><circle cx="12" cy="14" r="8"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></symbol>
+    <symbol id="i-max" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+    <symbol id="i-rain" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.24"/><path d="M16 14v6M8 14v6M12 16v6"/></symbol>
+    <symbol id="i-fish" viewBox="0 0 24 24"><path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z"/><path d="M18 12v.5"/><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"/><path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5 .23 6.5C6.58 18.03 7 16 7 13.33"/></symbol>
+    <symbol id="i-log" viewBox="0 0 24 24"><path d="M5.5 8.5h11a3.5 3.5 0 0 1 0 7h-11a3.5 3.5 0 0 1 0-7z"/><ellipse cx="16.5" cy="12" rx="1.4" ry="2"/><path d="M4.5 12h6"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></symbol>
+    <symbol id="i-wind" viewBox="0 0 24 24"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2M9.6 4.6A2 2 0 1 1 11 8H2M12.6 19.4A2 2 0 1 0 14 16H2"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-headphones" viewBox="0 0 24 24"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></symbol>
+    <symbol id="i-waves" viewBox="0 0 24 24"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></symbol>
+    <symbol id="i-food" viewBox="0 0 24 24"><circle cx="12" cy="4.5" r="1.6"/><circle cx="7.5" cy="9.5" r="1.6"/><circle cx="15.5" cy="10.5" r="1.6"/><circle cx="10.5" cy="15" r="1.6"/><circle cx="16" cy="18.5" r="1.6"/><circle cx="7" cy="20" r="1.6"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-4 0v0M14 10V4a2 2 0 0 0-4 0v2M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></symbol>
+    <symbol id="i-status" viewBox="0 0 70 12">
+      <g fill="currentColor" stroke="none">
+        <rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4.5" y="6" width="3" height="6" rx="1"/><rect x="9" y="3.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="1" width="3" height="11" rx="1"/>
+        <path d="M30 3.2a10 10 0 0 1 13 0l-1.4 1.5a8 8 0 0 0-10.2 0zM32.4 5.9a6.4 6.4 0 0 1 8.2 0l-1.5 1.5a4.2 4.2 0 0 0-5.2 0zM36.5 11.5l-2.1-2.2a3 3 0 0 1 4.2 0z"/>
+        <rect x="49" y="1" width="18" height="10" rx="3" fill="none" stroke="currentColor" stroke-opacity=".45"/>
+        <rect x="51" y="3" width="14" height="6" rx="1.6"/>
+        <rect x="68" y="4.2" width="1.6" height="3.6" rx=".8" opacity=".45"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ================= 시안 개요 ================= -->
+<section class="overview" data-doan-frame="overview" data-doan-title="시안 개요">
+  <div>
+    <div class="ov-brand"><span class="orb lg"></span>mong</div>
+    <h1>화면을 보며 멍때리는 사이트</h1>
+    <p class="lead">불멍 · 비멍 · 물멍. 장면은 크게, 조작은 작게. 소리를 켜고 아무 생각 없이 바라보는 곳.</p>
+    <div class="ov-meta"><span>디자인 시안 v0.2</span><span>2026.11.10</span><span>모바일 우선 반응형</span><span>물멍 세 장면 확정</span></div>
+    <div class="in-code" data-doan-id="ov-in-code">
+      <b>코드로 구현됨 · <code>src/</code></b>
+      이 보드의 화면은 <code>src/</code>에 구현돼 있어요(<code>npm run dev</code>). 각 화면 이름 옆 연결 파일에서 해당 코드를 볼 수 있어요. 불멍 소리는 실제 녹음(CC0), 비멍·물멍 소리는 아직 Web Audio 합성이에요. 보드에서는 장면을 직접 눌러 볼 수 있지만 소리는 나지 않아요.
+    </div>
+    <div class="not-in-code" data-doan-id="ov-not-in-code">
+      <b>아직 코드 없음</b>
+      비멍의 ‘김 서린 창문 닦기’ 아이디어만 코드에 없어요. <span class="tag-added">구현하면서 추가</span> 표시는 코드에 먼저 들어가고 보드에 나중에 적은 것이에요.
+    </div>
+  </div>
+  <div>
+    <h3>원칙</h3>
+    <ol class="principles">
+      <li><b>장면이 주인공</b><span>화면 전체를 장면으로 채우고, 4초 동안 손대지 않으면 UI가 사라져요.</span></li>
+      <li><b>손대면 반응해요</b><span>장작을 넣고, 비 세기를 바꾸고, 먹이를 줘요. 반응은 느리고 부드럽게.</span></li>
+      <li><b>소리가 절반</b><span>실제 녹음한 소리를 반복 재생하고, 불 세기·비 세기에 맞춰 볼륨과 레이어가 바뀌어요.</span></li>
+      <li><b>한 손으로</b><span>모바일은 엄지가 닿는 아래쪽에 조작을 모으고, 데스크톱은 단축키를 줘요.</span></li>
+    </ol>
+  </div>
+  <div>
+    <h3>색</h3>
+    <div class="palettes">
+      <div class="pal"><div class="sw" style="background:var(--fire-500)"></div><div class="sw" style="background:var(--fire-300)"></div><div class="sw" style="background:var(--fire-900)"></div><div><b>불멍</b>불꽃 · 잔불 · 밤</div></div>
+      <div class="pal"><div class="sw" style="background:var(--rain-500)"></div><div class="sw" style="background:var(--rain-300)"></div><div class="sw" style="background:var(--rain-900)"></div><div><b>비멍</b>빗빛 · 유리 · 밤하늘</div></div>
+      <div class="pal"><div class="sw" style="background:var(--water-500)"></div><div class="sw" style="background:var(--water-300)"></div><div class="sw" style="background:var(--water-900)"></div><div><b>물멍</b>청록 · 물빛 · 깊은 물</div></div>
+      <div class="pal"><div class="sw" style="background:var(--ui-glass)"></div><div class="sw" style="background:var(--ui-ink)"></div><div class="sw" style="background:var(--ui-glass-strong)"></div><div><b>공통 UI</b>반투명 유리 · 글자 · 시트</div></div>
+    </div>
+    <h3>글꼴 · Pretendard</h3>
+    <div class="type-spec">
+      <div><span style="font:700 30px/1.2 var(--font);letter-spacing:-.03em">오늘은 어떤 멍?</span><small>30 · Bold · 제목</small></div>
+      <div><span style="font:700 16px/1 var(--font)">장작 넣기</span><small>16 · Bold · 버튼</small></div>
+      <div><span style="font:500 13px/1 var(--font);color:var(--board-dim)">타닥타닥 · 장작 3개</span><small>13 · Medium · 상태</small></div>
+    </div>
+  </div>
+  <div>
+    <h3>소리 계획</h3>
+    <table class="sound">
+      <tr><th>장면</th><th>계속 나는 소리</th><th>손댈 때</th></tr>
+      <tr><td>불멍</td><td>장작 타는 소리, 불꽃 일렁임</td><td>장작 넣을 때 ‘툭’, 불티 ‘파삭’</td></tr>
+      <tr><td>비멍</td><td>창문에 부딪히는 빗소리</td><td>비 세기 3단계 전환, 천둥(선택)</td></tr>
+      <tr><td>물멍</td><td>여과기 물소리, 보글보글</td><td>먹이 줄 때 ‘퐁’</td></tr>
+    </table>
+    <h3>구현 메모</h3>
+    <ul class="tech">
+      <li>장면은 Canvas 2D로 그려요(<code>src/scenes/</code>). 보드의 <code>.doan/assets/mong-scenes.js</code>는 시안용 사본이에요.</li>
+      <li>불멍 소리는 Freesound CC0 녹음(<code>public/sounds/fire/</code>), 비멍·물멍은 아직 Web Audio 합성(<code>src/audio/</code>). 장면 상태(불 세기, 비 세기, 파도)를 따라가고, 첫 터치 뒤에 재생을 시작해요.</li>
+      <li>보는 동안 화면이 꺼지지 않게 Screen Wake Lock을 써요.</li>
+      <li><code>prefers-reduced-motion</code>이면 불티·빗줄기 수를 줄여요.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 01 홈 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">01</span><h2>홈 · 오늘은 어떤 멍?</h2><p>세 장면이 움직이는 미리보기로 바로 보여요</p></div>
+  <div class="row-body">
+
+    <div class="screen phone" data-doan-frame="home-mobile" data-doan-implements="src/views/home-view.ts" data-doan-title="홈 · 모바일">
+      <div class="home-bg"></div>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui home-head">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <h1>오늘은 어떤 멍?</h1>
+        <p>소리를 켜고, 아무 생각 없이 바라보세요.</p>
+      </div>
+      <div class="ui cards-m" data-doan-id="home-m-cards">
+        <a class="card theme-fire" data-doan-id="home-m-fire">
+          <canvas class="scene" data-scene="fire" data-fx="0.7" data-fy="0.7" data-scale="1.15"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-log"/></svg>장작 넣기</span>
+          <div class="card-info"><div><h3>불멍</h3><p>타닥타닥, 장작 타는 소리</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+        <a class="card theme-rain" data-doan-id="home-m-rain">
+          <canvas class="scene" data-scene="rain" data-intensity="0.55"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-rain"/></svg>비 세기 조절</span>
+          <div class="card-info"><div><h3>비멍</h3><p>창가에 앉아 듣는 빗소리</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+        <a class="card theme-water" data-doan-id="home-m-water">
+          <canvas class="scene" data-scene="aquarium" data-scale="1.3"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-fish"/></svg>먹이 주기 · 물결</span>
+          <div class="card-info"><div><h3>물멍</h3><p>어항 · 바다 · 연못 중에 골라요</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+      </div>
+      <div class="ui home-foot"><svg class="ico sm"><use href="#i-headphones"/></svg>이어폰을 끼면 더 좋아요</div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen desk" data-doan-frame="home-desktop" data-doan-implements="src/views/home-view.ts" data-doan-title="홈 · 데스크톱 (비멍에 마우스 올림)">
+      <div class="home-bg"></div>
+      <div class="ui d-top">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <button class="icon-btn glass" aria-label="전체화면"><svg class="ico"><use href="#i-max"/></svg></button>
+      </div>
+      <div class="ui home-d-head"><h1>오늘은 어떤 멍?</h1><p>소리를 켜고, 아무 생각 없이 바라보세요.</p></div>
+      <div class="ui cards-d" data-doan-id="home-d-cards">
+        <a class="card theme-fire">
+          <canvas class="scene" data-scene="fire" data-fy="0.52" data-scale="0.95"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-log"/></svg>장작 넣기</span>
+          <div class="card-info"><div><h3>불멍</h3><p>타닥타닥, 장작 타는 소리</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+        <a class="card theme-rain is-hover" data-doan-id="home-d-rain-hover">
+          <canvas class="scene" data-scene="rain" data-intensity="0.6"></canvas>
+          <span class="card-tag glass"><span class="eq"><i></i><i></i><i></i><i></i></span>소리 미리 듣는 중</span>
+          <div class="card-info"><div><h3>비멍</h3><p>창가에 앉아 듣는 빗소리</p></div><span class="enter">들어가기<svg class="ico sm"><use href="#i-arrow"/></svg></span></div>
+        </a>
+        <a class="card theme-water">
+          <canvas class="scene" data-scene="aquarium"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-fish"/></svg>먹이 주기 · 물결</span>
+          <div class="card-info"><div><h3>물멍</h3><p>어항 · 바다 · 연못 중에 골라요</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+      </div>
+      <div class="ui home-d-foot">
+        <span><svg class="ico sm"><use href="#i-headphones"/></svg>이어폰을 끼면 더 좋아요</span>
+        <span><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 바로 들어가기</span>
+      </div>
+    </div>
+
+    <aside class="notes">
+      <h4>홈</h4>
+      <ul>
+        <li>첫 화면부터 세 장면이 <b>실제로 움직이는 미리보기</b>예요. 고르는 순간이 곧 멍때리기의 시작.</li>
+        <li>카드를 누르는 동작이 사용자 제스처라서, 들어가자마자 <b>소리를 바로 켤 수 있어요</b>(자동재생 제한 회피).</li>
+        <li>카드 왼쪽 위 태그로 장면마다 할 수 있는 것을 한 단어로 알려요.</li>
+        <li>데스크톱은 카드에 마우스를 올리면 살짝 떠오르고, 소리를 작게 미리 들려줘요.</li>
+      </ul>
+      <h4>반응형</h4>
+      <ul>
+        <li>~767px: 카드 세로 3장</li>
+        <li>768~1199px: 카드 가로 3장, 높이 줄임</li>
+        <li>1200px~: 카드 가로 3장, 숫자키로 바로 들어가기</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 02 불멍 ================= -->
+<section class="row theme-fire">
+  <div class="row-head"><span class="row-no">02</span><h2>불멍 · 캠프파이어</h2><p>장작이 실제로 타들어가고, 장작을 넣으면 불이 옮겨붙어요</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-fire" data-doan-frame="fire-mobile" data-doan-implements="src/views/scene-view.ts" data-doan-title="불멍 · 모바일">
+      <canvas class="scene" data-scene="fire"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass" data-doan-id="fire-m-tabs"><a class="on">불멍</a><a>비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="ui m-bottom">
+        <div class="m-status">
+          <span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>타닥타닥 · 장작 <b data-stat="logs">3</b>개</span>
+          <span class="meter" data-doan-id="fire-m-meter">불 세기<span class="bar"><i data-stat="intensity" data-stat-mode="width"></i></span></span>
+        </div>
+        <div class="dock glass" data-doan-id="fire-m-dock">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <button class="primary" data-action="add-log" data-doan-id="fire-m-add"><svg class="ico"><use href="#i-log"/></svg>장작 넣기</button>
+          <button class="icon-btn" aria-label="소리 조절"><svg class="ico"><use href="#i-sliders"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-fire" data-doan-frame="fire-mobile-add" data-doan-implements="src/views/scene-view.ts" data-doan-title="불멍 · 장작 끌어 넣기">
+      <canvas class="scene" data-scene="fire" data-fy="0.6" data-auto-add="7"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass"><a class="on">불멍</a><a>비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="ui drop-zone" data-doan-id="fire-drop-zone"></div>
+      <div class="ui drop-label">여기에 놓으면 불에 들어가요</div>
+      <svg class="ui drag-path" viewBox="0 0 390 844" fill="none"><path d="M78 712C70 560 150 430 236 388" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-dasharray="4 7" stroke-linecap="round"/></svg>
+      <div class="ui drag-ghost" data-doan-id="fire-drag-ghost"><span class="log-art big"></span><span class="finger"></span></div>
+      <div class="ui tray glass-strong" data-doan-id="fire-tray">
+        <div class="grab"></div>
+        <div class="tray-head"><h4>장작 고르기</h4><span>끌어서 넣거나, 눌러서 바로 넣어요</span></div>
+        <div class="woods">
+          <button class="wood on lifted" data-action="add-log"><span class="log-art"></span><b>참나무</b><span>오래 타요</span></button>
+          <button class="wood" data-action="add-log"><span class="log-art pine"></span><b>소나무</b><span>타닥 소리가 커요</span></button>
+          <button class="wood" data-action="add-log"><span class="log-art birch"></span><b>자작나무</b><span>불꽃이 밝아요</span></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen desk theme-fire" data-doan-frame="fire-desktop" data-doan-implements="src/views/scene-view.ts" data-doan-title="불멍 · 데스크톱">
+      <canvas class="scene" data-scene="fire" data-fy="0.64" data-scale="0.85"></canvas>
+      <div class="ui d-top">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <nav class="tabs glass"><a class="on">불멍</a><a>비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="전체화면"><svg class="ico"><use href="#i-max"/></svg></button>
+      </div>
+      <div class="ui d-now">
+        <strong><span class="eq"><i></i><i></i><i></i><i></i></span>장작 타는 소리</strong>
+        <span class="meter"><span>장작 <b data-stat="logs">3</b>개 · 불 세기</span><span class="bar"><i data-stat="intensity" data-stat-mode="width"></i></span></span>
+      </div>
+      <div class="ui d-dock glass" data-doan-id="fire-d-dock">
+        <button class="chip-btn"><svg class="ico"><use href="#i-timer"/></svg>30:00</button>
+        <span class="sep"></span>
+        <button class="primary" data-action="add-log"><svg class="ico"><use href="#i-log"/></svg>장작 넣기<kbd>Space</kbd></button>
+        <span class="sep"></span>
+        <div class="vol"><svg class="ico"><use href="#i-volume"/></svg><div class="slider"><i style="width:72%"></i><b style="left:72%"></b></div></div>
+      </div>
+      <div class="ui d-keys"><span><kbd>←</kbd><kbd>→</kbd> 장면 바꾸기</span><span><kbd>M</kbd> 소리</span><span><kbd>F</kbd> 전체화면</span></div>
+    </div>
+
+    <aside class="notes">
+      <h4>장작이 타는 방식</h4>
+      <ul>
+        <li>장작 3개로 시작해요. 하나가 <b>1~2분에 걸쳐</b> 갈색 → 숯 → 잔불로 타들어가고, 다 타면 짧아지며 사라져요.</li>
+        <li>숯이 된 장작은 갈라진 틈이 주황색으로 숨 쉬듯 빛나요.</li>
+        <li><b>장작 넣기</b>: 위에서 ‘툭’ 떨어지며 불티가 튀고, 3초 동안 불이 옮겨붙은 뒤 불꽃이 커져요.</li>
+        <li>불 세기 게이지는 남은 장작만큼 내려가요. 재촉하는 알림은 없어요.</li>
+      </ul>
+      <h4>조작</h4>
+      <ul>
+        <li>모바일: 버튼을 누르거나, 트레이에서 장작을 <b>끌어다 불에 놓아요</b>.</li>
+        <li>장작 종류(참나무·소나무·자작나무)는 타는 시간과 소리가 달라지는 <b>선택 제안</b>이에요.</li>
+        <li>데스크톱: <kbd>Space</kbd>로 장작 넣기, 장면을 클릭해도 넣어져요.</li>
+        <li><span class="tag-added">구현하면서 추가</span> 트레이는 ‘장작 넣기’를 <b>꾹 누르면</b> 열려요. 처음 장작을 넣을 때 한 번 알려줘요.</li>
+        <li><span class="tag-added">구현하면서 추가</span> <b>장작 알아서 넣기</b>(기본 켬): 20초 넘게 손대지 않았는데 불이 약해지면 장작을 하나씩 넣어요. 오래 멍때려도 불이 꺼지지 않게. 소리와 타이머 시트에서 끌 수 있어요.</li>
+      </ul>
+      <h4>소리</h4>
+      <ul>
+        <li>타닥 소리 볼륨 = 불 세기. 장작 넣을 때 ‘툭’ + 불티 ‘파삭’.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 03 비멍 ================= -->
+<section class="row theme-rain">
+  <div class="row-head"><span class="row-no">03</span><h2>비멍 · 창가에서 보는 비</h2><p>흐린 도시 불빛 앞으로 빗방울이 맺히고 흘러내려요</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-rain" data-doan-frame="rain-mobile" data-doan-implements="src/views/scene-view.ts" data-doan-title="비멍 · 모바일">
+      <canvas class="scene" data-scene="rain" data-intensity="0.6"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass"><a>불멍</a><a class="on">비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>빗소리 · 창가</span><span>천둥 꺼짐</span></div>
+        <div class="dock glass" data-doan-id="rain-m-dock">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <div class="seg" data-doan-id="rain-m-seg">
+            <button data-action="rain" data-value="0.25">보슬비</button>
+            <button class="on" data-action="rain" data-value="0.6">비</button>
+            <button data-action="rain" data-value="1">장대비</button>
+          </div>
+          <button class="icon-btn toggleable" data-action="thunder" aria-label="천둥"><svg class="ico"><use href="#i-zap"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-rain" data-doan-frame="rain-mobile-sheet" data-doan-implements="src/views/scene-view.ts" data-doan-title="비멍 · 소리와 타이머 시트">
+      <canvas class="scene" data-scene="rain" data-intensity="0.6" data-thunder="on"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass"><a>불멍</a><a class="on">비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="scrim"></div>
+      <div class="ui sheet glass-strong" data-doan-id="rain-sheet">
+        <div class="grab"></div>
+        <h3>소리와 타이머</h3>
+        <p class="sub">타이머가 끝나면 소리가 3분 동안 천천히 작아져요.</p>
+        <h4>타이머</h4>
+        <div class="chips" data-doan-id="timer-chips"><button>15분</button><button class="on">30분</button><button>1시간</button><button>계속</button></div>
+        <h4>소리 섞기</h4>
+        <div class="mix" data-doan-id="rain-mix">
+          <div class="mix-row"><svg class="ico sm"><use href="#i-rain"/></svg><span>빗소리</span><div class="slider"><i style="width:75%"></i><b style="left:75%"></b></div><span class="val">75</span></div>
+          <div class="mix-row"><svg class="ico sm"><use href="#i-zap"/></svg><span>천둥</span><div class="slider"><i style="width:30%"></i><b style="left:30%"></b></div><span class="val">30</span></div>
+          <div class="mix-row"><svg class="ico sm"><use href="#i-wind"/></svg><span>창밖 바람</span><div class="slider"><i style="width:20%"></i><b style="left:20%"></b></div><span class="val">20</span></div>
+        </div>
+        <button class="btn-block">완료</button>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen desk theme-rain" data-doan-frame="rain-desktop" data-doan-implements="src/views/scene-view.ts" data-doan-title="비멍 · 데스크톱">
+      <canvas class="scene" data-scene="rain" data-intensity="0.6" data-thunder="on"></canvas>
+      <div class="ui d-top">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <nav class="tabs glass"><a>불멍</a><a class="on">비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="전체화면"><svg class="ico"><use href="#i-max"/></svg></button>
+      </div>
+      <div class="ui d-now">
+        <strong><span class="eq"><i></i><i></i><i></i><i></i></span>빗소리 · 창가</strong>
+        <span>비 · 천둥 켜짐</span>
+      </div>
+      <div class="ui d-dock glass" data-doan-id="rain-d-dock">
+        <button class="chip-btn"><svg class="ico"><use href="#i-timer"/></svg>30:00</button>
+        <span class="sep"></span>
+        <div class="seg">
+          <button data-action="rain" data-value="0.25">보슬비</button>
+          <button class="on" data-action="rain" data-value="0.6">비</button>
+          <button data-action="rain" data-value="1">장대비</button>
+        </div>
+        <button class="chip-btn on toggleable" data-action="thunder"><svg class="ico"><use href="#i-zap"/></svg>천둥</button>
+        <span class="sep"></span>
+        <div class="vol"><svg class="ico"><use href="#i-volume"/></svg><div class="slider"><i style="width:64%"></i><b style="left:64%"></b></div></div>
+      </div>
+      <div class="ui d-keys"><span><kbd>↑</kbd><kbd>↓</kbd> 비 세기</span><span><kbd>T</kbd> 천둥</span><span><kbd>M</kbd> 소리</span></div>
+    </div>
+
+    <aside class="notes">
+      <h4>장면</h4>
+      <ul>
+        <li>창가에 앉아 밖을 보는 시점. 뒤로는 <b>흐릿한 도시 불빛(보케)</b>과 빗줄기, 앞으로는 <b>유리창에 맺힌 물방울</b>.</li>
+        <li>큰 물방울이 멈췄다 흘렀다 하며 내려가고, 지나간 자리에 작은 물방울 자국을 남겨요.</li>
+        <li>도로 쪽 불빛 몇 개는 천천히 옆으로 지나가요(차).</li>
+      </ul>
+      <h4>조작</h4>
+      <ul>
+        <li><b>비 세기 3단계</b>: 보슬비 / 비 / 장대비. 빗줄기 양, 흘러내리는 물방울, 소리가 함께 바뀌어요.</li>
+        <li><b>천둥</b>(선택): 켜면 20~40초에 한 번 번쩍이고, 1~2초 뒤 천둥소리.</li>
+        <li>소리 시트에서 빗소리·천둥·바람을 따로 섞어요. 타이머도 여기서.</li>
+      </ul>
+      <h4>더 해볼 만한 것 <span class="tag-todo">아직 코드 없음</span></h4>
+      <ul>
+        <li>김 서린 창문을 손가락으로 닦으면 그 자리만 선명해지고, 천천히 다시 흐려지기.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 04 물멍 ================= -->
+<section class="row theme-water">
+  <div class="row-head"><span class="row-no">04</span><h2>물멍 · 어항</h2><p>물멍은 어항 · 바다 · 연못 세 장면을 위쪽 칩으로 골라요</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-water" data-doan-frame="water-mobile" data-doan-implements="src/views/scene-view.ts" data-doan-title="물멍 · 어항 · 모바일">
+      <canvas class="scene" data-scene="aquarium"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass"><a>불멍</a><a>비멍</a><a class="on">물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass"><a class="on">어항</a><a>바다</a><a>연못</a></nav>
+      <div class="ui m-bottom">
+        <div class="hint glass"><svg class="ico sm"><use href="#i-hand"/></svg>물속을 톡 치면 그 자리에 먹이가 떨어져요</div>
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>보글보글 · 물고기 <b data-stat="fish">10</b>마리</span></div>
+        <div class="dock glass" data-doan-id="water-m-dock">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <button class="primary" data-action="feed" data-doan-id="water-m-feed"><svg class="ico"><use href="#i-food"/></svg>먹이 주기</button>
+          <button class="icon-btn" aria-label="소리 조절"><svg class="ico"><use href="#i-sliders"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-water" data-doan-frame="water-mobile-feed" data-doan-implements="src/views/scene-view.ts" data-doan-title="물멍 · 어항 · 먹이 주는 순간">
+      <canvas class="scene" data-scene="aquarium" data-auto-feed="5"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass"><a>불멍</a><a>비멍</a><a class="on">물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass"><a class="on">어항</a><a>바다</a><a>연못</a></nav>
+      <div class="ui toast glass below-sub" data-doan-id="water-toast"><span class="dot"></span>물고기들이 먹이를 먹으러 와요</div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>퐁 · 먹이 7알</span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <button class="primary pressed" data-action="feed"><svg class="ico"><use href="#i-food"/></svg>먹이 주기</button>
+          <button class="icon-btn" aria-label="소리 조절"><svg class="ico"><use href="#i-sliders"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen desk theme-water" data-doan-frame="water-desktop" data-doan-implements="src/views/scene-view.ts" data-doan-title="물멍 · 어항 · 데스크톱">
+      <canvas class="scene" data-scene="aquarium"></canvas>
+      <div class="ui d-top">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <nav class="tabs glass"><a>불멍</a><a>비멍</a><a class="on">물멍</a></nav>
+        <button class="icon-btn glass" aria-label="전체화면"><svg class="ico"><use href="#i-max"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass desk-sub"><a class="on">어항</a><a>바다</a><a>연못</a></nav>
+      <div class="ui d-now">
+        <strong><span class="eq"><i></i><i></i><i></i><i></i></span>어항 · 보글보글</strong>
+        <span>물고기 <b data-stat="fish">10</b>마리</span>
+      </div>
+      <div class="ui d-dock glass" data-doan-id="water-d-dock">
+        <button class="chip-btn"><svg class="ico"><use href="#i-timer"/></svg>30:00</button>
+        <span class="sep"></span>
+        <button class="primary" data-action="feed"><svg class="ico"><use href="#i-food"/></svg>먹이 주기<kbd>Space</kbd></button>
+        <span class="sep"></span>
+        <div class="vol"><svg class="ico"><use href="#i-volume"/></svg><div class="slider"><i style="width:58%"></i><b style="left:58%"></b></div></div>
+      </div>
+      <div class="ui d-keys"><span>클릭한 자리에 먹이</span><span><kbd>M</kbd> 소리</span><span><kbd>F</kbd> 전체화면</span></div>
+    </div>
+
+    <aside class="notes">
+      <h4>결정 · 2026.11.10</h4>
+      <ul>
+        <li><b>세 장면 모두 써요.</b> 물멍에 들어오면 마지막에 본 장면이 열리고(처음엔 어항), 위쪽 칩으로 바다 · 연못으로 바꿔요.</li>
+        <li>주소: <code>#/water/aquarium</code> · <code>#/water/sea</code> · <code>#/water/pond</code></li>
+      </ul>
+      <h4>어항</h4>
+      <ul>
+        <li>‘물멍’이 원래 어항을 보며 멍때리는 데서 온 말이라 <b>가장 바로 이해돼요</b>.</li>
+        <li>먹이 주기라는 <b>확실한 손맛</b>이 있어요. 불멍의 장작 넣기와 짝이 맞아요.</li>
+        <li>청록색이라 불멍(주황)·비멍(남색)과 겹치지 않아요.</li>
+      </ul>
+      <h4>장면</h4>
+      <ul>
+        <li>물고기 3종 10마리: 네온테트라 떼(같이 움직임), 금붕어 2, 진주 구라미 1.</li>
+        <li>빛줄기·수초·기포가 늘 일렁여서, 물고기가 쉬어도 화면이 멈춰 보이지 않아요.</li>
+      </ul>
+      <h4>조작</h4>
+      <ul>
+        <li>물속을 <b>톡 치면 그 자리에 먹이</b>가 떨어지고, 가까운 물고기가 빠르게 모여들어요.</li>
+        <li>못 먹은 먹이는 바닥에 가라앉았다 천천히 사라져요.</li>
+        <li>소리: 여과기 물소리 + 보글보글, 먹이 줄 때 ‘퐁’.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 04-1 물멍 다른 안 ================= -->
+<section class="row theme-water">
+  <div class="row-head"><span class="row-no">04-1</span><h2>물멍 · 바다와 연못</h2><p>어항과 같은 자리에서 칩으로 바꿔요</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-water" data-doan-frame="water-alt-sea" data-doan-implements="src/views/scene-view.ts" data-doan-title="물멍 · 바다">
+      <canvas class="scene" data-scene="sea"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass"><a>불멍</a><a>비멍</a><a class="on">물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass" data-doan-id="water-subscenes"><a>어항</a><a class="on">바다</a><a>연못</a></nav>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>파도 소리 · 밤바다</span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <div class="seg">
+            <button data-action="wave" data-value="0.6">잔잔</button>
+            <button class="on" data-action="wave" data-value="1">보통</button>
+            <button data-action="wave" data-value="1.5">높음</button>
+          </div>
+          <button class="icon-btn" aria-label="소리 조절"><svg class="ico"><use href="#i-sliders"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-water" data-doan-frame="water-alt-pond" data-doan-implements="src/views/scene-view.ts" data-doan-title="물멍 · 연못">
+      <canvas class="scene" data-scene="pond"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass"><a>불멍</a><a>비멍</a><a class="on">물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass"><a>어항</a><a>바다</a><a class="on">연못</a></nav>
+      <div class="ui m-bottom">
+        <div class="hint glass"><svg class="ico sm"><use href="#i-hand"/></svg>물을 톡 치면 물결이 퍼져요</div>
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>물방울 · 바람 소리</span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <button class="primary toggleable" data-action="drizzle"><svg class="ico"><use href="#i-drop"/></svg>빗방울 떨어뜨리기</button>
+          <button class="icon-btn" aria-label="소리 조절"><svg class="ico"><use href="#i-sliders"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes wide">
+      <h4>물멍 세 장면</h4>
+      <table class="compare">
+        <tr><th></th><th class="pick">어항 (처음 열리는 장면)</th><th>바다 · 밤바다 파도</th><th>연못 · 윤슬</th></tr>
+        <tr><td>특징</td><td>‘물멍’ 하면 떠오르는 장면이라 바로 이해돼요. 먹이 주기라는 확실한 손맛이 있어요.</td><td>파도 소리가 가장 좋아서, 귀로 멍때리기 좋아요. 밀려왔다 빠지는 리듬이 숨 고르기와 닮았어요.</td><td>가장 단순하고 조용해요. 톡 치면 물결이 퍼지는 게 바로 이해돼요.</td></tr>
+        <tr><td>주의할 점</td><td>물고기 움직임을 자연스럽게 다듬는 데 손이 많이 가요.</td><td>비멍과 ‘밤 · 파랑’ 분위기가 겹치고, 손댈 거리가 적어요.</td><td>오래 보면 변화가 적어요.</td></tr>
+        <tr><td>조작</td><td>톡 치면 먹이</td><td>파도 크기 3단계, 바다를 톡 치면 조약돌 ‘퐁당’</td><td>톡 치면 물결, 빗방울 켜기</td></tr>
+        <tr><td>소리</td><td>여과기 물소리, 보글보글</td><td>밀려왔다 빠지는 파도</td><td>물방울, 바람, 새소리(선택)</td></tr>
+      </table>
+      <p class="rec"><b>결정</b> 세 장면을 모두 써요. 물멍 안에서 ‘어항 · 바다 · 연못’ 칩으로 바꾸고, 마지막에 본 장면을 기억해요. 바다의 파도 소리는 화면의 파도와 같은 시계를 써서 밀려오는 순간에 맞춰 커져요.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 05 공통 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">05</span><h2>공통 상태</h2><p>몰입 모드 · 타이머 종료 · 가로 화면</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-fire" data-doan-frame="common-immersive" data-doan-implements="src/views/scene-view.ts" data-doan-title="몰입 모드 (UI 숨김)">
+      <canvas class="scene" data-scene="fire"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui imm-timer"><svg class="ico sm"><use href="#i-timer"/></svg>28:41</div>
+      <div class="ui imm-hint" data-doan-id="immersive-hint"><i></i>화면을 톡 치면 메뉴가 나와요</div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-rain" data-doan-frame="common-timer-end" data-doan-implements="src/views/scene-view.ts" data-doan-title="타이머 종료">
+      <canvas class="scene" data-scene="rain" data-intensity="0.3"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="scrim"></div>
+      <div class="ui end-card glass-strong" data-doan-id="timer-end-card">
+        <div class="moon"><svg class="ico lg"><use href="#i-moon"/></svg></div>
+        <h3>30분 동안 멍때렸어요</h3>
+        <p>소리가 천천히 작아지고 있어요.<br>조금 더 있을까요?</p>
+        <button class="primary">10분 더 있을래요</button>
+        <button class="btn-ghost">그만 볼래요</button>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen land theme-water" data-doan-frame="common-landscape" data-doan-implements="src/views/scene-view.ts" data-doan-title="가로 화면 (물멍)">
+      <canvas class="scene" data-scene="aquarium"></canvas>
+      <div class="ui land-label"><span class="eq"><i></i><i></i><i></i><i></i></span>물멍 · 어항</div>
+      <div class="ui rail glass" data-doan-id="landscape-rail">
+        <div class="rail-group">
+          <button class="icon-btn" aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></button>
+          <button class="icon-btn" aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></button>
+          <button class="icon-btn cur" aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></button>
+        </div>
+        <button class="feed" data-action="feed" aria-label="먹이 주기"><svg class="ico"><use href="#i-food"/></svg></button>
+        <div class="rail-group">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <button class="icon-btn" aria-label="소리"><svg class="ico"><use href="#i-volume"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes">
+      <h4>몰입 모드</h4>
+      <ul>
+        <li>4초 동안 입력이 없으면 UI가 1초에 걸쳐 사라져요. 데스크톱은 마우스 커서도 숨겨요.</li>
+        <li>화면을 톡 치면(첫 번째 터치) 메뉴만 다시 나타나고, 장면에는 반응하지 않아요.</li>
+        <li>보는 동안은 Wake Lock으로 화면이 꺼지지 않게 해요.</li>
+      </ul>
+      <h4>타이머 종료</h4>
+      <ul>
+        <li>끝나기 3분 전부터 소리를 천천히 줄이고, 끝나면 ‘잘 멍때렸어요’ 카드.</li>
+        <li>응답이 없으면 1분 뒤 장면도 어두워지며 멈춰요.</li>
+      </ul>
+      <h4>가로 화면</h4>
+      <ul>
+        <li>조작을 오른쪽 세로 막대로 옮겨서 장면을 가리지 않아요.</li>
+        <li><span class="tag-added">구현하면서 추가</span> 비멍 · 바다에서는 가운데 버튼이 세기를 한 단계씩 바꿔요.</li>
+      </ul>
+      <h4>소리 켜기 <span class="tag-added">구현하면서 추가</span></h4>
+      <ul>
+        <li>링크로 바로 들어와서 아직 터치가 없으면 ‘탭해서 소리 켜기’ 안내가 떠요(브라우저 자동재생 제한).</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<script src="../assets/mong-scenes.js"></script>
+</body>
+</html>
