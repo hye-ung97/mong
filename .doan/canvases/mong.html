@@ -53,7 +53,7 @@
     <div class="ov-meta"><span>디자인 시안 v0.2</span><span>2026.11.10</span><span>모바일 우선 반응형</span><span>물멍 세 장면 확정</span></div>
     <div class="in-code" data-doan-id="ov-in-code">
       <b>코드로 구현됨 · <code>src/</code></b>
-      이 보드의 화면은 <code>src/</code>에 구현돼 있어요(<code>npm run dev</code>). 각 화면 이름 옆 연결 파일에서 해당 코드를 볼 수 있어요. 불멍 소리는 실제 녹음(CC0), 비멍·물멍 소리는 아직 Web Audio 합성이에요. 보드에서는 장면을 직접 눌러 볼 수 있지만 소리는 나지 않아요.
+      이 보드의 화면은 <code>src/</code>에 구현돼 있어요(<code>npm run dev</code>). 각 화면 이름 옆 연결 파일에서 해당 코드를 볼 수 있어요. 불멍·비멍 소리는 실제 녹음(CC0), 물멍 소리는 아직 Web Audio 합성이에요. 보드에서는 장면을 직접 눌러 볼 수 있지만 소리는 나지 않아요.
     </div>
     <div class="not-in-code" data-doan-id="ov-not-in-code">
       <b>아직 코드 없음</b>
@@ -95,7 +95,7 @@
     <h3>구현 메모</h3>
     <ul class="tech">
       <li>장면은 Canvas 2D로 그려요(<code>src/scenes/</code>). 보드의 <code>.doan/assets/mong-scenes.js</code>는 시안용 사본이에요.</li>
-      <li>불멍 소리는 Freesound CC0 녹음(<code>public/sounds/fire/</code>), 비멍·물멍은 아직 Web Audio 합성(<code>src/audio/</code>). 장면 상태(불 세기, 비 세기, 파도)를 따라가고, 첫 터치 뒤에 재생을 시작해요.</li>
+      <li>불멍·비멍 소리는 Freesound CC0 녹음(<code>public/sounds/</code>), 물멍은 아직 Web Audio 합성(<code>src/audio/</code>). 장면 상태(불 세기, 비 세기, 파도)를 따라가고, 첫 터치 뒤에 재생을 시작해요.</li>
       <li>보는 동안 화면이 꺼지지 않게 Screen Wake Lock을 써요.</li>
       <li><code>prefers-reduced-motion</code>이면 불티·빗줄기 수를 줄여요.</li>
     </ul>

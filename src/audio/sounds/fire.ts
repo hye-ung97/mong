@@ -56,14 +56,14 @@ export class FireSound extends SceneSound {
     this.bedTone = filter(c, 'lowpass', 16000, 0.5);
     this.bedLevel = gain(c, 0.8);
     chain(this.bedTone, this.bedLevel, this.layer('bed'));
-    void this.load();
+    void this.loadAll();
   }
 
-  private async load() {
+  private async loadAll() {
     const [bed, log, flare] = await Promise.allSettled([
-      this.env.load(`${BASE}bed.m4a`),
-      this.env.load(`${BASE}log.mp3`),
-      this.env.load(`${BASE}flare.mp3`),
+      this.load(`${BASE}bed.m4a`),
+      this.load(`${BASE}log.mp3`),
+      this.load(`${BASE}flare.mp3`),
     ]);
     if (this.disposed) return;
     if (bed.status === 'fulfilled') {

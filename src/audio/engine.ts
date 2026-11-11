@@ -5,7 +5,7 @@ import { SceneSound, type LayerDef, type SoundContext } from './sound';
 import { FIRE_LAYERS, FireSound } from './sounds/fire';
 import { RAIN_LAYERS, RainSound } from './sounds/rain';
 import { AQUARIUM_LAYERS, AquariumSound, POND_LAYERS, PondSound, SEA_LAYERS, SeaSound } from './sounds/water';
-import { loadBuffer } from './assets';
+import { loadBuffer, releaseBuffer } from './assets';
 import { makeNoise, type NoiseKind } from './synth';
 
 type SoundClass = new (env: SoundContext, defs: readonly LayerDef[], mix?: Record<string, number>) => SceneSound;
@@ -83,7 +83,7 @@ class AudioEngine {
       this.applyVolume(0);
       const noise = {} as Record<NoiseKind, AudioBuffer>;
       for (const kind of ['white', 'pink', 'brown'] as const) noise[kind] = makeNoise(ctx, kind);
-      this.env = { ctx, noise, wallOffset: () => this.offset, load: (url) => loadBuffer(ctx, url) };
+      this.env = { ctx, noise, wallOffset: () => this.offset, load: (url) => loadBuffer(ctx, url), release: releaseBuffer };
       ctx.addEventListener('statechange', () => {
         if (this.ready) this.startWanted();
         this.notify();
