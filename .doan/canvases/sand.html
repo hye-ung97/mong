@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="doan:canvas" content="sand">
+<meta name="doan:width" content="2800">
+<title>모래멍 시안</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/mong.css">
+<link rel="stylesheet" href="../assets/fire-v2.css">
+<link rel="stylesheet" href="../assets/sand.css">
+</head>
+<body class="board theme-sand">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-timer" viewBox="0 0 24 24"><path d="M10 2h4"/><path d="m12 14 3-3"/><circle cx="12" cy="14" r="8"/></symbol>
+    <symbol id="i-max" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-4 0v0M14 10V4a2 2 0 0 0-4 0v2M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></symbol>
+    <symbol id="i-rain" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.24"/><path d="M16 14v6M8 14v6M12 16v6"/></symbol>
+    <symbol id="i-fish" viewBox="0 0 24 24"><path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z"/><path d="M18 12v.5"/><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"/><path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5 .23 6.5C6.58 18.03 7 16 7 13.33"/></symbol>
+    <symbol id="i-log" viewBox="0 0 24 24"><path d="M5.5 8.5h11a3.5 3.5 0 0 1 0 7h-11a3.5 3.5 0 0 1 0-7z"/><ellipse cx="16.5" cy="12" rx="1.4" ry="2"/><path d="M4.5 12h6"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-headphones" viewBox="0 0 24 24"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></symbol>
+    <!-- 새 아이콘: 모래시계 (모래멍 · 비우기) -->
+    <symbol id="i-sand" viewBox="0 0 24 24"><path d="M6 2h12M6 22h12"/><path d="M7 2v4a5 5 0 0 0 2 4l3 2 3-2a5 5 0 0 0 2-4V2"/><path d="M7 22v-4a5 5 0 0 1 2-4l3-2 3 2a5 5 0 0 1 2 4v4"/></symbol>
+    <symbol id="i-status" viewBox="0 0 70 12">
+      <g fill="currentColor" stroke="none">
+        <rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4.5" y="6" width="3" height="6" rx="1"/><rect x="9" y="3.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="1" width="3" height="11" rx="1"/>
+        <path d="M30 3.2a10 10 0 0 1 13 0l-1.4 1.5a8 8 0 0 0-10.2 0zM32.4 5.9a6.4 6.4 0 0 1 8.2 0l-1.5 1.5a4.2 4.2 0 0 0-5.2 0zM36.5 11.5l-2.1-2.2a3 3 0 0 1 4.2 0z"/>
+        <rect x="49" y="1" width="18" height="10" rx="3" fill="none" stroke="currentColor" stroke-opacity=".45"/>
+        <rect x="51" y="3" width="14" height="6" rx="1.6"/>
+        <rect x="68" y="4.2" width="1.6" height="3.6" rx=".8" opacity=".45"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ================= 시안 개요 ================= -->
+<section class="brief" data-doan-frame="brief" data-doan-title="모래멍 · 개요">
+  <div>
+    <div class="ov-brand"><span class="orb lg"></span>mong · 모래멍</div>
+    <h1>색모래가 떨어져 쌓이는 걸 바라보기</h1>
+    <p class="lead">위에서 색모래 한 줄기가 모래시계처럼 떨어져요. 줄기가 지나간 길과 떨어지는 속도가 그대로 줄무늬로 남아서, 볼 때마다 다른 모양이 쌓여요.</p>
+    <div class="ov-meta"><span>디자인 시안</span><span>2026.11.11</span><span>보드에서 화면을 끌어 모래를 부어 볼 수 있어요</span></div>
+  </div>
+  <div>
+    <h3>어떻게 생겼나</h3>
+    <ul class="changes">
+      <li><em>줄기</em><b>천천히 흔들리며 떨어져요</b><span>손대지 않아도 줄기가 좌우로 느리게 움직여요. 같은 길을 되풀이하지 않아서 봉우리 자리가 매번 달라요.</span></li>
+      <li><em>색</em><b>색이 시간에 따라 바뀌어요</b><span>색 묶음 안의 다섯 색이 7초쯤마다 넘어가요. 빨리 부으면 띠가 두껍고, 천천히 부으면 가늘게 쌓여요.</span></li>
+      <li><em>손맛</em><b>끌면 줄기가 따라와요</b><span>화면을 끌어서 원하는 곳에 부어요. 빠르게 휘저으면 모래가 옆으로 날려서 넓게 깔려요.</span></li>
+      <li><em>끝</em><b>가득 차면 비우고 다시</b><span>바닥 틈으로 모래가 스르르 빠지고, 빈 자리에 새로 쌓여요. 멈추지 않고 이어져요.</span></li>
+    </ul>
+  </div>
+  <div>
+    <div class="in-code" data-doan-id="brief-in-code">
+      <b>코드에 들어간 것</b>
+      모래 장면(<code>src/scenes/sand.ts</code>), 네 번째 탭과 주소 <code>#/sand</code>, 모래멍 색, 색 묶음 네 가지와 고르기 트레이, 비우기, 끌어서 붓기, 홈의 네 번째 카드, 모래시계 아이콘과 문구.
+    </div>
+    <div class="not-in-code" data-doan-id="brief-not-in-code">
+      <b>시안과 코드가 다른 것</b>
+      <ul>
+        <li>폰 기울여 방향 바꾸기: 코드에만 있어요(색 고르기 트레이의 스위치). 시안에는 없어요</li>
+        <li>‘가득 차면 저절로 비우기’ 스위치는 코드에서 소리 시트에도 있어요</li>
+        <li>데스크톱 홈 네 칸: 시안 없이 코드에만 있어요</li>
+        <li>동그란 손가락, 되풀이해서 비우는 화면은 설명용이에요</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 01 모바일 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">01</span><h2>모래멍 · 모바일</h2><p>모래는 받침 위에 쌓이고, 조작은 받침 아래에</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-sand" data-doan-frame="sand-mobile" data-doan-implements="src/views/scene-view.ts" data-doan-title="모래멍 · 기본">
+      <canvas class="scene" data-sand data-palette="sunset" data-speed="0.6" data-floor="132" data-top="110" data-prefill="0.3"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs four glass" data-doan-id="sand-tabs"><a>불멍</a><a>비멍</a><a>물멍</a><a class="on">모래멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>모래 소리 · <span data-stat="palette">노을</span></span><span>채움 <span data-stat="fill">0%</span></span></div>
+        <div class="dock glass" data-doan-id="sand-dock">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <div class="seg" data-doan-id="sand-seg">
+            <button data-sand-act="speed" data-value="0.3">솔솔</button>
+            <button class="on" data-sand-act="speed" data-value="0.6">보통</button>
+            <button data-sand-act="speed" data-value="1">콸콸</button>
+          </div>
+          <button class="icon-btn" aria-label="색 고르기" data-doan-id="sand-palette-btn"><span class="swatch pal-sunset" data-sand-swatch></span></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-sand" data-doan-frame="sand-drag" data-doan-implements="src/views/scene-view.ts" data-doan-title="모래멍 · 끌어서 붓기">
+      <canvas class="scene" data-sand data-palette="ocean" data-speed="1" data-floor="132" data-top="110" data-prefill="0.14" data-auto-drag="5"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs four glass"><a>불멍</a><a>비멍</a><a>물멍</a><a class="on">모래멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="ui sand-finger" data-sand-finger data-doan-id="sand-finger"></div>
+      <div class="ui hint top glass" data-doan-id="sand-drag-hint"><svg class="ico sm"><use href="#i-hand"/></svg>화면을 끌면 모래가 따라와요</div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>모래 소리 · <span data-stat="palette">바다</span></span><span>채움 <span data-stat="fill">0%</span></span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <div class="seg">
+            <button data-sand-act="speed" data-value="0.3">솔솔</button>
+            <button data-sand-act="speed" data-value="0.6">보통</button>
+            <button class="on" data-sand-act="speed" data-value="1">콸콸</button>
+          </div>
+          <button class="icon-btn" aria-label="색 고르기"><span class="swatch pal-ocean" data-sand-swatch></span></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-sand" data-doan-frame="sand-palette" data-doan-implements="src/views/scene-view.ts" data-doan-title="모래멍 · 색 고르기">
+      <canvas class="scene" data-sand data-palette="candy" data-speed="0.6" data-floor="132" data-top="110" data-prefill="0.55"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs four glass"><a>불멍</a><a>비멍</a><a>물멍</a><a class="on">모래멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="ui tray2 glass-strong" data-doan-id="sand-tray">
+        <div class="grab"></div>
+        <div class="tray-head"><h4>색 고르기</h4><span>지금부터 떨어지는 모래가 바뀌어요</span></div>
+        <div class="pals">
+          <button class="pal-pick" data-sand-act="palette" data-value="sunset"><span class="swatch big pal-sunset"></span><b>노을</b></button>
+          <button class="pal-pick" data-sand-act="palette" data-value="ocean"><span class="swatch big pal-ocean"></span><b>바다</b></button>
+          <button class="pal-pick" data-sand-act="palette" data-value="forest"><span class="swatch big pal-forest"></span><b>숲</b></button>
+          <button class="pal-pick on" data-sand-act="palette" data-value="candy"><span class="swatch big pal-candy"></span><b>사탕</b></button>
+        </div>
+        <div class="tend-row"><div><b>가득 차면 저절로 비우기</b><small>끄면 가득 찼을 때 모래가 멈춰요</small></div><span class="switch"></span></div>
+        <button class="tray-go" data-sand-act="empty" data-doan-id="sand-empty-btn"><svg class="ico"><use href="#i-sand"/></svg>지금 비우기</button>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes">
+      <h4>자리</h4>
+      <ul>
+        <li>불멍이 모닥불 앞, 비멍이 창가라면 모래멍은 <b>유리 액자 앞</b>이에요. 어두운 방에 액자 하나만 있어요.</li>
+        <li>화면 아래가 <b>받침</b>이고 조작 버튼은 그 위에 놓여요. 모래가 버튼에 가리지 않아요.</li>
+      </ul>
+      <h4>조작</h4>
+      <ul>
+        <li><b>속도 3단계</b>: 솔솔 · 보통 · 콸콸. 다 차는 데 7분 · 3분 반 · 1분 반쯤 걸려요.</li>
+        <li><b>색 버튼</b>은 지금 색 묶음을 그대로 보여줘요. 누르면 트레이가 열려요.</li>
+        <li>색을 바꾸면 이미 쌓인 모래는 그대로 두고 <b>새 모래만</b> 바뀌어요. 섞어 쌓을 수 있어요.</li>
+        <li>화면을 끌면 줄기가 손을 따라오고, 손을 떼면 4초 뒤 다시 저절로 흔들려요.</li>
+      </ul>
+      <h4>안내</h4>
+      <ul>
+        <li>‘화면을 끌면 모래가 따라와요’는 처음 들어왔을 때만 뜨고, 한 번 끌면 사라져요.</li>
+        <li>가운데 화면의 동그란 손가락은 설명용이에요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 02 데스크톱 · 비우기 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">02</span><h2>데스크톱 · 가득 찼을 때</h2><p>넓은 화면에서는 봉우리가 여러 개 생겨요</p></div>
+  <div class="row-body">
+
+    <div class="screen desk theme-sand" data-doan-frame="sand-desktop" data-doan-implements="src/views/scene-view.ts" data-doan-title="모래멍 · 데스크톱">
+      <canvas class="scene" data-sand data-palette="sunset" data-speed="0.6" data-floor="112" data-top="96" data-prefill="0.38"></canvas>
+      <div class="ui d-top">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <nav class="tabs four glass"><a>불멍</a><a>비멍</a><a>물멍</a><a class="on">모래멍</a></nav>
+        <button class="icon-btn glass" aria-label="전체화면"><svg class="ico"><use href="#i-max"/></svg></button>
+      </div>
+      <div class="ui d-now">
+        <strong><span class="eq"><i></i><i></i><i></i><i></i></span>모래 소리</strong>
+        <span><span data-stat="speed">보통</span> · <span data-stat="palette">노을</span> · 채움 <span data-stat="fill">0%</span></span>
+      </div>
+      <div class="ui d-dock glass" data-doan-id="sand-d-dock">
+        <button class="chip-btn"><svg class="ico"><use href="#i-timer"/></svg>30:00</button>
+        <span class="sep"></span>
+        <div class="seg narrow">
+          <button data-sand-act="speed" data-value="0.3">솔솔</button>
+          <button class="on" data-sand-act="speed" data-value="0.6">보통</button>
+          <button data-sand-act="speed" data-value="1">콸콸</button>
+        </div>
+        <div class="pal-chips" data-doan-id="sand-d-palettes">
+          <button class="on" data-sand-act="palette" data-value="sunset" aria-label="노을"><span class="swatch pal-sunset"></span></button>
+          <button data-sand-act="palette" data-value="ocean" aria-label="바다"><span class="swatch pal-ocean"></span></button>
+          <button data-sand-act="palette" data-value="forest" aria-label="숲"><span class="swatch pal-forest"></span></button>
+          <button data-sand-act="palette" data-value="candy" aria-label="사탕"><span class="swatch pal-candy"></span></button>
+        </div>
+        <button class="chip-btn" data-sand-act="empty"><svg class="ico"><use href="#i-sand"/></svg>비우기</button>
+        <span class="sep"></span>
+        <div class="vol"><svg class="ico"><use href="#i-volume"/></svg><div class="slider"><i style="width:64%"></i><b style="left:64%"></b></div></div>
+      </div>
+      <div class="ui d-keys stack"><span><kbd>↑</kbd><kbd>↓</kbd> 속도 · <kbd>E</kbd> 비우기</span><span>화면을 끌면 모래가 따라와요</span></div>
+    </div>
+
+    <div class="screen phone theme-sand" data-doan-frame="sand-empty" data-doan-implements="src/views/scene-view.ts" data-doan-title="모래멍 · 가득 차서 비우는 순간">
+      <canvas class="scene" data-sand data-palette="forest" data-speed="0.6" data-floor="132" data-top="110" data-prefill="0.85" data-demo-empty></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs four glass"><a>불멍</a><a>비멍</a><a>물멍</a><a class="on">모래멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="ui toast glass" data-doan-id="sand-full-toast"><span class="dot"></span>가득 찼어요. 비우고 다시 쌓을게요</div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>모래 소리 · <span data-stat="palette">숲</span></span><span>채움 <span data-stat="fill">0%</span></span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <div class="seg">
+            <button data-sand-act="speed" data-value="0.3">솔솔</button>
+            <button class="on" data-sand-act="speed" data-value="0.6">보통</button>
+            <button data-sand-act="speed" data-value="1">콸콸</button>
+          </div>
+          <button class="icon-btn" aria-label="색 고르기"><span class="swatch pal-forest" data-sand-swatch></span></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes">
+      <h4>데스크톱</h4>
+      <ul>
+        <li>색 묶음 네 개가 독에 나와 있어요. 트레이를 열지 않고 바로 바꿔요.</li>
+        <li>화면이 넓어서 줄기가 멀리 오가고, 봉우리와 골짜기가 여러 개 생겨요.</li>
+      </ul>
+      <h4>가득 찼을 때</h4>
+      <ul>
+        <li>봉우리가 탭 아래까지 닿으면 가득 찬 거예요. 2초 멈췄다가 <b>바닥 가운데 틈으로</b> 빠져요.</li>
+        <li>빠질 때는 가운데가 깔때기처럼 꺼지면서 줄무늬가 안쪽으로 흘러들어요. 7초쯤 걸려요.</li>
+        <li>다 빠지면 줄기가 다른 길로 다시 떨어지기 시작해요.</li>
+        <li>오른쪽 화면은 비우는 모습을 되풀이해서 보여줘요(설명용).</li>
+      </ul>
+      <h4>타이머</h4>
+      <ul>
+        <li>타이머가 끝나면 다른 멍처럼 소리가 줄면서 모래도 천천히 가늘어지다 멈춰요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 03 색 묶음 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">03</span><h2>색 묶음 네 가지</h2><p>같은 움직임이어도 색에 따라 분위기가 달라요</p></div>
+  <div class="row-body">
+
+    <div class="pal-board" data-doan-frame="sand-palettes" data-doan-implements="src/scenes/sand.ts" data-doan-title="모래멍 · 색 묶음 비교">
+      <div class="pal-cell">
+        <div class="screen theme-sand"><canvas class="scene" data-sand data-palette="sunset" data-speed="0.6" data-prefill="0.7"></canvas></div>
+        <p><b>노을</b>노랑에서 남색까지. 기본 색이에요.</p>
+      </div>
+      <div class="pal-cell">
+        <div class="screen theme-sand"><canvas class="scene" data-sand data-palette="ocean" data-speed="0.6" data-prefill="0.7"></canvas></div>
+        <p><b>바다</b>모래빛과 푸른색. 가장 차분해요.</p>
+      </div>
+      <div class="pal-cell">
+        <div class="screen theme-sand"><canvas class="scene" data-sand data-palette="forest" data-speed="0.6" data-prefill="0.7"></canvas></div>
+        <p><b>숲</b>연두와 초록 사이에 흙빛이 끼어요.</p>
+      </div>
+      <div class="pal-cell">
+        <div class="screen theme-sand"><canvas class="scene" data-sand data-palette="candy" data-speed="0.6" data-prefill="0.7"></canvas></div>
+        <p><b>사탕</b>밝은 다섯 색. 가장 화려해요.</p>
+      </div>
+    </div>
+
+    <aside class="notes">
+      <h4>모양이 달라지는 까닭</h4>
+      <ul>
+        <li><b>방향</b>: 줄기가 머문 곳에 봉우리가 서고, 지나간 곳에는 얇은 층이 깔려요.</li>
+        <li><b>속도</b>: 색은 시간에 맞춰 바뀌니까, 콸콸이면 띠가 두껍고 솔솔이면 가는 줄이 촘촘해요.</li>
+        <li><b>비탈</b>: 알갱이는 내려앉으면서 낮은 쪽으로 굴러요. 봉우리 옆으로 색 띠가 비스듬히 흘러내려요.</li>
+        <li>알갱이마다 밝기가 조금씩 달라서 가까이 보면 모래처럼 거칠어요.</li>
+      </ul>
+      <h4>색 묶음</h4>
+      <ul>
+        <li>한 묶음은 다섯 색이고, 한 바퀴 돌면 처음 색으로 돌아와요.</li>
+        <li>이름과 색은 바꾸기 쉬워요. 더 넣고 싶은 색이 있으면 알려주세요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 04 홈 · 정할 것 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">04</span><h2>홈 · 정해야 할 것</h2><p>멍이 네 가지가 되면 홈과 탭이 조금 바뀌어요</p></div>
+  <div class="row-body">
+
+    <div class="screen phone" data-doan-frame="sand-home" data-doan-implements="src/views/home-view.ts" data-doan-title="홈 · 카드 네 장">
+      <div class="home-bg"></div>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui home-head">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <h1>오늘은 어떤 멍?</h1>
+        <p>소리를 켜고, 아무 생각 없이 바라보세요.</p>
+      </div>
+      <div class="ui cards-m four" data-doan-id="sand-home-cards">
+        <a class="card theme-fire">
+          <canvas class="scene" data-scene="fire" data-fx="0.7" data-fy="0.78" data-scale="1"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-log"/></svg>장작 넣기</span>
+          <div class="card-info"><div><h3>불멍</h3><p>타닥타닥, 장작 타는 소리</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+        <a class="card theme-rain">
+          <canvas class="scene" data-scene="rain" data-intensity="0.55"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-rain"/></svg>비 세기 조절</span>
+          <div class="card-info"><div><h3>비멍</h3><p>창가에 앉아 듣는 빗소리</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+        <a class="card theme-water">
+          <canvas class="scene" data-scene="aquarium" data-scale="1.3"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-fish"/></svg>먹이 주기 · 물결</span>
+          <div class="card-info"><div><h3>물멍</h3><p>어항 · 바다 · 연못 중에 골라요</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+        <a class="card theme-sand" data-doan-id="sand-home-card">
+          <canvas class="scene" data-sand data-palette="sunset" data-speed="1" data-prefill="0.45"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-sand"/></svg>색모래 붓기</span>
+          <div class="card-info"><div><h3>모래멍</h3><p>사르르, 색모래 쌓이는 소리</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+      </div>
+      <div class="ui home-foot"><svg class="ico sm"><use href="#i-headphones"/></svg>이어폰을 끼면 더 좋아요</div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes">
+      <h4>홈과 탭</h4>
+      <ul>
+        <li>모바일 홈은 카드 높이를 172에서 <b>126</b>으로 줄여 네 장을 한 화면에 넣었어요. 스크롤하게 두고 높이를 지키는 방법도 있어요.</li>
+        <li>데스크톱 홈은 세 칸이 네 칸이 돼요. 시안 없이 코드에만 들어갔어요.</li>
+        <li>탭이 네 개가 되면서 모바일에서는 탭 안쪽 여백을 14에서 10으로 줄였어요.</li>
+      </ul>
+      <h4>소리</h4>
+      <ul>
+        <li>떨어지는 소리는 모래 붓는 <b>녹음(CC0)</b>이고, 속도에 따라 크기와 밝기가 바뀌어요.</li>
+        <li>비우는 동안에는 모래시계 속 모래 소리가 끝날 때까지 이어져요.</li>
+      </ul>
+    </aside>
+
+    <aside class="notes">
+      <h4>정해야 할 것</h4>
+      <ul>
+        <li><b>이 모양이 맞는지.</b> 옆에서 본 모래가 쌓이는 모습으로 그렸어요. 진자에 매달린 모래가 바닥에 무늬를 그리는 쪽이나, 물이 든 액자를 뒤집는 쪽을 생각하셨다면 방향을 바꿀게요.</li>
+        <li><b>비우는 방법.</b> 시안은 바닥 틈으로 빠져요. 모래시계처럼 <b>뒤집어서</b> 쌓인 모래가 다시 떨어지게 할 수도 있어요. 섞인 색이 새 무늬가 돼서 더 재밌지만 만들 양이 늘어요.</li>
+        <li><b>폰 기울이기.</b> 코드에 넣었어요. 기본은 꺼져 있고, 트레이에서 켜면 기울인 쪽으로 줄기가 휘어요. 실제 폰에서 느낌을 확인해야 해요.</li>
+        <li><b>색 직접 고르기.</b> 묶음 말고 색 하나를 골라 붓게 할지. 멍때리기에는 묶음이 손이 덜 가요.</li>
+        <li><b>모래멍 색.</b> 불멍 주황 · 비멍 파랑 · 물멍 청록과 겹치지 않게 연보라로 잡았어요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<script src="../assets/mong-scenes.js"></script>
+<script src="../assets/sand.js"></script>
+</body>
+</html>

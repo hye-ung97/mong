@@ -11,11 +11,12 @@ const CARDS: readonly Card[] = [
   { group: 'fire', scene: 'fire', title: '불멍', sub: '타닥타닥, 장작 타는 소리', tag: '장작 넣기', tagIcon: 'log' },
   { group: 'rain', scene: 'rain', title: '비멍', sub: '창가에 앉아 듣는 빗소리', tag: '비 세기 조절', tagIcon: 'rain' },
   { group: 'water', scene: 'aquarium', title: '물멍', sub: '어항 · 바다 · 연못 중에 골라요', tag: '먹이 주기 · 물결', tagIcon: 'fish' },
+  { group: 'sand', scene: 'sand', title: '모래멍', sub: '사르르, 색모래 쌓이는 소리', tag: '색모래 붓기', tagIcon: 'sand' },
 ];
 
 const canHover = () => matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-/** 오늘은 어떤 멍? — three live previews; picking one is the gesture that starts the sound. */
+/** 오늘은 어떤 멍? — four live previews; picking one is the gesture that starts the sound. */
 export class HomeView implements View {
   readonly el: HTMLElement;
   private readonly hosts: SceneHost[] = [];
@@ -45,7 +46,7 @@ export class HomeView implements View {
       </nav>
       <footer class="home-foot">
         <span>${icon('headphones', 'sm')}이어폰을 끼면 더 좋아요</span>
-        <span class="only-d"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 바로 들어가기</span>
+        <span class="only-d"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd> 바로 들어가기</span>
       </footer>`;
     parent.append(this.el);
 
@@ -67,8 +68,8 @@ export class HomeView implements View {
     });
     this.on(window, 'keydown', (e: Event) => {
       const k = (e as KeyboardEvent).code;
-      const n = k === 'Digit1' ? 0 : k === 'Digit2' ? 1 : k === 'Digit3' ? 2 : -1;
-      if (n < 0) return;
+      const n = ['Digit1', 'Digit2', 'Digit3', 'Digit4'].indexOf(k);
+      if (n < 0 || n >= CARDS.length) return;
       audio.unlock();
       location.hash = groupRoute(CARDS[n].group);
     });

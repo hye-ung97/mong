@@ -11,10 +11,10 @@ type Route = { view: 'home' } | { view: 'scene'; id: SceneId };
 
 const WATER_IDS: readonly WaterId[] = ['aquarium', 'sea', 'pond'];
 
-/** #/  ·  #/fire  ·  #/rain  ·  #/water (last used)  ·  #/water/aquarium|sea|pond */
+/** #/  ·  #/fire  ·  #/rain  ·  #/water (last used)  ·  #/water/aquarium|sea|pond  ·  #/sand */
 function parse(hash: string): Route {
   const [first, second] = hash.replace(/^#\/?/, '').split('/').filter(Boolean);
-  if (first === 'fire' || first === 'rain') return { view: 'scene', id: first };
+  if (first === 'fire' || first === 'rain' || first === 'sand') return { view: 'scene', id: first };
   if (first === 'water') {
     const sub = WATER_IDS.find((w) => w === second) ?? settings().water;
     return { view: 'scene', id: sub };

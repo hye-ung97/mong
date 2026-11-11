@@ -12,6 +12,7 @@ import { Rain } from '../scenes/rain';
 import {
   GROUPS, WATER, createScene, groupOf, groupRoute, isWater, routeOf, type GroupId, type SceneId,
 } from '../scenes/registry';
+import { SAND_PALETTES, Sand, type SandPalette } from '../scenes/sand';
 import { Sea } from '../scenes/sea';
 import { EQ, wordmark, type View } from './view';
 
@@ -23,6 +24,7 @@ const AUDIO_STATE_EVERY = 250;
 interface Level { v: number; label: string }
 const RAIN_LEVELS: readonly Level[] = [{ v: 0.25, label: '보슬비' }, { v: 0.6, label: '비' }, { v: 1, label: '장대비' }];
 const WAVE_LEVELS: readonly Level[] = [{ v: 0.6, label: '잔잔' }, { v: 1, label: '보통' }, { v: 1.5, label: '높음' }];
+const SAND_LEVELS: readonly Level[] = [{ v: 0.3, label: '솔솔' }, { v: 0.6, label: '보통' }, { v: 1, label: '콸콸' }];
 const nearest = (levels: readonly Level[], v: number) =>
   levels.reduce((a, b) => (Math.abs(b.v - v) < Math.abs(a.v - v) ? b : a));
 
@@ -96,9 +98,24 @@ const COPY: Record<SceneId, Copy> = {
     keys: [{ text: '클릭하면 물결' }, { keys: ['Space'], text: '먹이' }, { keys: ['R'], text: '빗방울' }, { keys: ['S'], text: '계절' }],
     land: '물멍 · 연못',
   },
+  sand: {
+    now: '모래 소리 · <span data-bind="palette">노을</span>',
+    aside: '채움 <span data-bind="fill">0</span>%',
+    hint: '화면을 끌면 모래가 따라와요',
+    title: '모래 소리',
+    sub: '<span data-bind="speed">보통</span> · <span data-bind="palette">노을</span> · 채움 <span data-bind="fill">0</span>%',
+    keys: [{ keys: ['↑', '↓'], text: '속도 · <kbd>E</kbd> 비우기' }, { text: '화면을 끌면 모래가 따라와요' }],
+    land: '모래멍',
+  },
 };
 
-const GROUP_ORDER: readonly GroupId[] = ['fire', 'rain', 'water'];
+const GROUP_ORDER: readonly GroupId[] = ['fire', 'rain', 'water', 'sand'];
+
+const swatch = (p: SandPalette, cls = '') => `<span class="swatch pal-${p} ${cls}" aria-hidden="true"></span>`;
+
+/** Tilt sensing exists (phones); iOS also wants to be asked from a tap. */
+type OrientationCtor = typeof DeviceOrientationEvent & { requestPermission?: () => Promise<'granted' | 'denied'> };
+const canTilt = () => typeof DeviceOrientationEvent !== 'undefined' && matchMedia('(pointer: coarse)').matches;
 
 /** A full-screen scene with its controls, sound, sleep timer and immersive mode. */
 export class SceneView implements View {
@@ -145,6 +162,7 @@ export class SceneView implements View {
     if (this.fire) this.setupFire();
     if (this.rain) this.setupRain();
     if (this.sea) this.setupSea();
+    if (this.sand) this.setupSand();
 
     const audioTimer = window.setInterval(() => audio.update(id, this.scene.audioState()), AUDIO_STATE_EVERY);
     this.cleanups.push(() => window.clearInterval(audioTimer));
@@ -168,6 +186,7 @@ export class SceneView implements View {
   private get aquarium() { return this.scene instanceof Aquarium ? this.scene : null; }
   private get sea() { return this.scene instanceof Sea ? this.scene : null; }
   private get pond() { return this.scene instanceof Pond ? this.scene : null; }
+  private get sand() { return this.scene instanceof Sand ? this.scene : null; }
 
   private $<T extends Element = HTMLElement>(sel: string): T {
     const n = this.el.querySelector<T>(sel);
@@ -213,9 +232,9 @@ export class SceneView implements View {
           </div>
         </header>
         ${sub}
-        ${c.hint && this.rain ? `<div class="hint hint-glass glass only-m">${icon('hand', 'sm')}${c.hint}</div>` : ''}
+        ${c.hint && (this.rain || this.sand) ? `<div class="hint hint-glass glass only-m">${icon('hand', 'sm')}${c.hint}</div>` : ''}
         <div class="bottom">
-          ${c.hint && !this.rain ? `<div class="hint glass only-m">${icon('hand', 'sm')}${c.hint}</div>` : ''}
+          ${c.hint && !this.rain && !this.sand ? `<div class="hint glass only-m">${icon('hand', 'sm')}${c.hint}</div>` : ''}
           ${this.fire ? `<div class="hint hint-embers glass" role="status">${icon('log', 'sm')}장작을 넣으면 다시 타올라요</div>` : ''}
           <div class="m-status only-m"><span class="now">${EQ}${c.now}</span>${c.aside ? `<span class="aside">${c.aside}</span>` : ''}</div>
           <div class="dock glass">${this.dockHtml()}</div>
@@ -231,6 +250,7 @@ export class SceneView implements View {
       <div class="scrim" data-act="close"></div>
       ${this.sheetHtml()}
       ${this.fire ? this.trayHtml() : ''}
+      ${this.sand ? this.sandTrayHtml() : ''}
       <div class="sleep"></div>
       ${this.endHtml()}`;
   }
@@ -272,6 +292,15 @@ export class SceneView implements View {
       case 'sea':
         main = this.seg(WAVE_LEVELS, 'wave', s.wave, '파도 크기');
         break;
+      case 'sand':
+        // phones: the colour button shows the chosen set and opens the tray. Wide screens: the four sets and 비우기 are on the dock.
+        main = this.seg(SAND_LEVELS, 'sand-speed', s.sandSpeed, '모래 속도');
+        extra = `
+          <button class="dock-btn only-m" data-act="tray" aria-haspopup="dialog" aria-label="색 고르기"><span data-bind-swatch>${swatch(s.sandPalette)}</span></button>
+          <div class="pal-chips only-d" role="radiogroup" aria-label="색 고르기">${SAND_PALETTES.map((p) =>
+            `<button role="radio" data-act="palette" data-value="${p.id}" aria-label="${p.label}" title="${p.label}">${swatch(p.id)}</button>`).join('')}</div>
+          <button class="dock-btn only-d" data-act="sand-empty">${icon('sand')}<span>비우기</span></button>`;
+        break;
     }
     return `
       <button class="dock-btn" data-act="sheet" aria-label="소리와 타이머">${icon('timer')}<span class="only-d" data-bind="timer">타이머</span></button>
@@ -280,7 +309,7 @@ export class SceneView implements View {
       ${extra}
       <span class="sep only-d"></span>
       <div class="vol only-d"><button class="vol-btn" data-act="mute" data-bind-mute aria-label="소리 끄기">${icon('volume')}</button><input class="range" type="range" min="0" max="100" data-act="volume" aria-label="음량"></div>
-      ${this.id === 'rain' || this.id === 'pond' ? '' : `<button class="dock-btn only-m" data-act="sheet" aria-label="소리 섞기">${icon('sliders')}</button>`}`;
+      ${this.id === 'rain' || this.id === 'pond' || this.id === 'sand' ? '' : `<button class="dock-btn only-m" data-act="sheet" aria-label="소리 섞기">${icon('sliders')}</button>`}`;
   }
 
   private railHtml() {
@@ -293,6 +322,7 @@ export class SceneView implements View {
       aquarium: { act: 'feed', icon: 'food', label: '먹이 주기' },
       sea: { act: 'wave-cycle', icon: 'waves', label: '파도 크기 바꾸기' },
       pond: { act: 'feed', icon: 'food', label: '먹이 주기' },
+      sand: { act: 'sand-cycle', icon: 'sand', label: '모래 속도 바꾸기' },
     } as const;
     const m = main[this.id];
     return `
@@ -313,7 +343,9 @@ export class SceneView implements View {
     }).join('');
     const tend = this.fire
       ? `<label class="switch-row"><span><b>장작 알아서 넣기</b><small>불이 약해지면 장작을 하나씩 넣어요</small></span><input class="switch" type="checkbox" data-act="auto-tend" ${s.autoTend ? 'checked' : ''}></label>`
-      : '';
+      : this.sand
+        ? `<label class="switch-row"><span><b>가득 차면 저절로 비우기</b><small>끄면 가득 찼을 때 모래가 멈춰요</small></span><input class="switch" type="checkbox" data-act="auto-empty" ${s.sandAutoEmpty ? 'checked' : ''}></label>`
+        : '';
     return `
       <div class="sheet glass-strong" role="dialog" aria-modal="true" aria-label="소리와 타이머">
         <div class="grab"></div>
@@ -343,6 +375,23 @@ export class SceneView implements View {
       </div>`;
   }
 
+  private sandTrayHtml() {
+    const s = settings();
+    const tilt = canTilt()
+      ? `<label class="switch-row"><span><b>폰 기울여 방향 바꾸기</b><small>기울인 쪽으로 모래 줄기가 휘어요</small></span><input class="switch" type="checkbox" data-act="sand-tilt" ${s.sandTilt ? 'checked' : ''}></label>`
+      : '';
+    return `
+      <div class="tray pal-tray glass-strong" role="dialog" aria-label="색 고르기">
+        <div class="grab"></div>
+        <div class="tray-head"><h4>색 고르기</h4><span>지금부터 떨어지는 모래가 바뀌어요</span></div>
+        <div class="pals" role="radiogroup" aria-label="색 묶음">${SAND_PALETTES.map((p) =>
+          `<button class="pal-pick" role="radio" data-act="palette" data-value="${p.id}">${swatch(p.id, 'big')}<b>${p.label}</b></button>`).join('')}</div>
+        <label class="switch-row"><span><b>가득 차면 저절로 비우기</b><small>끄면 가득 찼을 때 모래가 멈춰요</small></span><input class="switch" type="checkbox" data-act="auto-empty" ${s.sandAutoEmpty ? 'checked' : ''}></label>
+        ${tilt}
+        <button class="tray-go" data-act="sand-empty">${icon('sand')}지금 비우기</button>
+      </div>`;
+  }
+
   private endHtml() {
     return `
       <div class="end-card glass-strong" role="dialog" aria-label="타이머 종료">
@@ -367,6 +416,7 @@ export class SceneView implements View {
         n.style.width = `${Math.round(value * 100)}%`;
       });
     } else if (key === 'embers') this.el.classList.toggle('is-embers', value > 0);
+    else if (key === 'full') this.toast(value ? '가득 찼어요. 비우고 다시 쌓을게요' : '가득 찼어요. 비우기를 누르면 다시 쌓여요');
     else this.bind(key, value);
   }
 
@@ -386,6 +436,18 @@ export class SceneView implements View {
     if (this.sea) {
       this.bind('wave', nearest(WAVE_LEVELS, this.sea.size).label);
       this.syncSeg('wave', this.sea.size, WAVE_LEVELS);
+    }
+    if (this.sand) {
+      const pal = this.sand.palette;
+      this.bind('speed', nearest(SAND_LEVELS, this.sand.speed).label);
+      this.bind('palette', SAND_PALETTES.find((p) => p.id === pal)?.label ?? '');
+      this.syncSeg('sand-speed', this.sand.speed, SAND_LEVELS);
+      this.el.querySelectorAll<HTMLElement>('[data-act="palette"]').forEach((b) => {
+        const on = b.dataset.value === pal;
+        b.classList.toggle('on', on);
+        b.setAttribute('aria-checked', String(on));
+      });
+      this.el.querySelectorAll<HTMLElement>('[data-bind-swatch]').forEach((n) => { n.innerHTML = swatch(pal); });
     }
     if (this.pond) {
       const on = this.pond.drizzle;
@@ -513,7 +575,7 @@ export class SceneView implements View {
     if (this.fire) {
       // 불멍: a tap on the fire stirs it; logs go in with the dock button or by dragging
       if (!this.fire.pokeAt(x, y)) return;
-    } else if (this.rain || this.sea) return; // 비멍 wipes the glass, 바다 walks the sand: both with their own drag handlers
+    } else if (this.rain || this.sea || this.sand) return; // 비멍 wipes the glass, 바다 walks the sand, 모래멍 pulls the stream: each with its own drag handlers
     else if (this.aquarium) {
       const what = this.aquarium.poke(x, y);
       if (what === 'feed') {
@@ -591,6 +653,80 @@ export class SceneView implements View {
     for (const type of ['pointerup', 'pointercancel']) this.listen(canvas, type, () => sea.walkEnd());
   }
 
+  /* ---------- 모래멍: the frame, the stream under the hand, tilt ---------- */
+  private setupSand() {
+    const sand = this.sand!;
+    const canvas = this.host.canvas;
+    // the sand rests on the stand just above the controls and counts as full when it reaches the tabs
+    const place = () => {
+      const view = this.el.getBoundingClientRect();
+      const tops = ['.m-status', '.dock']
+        .map((sel) => this.$(sel).getBoundingClientRect())
+        .filter((r) => r.height > 0)
+        .map((r) => r.top);
+      const top = this.$('.topbar').getBoundingClientRect();
+      sand.setEdges(
+        top.height > 0 ? top.bottom - view.top + 10 : null,
+        tops.length ? Math.min(...tops) - view.top - 10 : null,
+      );
+    };
+    place();
+    this.listen(window, 'resize', place);
+    this.listen(canvas, 'pointerdown', (e: PointerEvent) => {
+      if (this.blocking) return;
+      canvas.setPointerCapture(e.pointerId);
+      sand.dragStart(this.host.toScene(e.clientX, e.clientY)[0]);
+      this.el.classList.add('hint-done');
+    });
+    this.listen(canvas, 'pointermove', (e: PointerEvent) => {
+      if (sand.dragMove(this.host.toScene(e.clientX, e.clientY)[0])) this.armIdle();
+    });
+    for (const type of ['pointerup', 'pointercancel']) this.listen(canvas, type, () => sand.dragEnd());
+    // left-right lean of the phone, whichever way it is held
+    this.listen(window, 'deviceorientation', (e: Event) => {
+      if (!settings().sandTilt) return;
+      const o = e as DeviceOrientationEvent;
+      const angle = screen.orientation?.angle ?? 0;
+      const lean = angle === 90 ? o.beta : angle === 270 ? -(o.beta ?? 0) : o.gamma;
+      sand.setTilt((lean ?? 0) / 30);
+    });
+  }
+
+  private setSandSpeed(v: number) {
+    this.sand?.setSpeed(v);
+    save({ sandSpeed: v });
+    this.refreshLabels();
+    this.toast(nearest(SAND_LEVELS, v).label);
+  }
+
+  private setPalette(id: SandPalette) {
+    if (!this.sand || !SAND_PALETTES.some((p) => p.id === id)) return;
+    this.sand.setPalette(id);
+    save({ sandPalette: id });
+    this.refreshLabels();
+  }
+
+  private emptySand() {
+    this.sand?.empty();
+    this.closeAll();
+  }
+
+  /** iOS only hands out tilt after asking from a tap; elsewhere it just works. */
+  private async setTilt(on: boolean, box: HTMLInputElement) {
+    if (on) {
+      const ask = (DeviceOrientationEvent as OrientationCtor).requestPermission;
+      if (ask) {
+        const ok = await ask.call(DeviceOrientationEvent).then((r) => r === 'granted', () => false);
+        if (!ok) {
+          box.checked = false;
+          this.toast('기울기 권한이 없어서 켤 수 없어요');
+          return;
+        }
+      }
+    } else this.sand?.setTilt(0);
+    save({ sandTilt: on });
+  }
+
   private feedToast() {
     if (Date.now() - this.lastFeedToast < 10_000) return;
     this.lastFeedToast = Date.now();
@@ -643,6 +779,10 @@ export class SceneView implements View {
       const i = WAVE_LEVELS.indexOf(nearest(WAVE_LEVELS, this.sea.size));
       const next = WAVE_LEVELS[Math.max(0, Math.min(WAVE_LEVELS.length - 1, i + dir))];
       this.setWave(next.v);
+    } else if (this.sand) {
+      const i = SAND_LEVELS.indexOf(nearest(SAND_LEVELS, this.sand.speed));
+      const next = SAND_LEVELS[Math.max(0, Math.min(SAND_LEVELS.length - 1, i + dir))];
+      this.setSandSpeed(next.v);
     }
   }
 
@@ -653,6 +793,9 @@ export class SceneView implements View {
     } else if (this.sea) {
       const i = WAVE_LEVELS.indexOf(nearest(WAVE_LEVELS, this.sea.size));
       this.setWave(WAVE_LEVELS[(i + 1) % WAVE_LEVELS.length].v);
+    } else if (this.sand) {
+      const i = SAND_LEVELS.indexOf(nearest(SAND_LEVELS, this.sand.speed));
+      this.setSandSpeed(SAND_LEVELS[(i + 1) % SAND_LEVELS.length].v);
     }
   }
 
@@ -728,8 +871,18 @@ export class SceneView implements View {
       case 'wave':
         this.setWave(Number(t.dataset.value));
         break;
+      case 'sand-speed':
+        this.setSandSpeed(Number(t.dataset.value));
+        break;
+      case 'palette':
+        this.setPalette(t.dataset.value as SandPalette);
+        break;
+      case 'sand-empty':
+        this.emptySand();
+        break;
       case 'rain-cycle':
       case 'wave-cycle':
+      case 'sand-cycle':
         this.cycleLevel();
         break;
       case 'thunder':
@@ -790,7 +943,12 @@ export class SceneView implements View {
     if (t.dataset.act === 'auto-tend' && this.fire) {
       this.fire.autoTend = t.checked;
       save({ autoTend: t.checked });
-    }
+    } else if (t.dataset.act === 'auto-empty' && this.sand) {
+      this.sand.autoEmpty = t.checked;
+      save({ sandAutoEmpty: t.checked });
+      // the same switch is in the tray and in the sheet
+      this.el.querySelectorAll<HTMLInputElement>('[data-act="auto-empty"]').forEach((b) => { b.checked = t.checked; });
+    } else if (t.dataset.act === 'sand-tilt') void this.setTilt(t.checked, t);
   };
 
   private readonly onKey = (e: KeyboardEvent) => {
@@ -815,10 +973,13 @@ export class SceneView implements View {
       }
       case 'ArrowUp':
       case 'ArrowDown':
-        if (this.rain || this.sea) {
+        if (this.rain || this.sea || this.sand) {
           e.preventDefault();
           this.stepLevel(e.code === 'ArrowUp' ? 1 : -1);
         }
+        break;
+      case 'KeyE':
+        this.emptySand();
         break;
       case 'KeyT':
         this.toggleThunder();
@@ -873,12 +1034,14 @@ export class SceneView implements View {
       this.host.paused = true;
       audio.suspend();
     }, SLEEP_AFTER);
+    this.sand?.setTaper(true);
   }
 
   private extend() {
     window.clearTimeout(this.sleepTimer);
     this.el.classList.remove('end-open', 'is-asleep');
     this.host.paused = false;
+    this.sand?.setTaper(false);
     audio.resume();
     timer.extend(10);
     this.armIdle();

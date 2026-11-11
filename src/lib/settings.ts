@@ -1,5 +1,6 @@
 import type { WoodKind } from '../scenes/fire';
 import { seasonNow, type Season } from '../scenes/pond';
+import type { SandPalette } from '../scenes/sand';
 import type { SceneId, WaterId } from '../scenes/registry';
 
 export interface Settings {
@@ -18,6 +19,12 @@ export interface Settings {
   autoTend: boolean;
   wood: WoodKind;
   water: WaterId;
+  /** 모래멍: how much sand falls (0.3 · 0.6 · 1), the colour set, and what happens when the frame is full. */
+  sandSpeed: number;
+  sandPalette: SandPalette;
+  sandAutoEmpty: boolean;
+  /** 모래멍: tilting the phone bends the stream. Off until the visitor turns it on. */
+  sandTilt: boolean;
   /** Last chosen timer in minutes, 0 = no timer. */
   timer: number;
   /** One-time hints already shown. */
@@ -39,6 +46,10 @@ const DEFAULTS: Settings = {
   autoTend: true,
   wood: 'oak',
   water: 'aquarium',
+  sandSpeed: 0.6,
+  sandPalette: 'sunset',
+  sandAutoEmpty: true,
+  sandTilt: false,
   timer: 0,
   hints: [],
 };

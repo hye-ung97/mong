@@ -23,6 +23,9 @@
   --water-500: #4fd1c0;
   --water-300: #a6efe5;
   --water-900: #04212b;
+  --sand-500: #b497f2;
+  --sand-300: #d9c9fb;
+  --sand-900: #1a1030;
 
   /* shape, type, motion */
   --r-pill: 999px;
@@ -38,4 +41,5 @@
 
 .theme-fire { --accent: var(--fire-500); --accent-soft: var(--fire-300); --accent-ink: var(--fire-900); }
 .theme-rain { --accent: var(--rain-500); --accent-soft: var(--rain-300); --accent-ink: var(--rain-900); }
+.theme-sand { --accent: var(--sand-500); --accent-soft: var(--sand-300); --accent-ink: var(--sand-900); }
 .theme-water { --accent: var(--water-500); --accent-soft: var(--water-300); --accent-ink: var(--water-900); }
