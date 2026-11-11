@@ -44,7 +44,7 @@ interface Copy {
   /** desktop, bottom-left */
   title: string;
   sub: string;
-  /** mobile hint above the dock, until the first tap */
+  /** mobile hint above the dock (비멍: on the glass), until the first tap */
   hint?: string;
   keys: KeyHint[];
   land: string;
@@ -65,7 +65,8 @@ const COPY: Record<SceneId, Copy> = {
     aside: '천둥 <span data-bind="thunder">꺼짐</span>',
     title: '빗소리 · 창가',
     sub: '<span data-bind="rain">비</span> · 천둥 <span data-bind="thunder">꺼짐</span>',
-    keys: [{ keys: ['↑', '↓'], text: '비 세기' }, { keys: ['T'], text: '천둥' }, { keys: ['M'], text: '소리' }],
+    hint: '창을 문지르면 김이 닦여요',
+    keys: [{ keys: ['↑', '↓'], text: '비 세기 · <kbd>T</kbd> 천둥' }, { text: '창을 끌면 김이 닦여요' }],
     land: '비멍',
   },
   aquarium: {
@@ -139,6 +140,7 @@ export class SceneView implements View {
     this.listen(window, 'keydown', this.onKey);
     this.listen(document, 'fullscreenchange', () => this.refreshFullscreen());
     if (this.fire) this.setupFire();
+    if (this.rain) this.setupRain();
 
     const audioTimer = window.setInterval(() => audio.update(id, this.scene.audioState()), AUDIO_STATE_EVERY);
     this.cleanups.push(() => window.clearInterval(audioTimer));
@@ -207,8 +209,9 @@ export class SceneView implements View {
           </div>
         </header>
         ${sub}
+        ${c.hint && this.rain ? `<div class="hint hint-glass glass only-m">${icon('hand', 'sm')}${c.hint}</div>` : ''}
         <div class="bottom">
-          ${c.hint ? `<div class="hint glass only-m">${icon('hand', 'sm')}${c.hint}</div>` : ''}
+          ${c.hint && !this.rain ? `<div class="hint glass only-m">${icon('hand', 'sm')}${c.hint}</div>` : ''}
           ${this.fire ? `<div class="hint hint-embers glass" role="status">${icon('log', 'sm')}장작을 넣으면 다시 타올라요</div>` : ''}
           <div class="m-status only-m"><span class="now">${EQ}${c.now}</span>${c.aside ? `<span class="aside">${c.aside}</span>` : ''}</div>
           <div class="dock glass">${this.dockHtml()}</div>
@@ -498,10 +501,38 @@ export class SceneView implements View {
     if (this.fire) {
       // 불멍: a tap on the fire stirs it; logs go in with the dock button or by dragging
       if (!this.fire.pokeAt(x, y)) return;
-    } else this.scene.tap(x, y);
+    } else if (this.rain) return; // 비멍 wipes the glass with its own drag handlers
+    else this.scene.tap(x, y);
     if (this.aquarium) this.feedToast();
     this.el.classList.add('hint-done');
   };
+
+  /* ---------- 비멍: the window ---------- */
+  private setupRain() {
+    const rain = this.rain!;
+    const canvas = this.host.canvas;
+    // the sill ends just above the controls that rest on it
+    const place = () => {
+      const tops = ['.m-status', '.dock']
+        .map((sel) => this.$(sel).getBoundingClientRect())
+        .filter((r) => r.height > 0)
+        .map((r) => r.top);
+      rain.setFloor(tops.length ? Math.min(...tops) - this.el.getBoundingClientRect().top : null);
+    };
+    place();
+    this.listen(window, 'resize', place);
+    // dragging on the glass wipes the mist
+    this.listen(canvas, 'pointerdown', (e: PointerEvent) => {
+      if (this.blocking) return;
+      canvas.setPointerCapture(e.pointerId);
+      rain.wipeStart(...this.host.toScene(e.clientX, e.clientY));
+      this.el.classList.add('hint-done');
+    });
+    this.listen(canvas, 'pointermove', (e: PointerEvent) => {
+      if (rain.wipeMove(...this.host.toScene(e.clientX, e.clientY))) this.armIdle();
+    });
+    for (const type of ['pointerup', 'pointercancel']) this.listen(canvas, type, () => rain.wipeEnd());
+  }
 
   private feedToast() {
     if (Date.now() - this.lastFeedToast < 10_000) return;

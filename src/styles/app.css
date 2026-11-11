@@ -204,6 +204,8 @@ kbd {
 .is-embers .hint-embers { display: flex; animation: hint-in 0.6s var(--ease) both; }
 .is-embers .hint:not(.hint-embers) { display: none; }
 @keyframes hint-in { from { opacity: 0; transform: translateY(6px); } }
+/* 비멍: the hint floats on the glass, between the tabs and where toasts appear, so the sill and what stands on it stay clear */
+.hint-glass { position: absolute; top: calc(env(safe-area-inset-top) + 68px); left: 50%; translate: -50% 0; white-space: nowrap; }
 .m-status { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 10px; font: 500 13px/1 var(--font); color: var(--ui-dim); white-space: nowrap; }
 .m-status b { color: var(--ui-ink); font-weight: 700; }
 .now .eq { margin-right: 8px; }
@@ -240,7 +242,10 @@ kbd {
 @media (min-width: 768px) and (max-width: 1239px) { .d-keys { display: none; } }
 @media (min-width: 768px) and (max-width: 1099px) { .d-now { display: none; } }
 /* 불멍's dock is wide (three wood chips): key hints stack in the corner, and the status text waits for a wider window */
-[data-scene="fire"] .d-keys { bottom: 34px; flex-direction: column; align-items: flex-end; gap: 9px; }
+[data-scene="fire"] .d-keys, [data-scene="rain"] .d-keys { bottom: 34px; flex-direction: column; align-items: flex-end; gap: 9px; }
+/* 비멍: dragging on the glass wipes the mist, so the browser must not scroll or select instead */
+[data-scene="rain"] canvas.scene { touch-action: none; cursor: grab; }
+[data-scene="rain"] canvas.scene:active { cursor: grabbing; }
 @media (min-width: 768px) and (max-width: 1159px) { [data-scene="fire"] .d-now { display: none; } }
 
 /* landscape phone: controls move to a rail on the right */
