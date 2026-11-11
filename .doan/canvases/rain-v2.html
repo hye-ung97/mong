@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="doan:canvas" content="rain-v2">
+<meta name="doan:width" content="2800">
+<title>비멍 v2 시안</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/mong.css">
+<link rel="stylesheet" href="../assets/fire-v2.css">
+<link rel="stylesheet" href="../assets/rain-v2.css">
+</head>
+<body class="board theme-rain">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-timer" viewBox="0 0 24 24"><path d="M10 2h4"/><path d="m12 14 3-3"/><circle cx="12" cy="14" r="8"/></symbol>
+    <symbol id="i-max" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-4 0v0M14 10V4a2 2 0 0 0-4 0v2M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></symbol>
+    <symbol id="i-status" viewBox="0 0 70 12">
+      <g fill="currentColor" stroke="none">
+        <rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4.5" y="6" width="3" height="6" rx="1"/><rect x="9" y="3.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="1" width="3" height="11" rx="1"/>
+        <path d="M30 3.2a10 10 0 0 1 13 0l-1.4 1.5a8 8 0 0 0-10.2 0zM32.4 5.9a6.4 6.4 0 0 1 8.2 0l-1.5 1.5a4.2 4.2 0 0 0-5.2 0zM36.5 11.5l-2.1-2.2a3 3 0 0 1 4.2 0z"/>
+        <rect x="49" y="1" width="18" height="10" rx="3" fill="none" stroke="currentColor" stroke-opacity=".45"/>
+        <rect x="51" y="3" width="14" height="6" rx="1.6"/>
+        <rect x="68" y="4.2" width="1.6" height="3.6" rx=".8" opacity=".45"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ================= 시안 개요 ================= -->
+<section class="brief" data-doan-frame="brief" data-doan-title="비멍 v2 · 개요">
+  <div>
+    <div class="ov-brand"><span class="orb lg"></span>mong · 비멍 v2</div>
+    <h1>창가에 앉아 창밖을 내다보는 것처럼</h1>
+    <p class="lead">지금 비멍은 흐린 불빛만 떠 있어서 ‘창’이 잘 느껴지지 않아요. 창틀과 창턱, 또렷한 창밖, 김 서린 유리를 더해서 방 안에서 밖을 보는 자리로 바꿔요.</p>
+    <div class="ov-meta"><span>디자인 시안</span><span>2026.11.11</span><span>보드에서 창을 직접 문질러 볼 수 있어요</span></div>
+  </div>
+  <div>
+    <h3>바뀌는 것</h3>
+    <ul class="changes">
+      <li><em>자리</em><b>창틀과 창턱이 생겨요</b><span>화면 아래가 방 안 창턱이 되고, 조작 버튼이 그 위에 놓여요. 유리는 버튼에 가리지 않고 통째로 창밖을 보여줘요.</span></li>
+      <li><em>창밖</em><b>도시가 보여요</b><span>건물 창 · 가로등 · 젖은 도로 · 지나가는 차. 지금은 색 동그라미만 떠 있어서 어디를 보는지 알 수 없어요.</span></li>
+      <li><em>유리</em><b>김이 서리고, 문지르면 닦여요</b><span>닦은 자리로 창밖이 또렷하게 보이고, 천천히 다시 서려요. 불멍의 뒤적이기 같은 손맛이에요.</span></li>
+      <li><em>빗방울</em><b>방울에 창밖이 비쳐요</b><span>방울마다 도시 불빛이 거꾸로 맺혀요. 흘러내리는 방울은 지나간 자리의 작은 방울을 쓸고 가요.</span></li>
+    </ul>
+  </div>
+  <div>
+    <div class="not-in-code" data-doan-id="brief-not-in-code">
+      <b>아직 코드에 없는 것</b>
+      A안은 코드에 들어갔어요(<code>src/scenes/rain.ts</code>): 창틀 · 창턱 · 머그컵과 화분, 창밖 도시와 지나가는 차, 번개 줄기, 김 서림과 닦기, 창밖을 비추는 빗방울, 안내 문구까지. 아래는 시안에만 있거나 코드와 달라요.
+      <ul>
+        <li>B안 · 유리 가까이 화면 (홈 카드는 창틀 없이 유리만 보여줘요)</li>
+        <li>김 닦기 화면의 동그란 손가락 표시와 자동으로 닦이는 움직임 (설명용)</li>
+        <li>폰 가로 화면: 시안이 없어서 코드에서는 창턱 없이 창살만 나와요</li>
+        <li>‘이전’ 화면은 v1 그림이에요. 지금 코드에는 없어요</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 01 A안 모바일 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">01</span><h2>A안 · 창가 자리 · 모바일</h2><p>창틀 안쪽에서 내다봐요. 조작은 창턱 위에</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-rain" data-doan-frame="rain2-mobile" data-doan-implements="src/views/scene-view.ts" data-doan-title="비멍 v2 · 기본">
+      <canvas class="scene" data-rain2 data-intensity="0.6" data-fog="0.55"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass"><a>불멍</a><a class="on">비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>빗소리 · 창가</span><span>천둥 <span data-stat="thunder">꺼짐</span></span></div>
+        <div class="dock glass" data-doan-id="rain2-dock">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <div class="seg" data-doan-id="rain2-seg">
+            <button data-rain2-act="rain" data-value="0.25">보슬비</button>
+            <button class="on" data-rain2-act="rain" data-value="0.6">비</button>
+            <button data-rain2-act="rain" data-value="1">장대비</button>
+          </div>
+          <button class="icon-btn" data-rain2-act="thunder" aria-label="천둥"><svg class="ico"><use href="#i-zap"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-rain" data-doan-frame="rain2-wipe" data-doan-implements="src/views/scene-view.ts" data-doan-title="비멍 v2 · 김 닦기">
+      <canvas class="scene" data-rain2 data-intensity="0.25" data-fog="1" data-auto-wipe="12"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass"><a>불멍</a><a class="on">비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="ui wipe-finger" data-wipe-finger data-doan-id="rain2-wipe-finger"></div>
+      <div class="ui hint on-glass glass" data-doan-id="rain2-wipe-hint"><svg class="ico sm"><use href="#i-hand"/></svg>창을 문지르면 김이 닦여요</div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>빗소리 · 창가</span><span>천둥 <span data-stat="thunder">꺼짐</span></span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <div class="seg">
+            <button class="on" data-rain2-act="rain" data-value="0.25">보슬비</button>
+            <button data-rain2-act="rain" data-value="0.6">비</button>
+            <button data-rain2-act="rain" data-value="1">장대비</button>
+          </div>
+          <button class="icon-btn" data-rain2-act="thunder" aria-label="천둥"><svg class="ico"><use href="#i-zap"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-rain" data-doan-frame="rain2-thunder" data-doan-implements="src/views/scene-view.ts" data-doan-title="비멍 v2 · 장대비와 천둥">
+      <canvas class="scene" data-rain2 data-intensity="1" data-fog="0.4" data-thunder="on" data-thunder-every="6"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass"><a>불멍</a><a class="on">비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>빗소리 · 창가</span><span>천둥 <span data-stat="thunder">켜짐</span></span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <div class="seg">
+            <button data-rain2-act="rain" data-value="0.25">보슬비</button>
+            <button data-rain2-act="rain" data-value="0.6">비</button>
+            <button class="on" data-rain2-act="rain" data-value="1">장대비</button>
+          </div>
+          <button class="icon-btn on" data-rain2-act="thunder" aria-label="천둥"><svg class="ico"><use href="#i-zap"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes">
+      <h4>창가 자리</h4>
+      <ul>
+        <li>화면 아래 5분의 1이 <b>방 안 창턱</b>이에요. 버튼이 창밖을 가리지 않고 창턱 위에 놓여요.</li>
+        <li>가운데 창살 하나가 ‘창’이라는 걸 바로 알려줘요. 유리 오른쪽 위에는 방 안 스탠드 불빛이 은은하게 비쳐요.</li>
+        <li>창턱의 머그컵에서 김이 올라와요. 방 안은 따뜻하고 밖은 차가운 대비가 비멍의 핵심이에요.</li>
+      </ul>
+      <h4>김 닦기</h4>
+      <ul>
+        <li>유리는 아래쪽부터 김이 서려 있어요. 김 낀 자리는 지금 비멍처럼 불빛이 뭉개져 보여요.</li>
+        <li><b>문지르면 닦이고</b>, 닦은 자리로 창밖이 또렷해져요. 20초쯤 지나면 천천히 다시 서려요.</li>
+        <li>안내 문구는 탭 바로 아래에 뜨고, 창을 한 번 문지르면 사라져요. 재촉하지 않아요.</li>
+      </ul>
+      <h4>비 세기와 천둥</h4>
+      <ul>
+        <li>세기를 올리면 빗줄기와 함께 <b>유리에 맺히는 방울</b>이 늘어요. 방울은 30초쯤 걸려 말라서, 세기를 내리면 유리도 천천히 맑아져요.</li>
+        <li>번개가 치면 하늘이 밝아지면서 건물이 까만 윤곽으로 드러나요. 지금은 화면 전체가 하얗게만 번쩍여요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 02 데스크톱 · 비교 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">02</span><h2>A안 · 데스크톱 · 이전과 비교</h2><p>넓은 화면에서는 세 칸짜리 큰 창이 돼요</p></div>
+  <div class="row-body">
+
+    <div class="screen desk theme-rain" data-doan-frame="rain2-desktop" data-doan-implements="src/views/scene-view.ts" data-doan-title="비멍 v2 · 데스크톱">
+      <canvas class="scene" data-rain2 data-intensity="0.6" data-fog="0.6" data-thunder="on" data-prewipe></canvas>
+      <div class="ui d-top">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <nav class="tabs glass"><a>불멍</a><a class="on">비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="전체화면"><svg class="ico"><use href="#i-max"/></svg></button>
+      </div>
+      <div class="ui d-now">
+        <strong><span class="eq"><i></i><i></i><i></i><i></i></span>빗소리 · 창가</strong>
+        <span><span data-stat="rain">비</span> · 천둥 <span data-stat="thunder">켜짐</span></span>
+      </div>
+      <div class="ui d-dock glass" data-doan-id="rain2-d-dock">
+        <button class="chip-btn"><svg class="ico"><use href="#i-timer"/></svg>30:00</button>
+        <span class="sep"></span>
+        <div class="seg">
+          <button data-rain2-act="rain" data-value="0.25">보슬비</button>
+          <button class="on" data-rain2-act="rain" data-value="0.6">비</button>
+          <button data-rain2-act="rain" data-value="1">장대비</button>
+        </div>
+        <button class="chip-btn on" data-rain2-act="thunder"><svg class="ico"><use href="#i-zap"/></svg>천둥</button>
+        <span class="sep"></span>
+        <div class="vol"><svg class="ico"><use href="#i-volume"/></svg><div class="slider"><i style="width:64%"></i><b style="left:64%"></b></div></div>
+      </div>
+      <div class="ui d-keys stack"><span><kbd>↑</kbd><kbd>↓</kbd> 비 세기 · <kbd>T</kbd> 천둥</span><span>창을 끌면 김이 닦여요</span></div>
+    </div>
+
+    <div class="screen phone theme-rain" data-doan-frame="rain-now" data-doan-title="이전 · v1 비멍">
+      <canvas class="scene" data-scene="rain" data-intensity="0.6"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass"><a>불멍</a><a class="on">비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="frame-tag">v2 이전의 비멍</div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>빗소리 · 창가</span><span>천둥 꺼짐</span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <div class="seg">
+            <button data-action="rain" data-value="0.25">보슬비</button>
+            <button class="on" data-action="rain" data-value="0.6">비</button>
+            <button data-action="rain" data-value="1">장대비</button>
+          </div>
+          <button class="icon-btn toggleable" data-action="thunder" aria-label="천둥"><svg class="ico"><use href="#i-zap"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes">
+      <h4>데스크톱</h4>
+      <ul>
+        <li>가운데가 넓은 <b>세 칸 창</b>이에요. 독 · 지금 소리 · 단축키 안내가 모두 창턱 아래 벽에 놓여요.</li>
+        <li>가운데 칸은 한 번 닦아 둔 모습이에요. 마우스로 끌면 더 닦여요.</li>
+      </ul>
+      <h4>장면이 달라진 곳</h4>
+      <ul>
+        <li><b>창밖</b>: 먼 건물 · 가까운 건물 · 도로 세 겹. 네온 간판과 가로등 빛이 젖은 도로에 길게 번져요.</li>
+        <li><b>움직임</b>: 차가 가끔 지나가고, 먼 탑의 빨간 불이 깜빡여요. 오래 봐도 조금씩 달라요.</li>
+        <li><b>빗방울</b>: 회색 점이 아니라 창밖을 거꾸로 비추는 작은 렌즈예요.</li>
+        <li><b>김</b>: 지금 비멍의 뭉개진 불빛은 김 서린 자리에 그대로 남아요.</li>
+      </ul>
+      <h4>그대로인 것</h4>
+      <ul>
+        <li>비 세기 3단계, 천둥 켜고 끄기, 타이머와 소리 시트, 단축키.</li>
+        <li>소리는 그대로예요. 닦을 때 ‘뽀드득’ 소리를 넣을지는 정해야 해요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 03 다른 방향 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">03</span><h2>B안 · 유리 가까이</h2><p>창틀 없이 유리에 얼굴을 바짝 댄 시점</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-rain" data-doan-frame="rain2-close" data-doan-implements="src/views/scene-view.ts" data-doan-title="비멍 v2 · B안 유리 가까이">
+      <canvas class="scene" data-rain2 data-frame="none" data-intensity="0.6" data-fog="0.9" data-prewipe data-hold-fog></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass"><a>불멍</a><a class="on">비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>빗소리 · 창가</span><span>천둥 <span data-stat="thunder">꺼짐</span></span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <div class="seg">
+            <button data-rain2-act="rain" data-value="0.25">보슬비</button>
+            <button class="on" data-rain2-act="rain" data-value="0.6">비</button>
+            <button data-rain2-act="rain" data-value="1">장대비</button>
+          </div>
+          <button class="icon-btn" data-rain2-act="thunder" aria-label="천둥"><svg class="ico"><use href="#i-zap"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes choice" data-doan-id="rain2-choice">
+      <h4>A안과 B안</h4>
+      <table class="compare">
+        <tr><th></th><th class="pick">A안 · 창가 자리</th><th>B안 · 유리 가까이</th></tr>
+        <tr><td>느낌</td><td>방 안에 앉아 창밖을 봐요. 따뜻한 안과 차가운 밖이 한 화면에 있어요.</td><td>유리만 보여요. 김과 방울이 주인공이고, 지금 비멍과 가장 비슷해요.</td></tr>
+        <tr><td>‘창’ 느낌</td><td>창살과 창턱 덕분에 처음 보는 순간 창이에요.</td><td>닦아 보기 전에는 창인지 알기 어려워요.</td></tr>
+        <tr><td>조작 자리</td><td>창턱 위. 창밖을 가리지 않아요.</td><td>지금처럼 장면 위에 떠 있어요.</td></tr>
+        <tr><td>주의할 점</td><td>창밖이 보이는 넓이가 20%쯤 줄어요. 소품이 많아지면 산만해져요.</td><td>불멍 · 물멍에 비해 ‘어디에 있는지’가 약해요.</td></tr>
+        <tr><td>만들 양</td><td>창밖 · 김 · 방울 + 창틀 · 창턱 · 소품</td><td>창밖 · 김 · 방울</td></tr>
+      </table>
+      <p class="rec"><b>A안을 권해요.</b> 불멍이 ‘모닥불 앞’, 물멍이 ‘어항 앞’이라면 비멍은 ‘창가’여야 자리가 생겨요. 소품은 머그컵과 화분 둘로만 두고, 창밖 · 김 · 방울은 두 안이 같은 코드를 쓰니까 A안으로 만들어도 B안은 창틀만 끄면 돼요.</p>
+    </aside>
+
+    <aside class="notes">
+      <h4>정해야 할 것</h4>
+      <ul>
+        <li><b>김 서림을 끌 수 있게 할지.</b> 시안은 늘 켜져 있어요. 끄는 스위치를 둔다면 소리 시트가 맞아요.</li>
+        <li><b>폰 가로 화면.</b> 창턱이 세로 공간을 많이 써서, 가로에서는 창턱 없이 창살만 두는 쪽을 생각하고 있어요. 시안은 아직 없어요.</li>
+        <li><b>홈 카드.</b> 홈의 비멍 카드도 같은 장면으로 바뀌어요. 카드에서는 창턱 없이 유리만 보여주는 게 좋아요.</li>
+        <li><b>창밖 풍경 고르기.</b> 도시 말고 숲 · 바다 창밖도 만들 수 있지만 이번 시안에는 넣지 않았어요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<script src="../assets/mong-scenes.js"></script>
+<script src="../assets/rain-v2.js"></script>
+</body>
+</html>
