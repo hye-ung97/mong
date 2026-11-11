@@ -234,6 +234,9 @@ kbd {
 }
 @media (min-width: 768px) and (max-width: 1239px) { .d-keys { display: none; } }
 @media (min-width: 768px) and (max-width: 1099px) { .d-now { display: none; } }
+/* 불멍's dock is wide (three wood chips): key hints stack in the corner, and the status text waits for a wider window */
+[data-scene="fire"] .d-keys { bottom: 34px; flex-direction: column; align-items: flex-end; gap: 9px; }
+@media (min-width: 768px) and (max-width: 1159px) { [data-scene="fire"] .d-now { display: none; } }
 
 /* landscape phone: controls move to a rail on the right */
 .rail, .land-label { display: none; }
@@ -375,6 +378,49 @@ kbd {
 .log-art.big { width: 128px; height: 34px; border-radius: 17px; box-shadow: 0 14px 30px rgba(0, 0, 0, 0.55), inset 0 -3px 0 rgba(0, 0, 0, 0.25); }
 .log-art.big::before { inset: 10px 28px 10px 12px; }
 .log-art.big::after { width: 24px; }
+.log-art.mini { width: 30px; height: 10px; border-radius: 5px; box-shadow: none; }
+.log-art.mini::before { display: none; }
+.log-art.mini::after { width: 7px; right: -1px; }
+
+/* 불멍 · dock button on phones: [chosen wood | 넣기] */
+.wood-split {
+  flex: 1; min-width: 0; height: 52px; display: flex;
+  border-radius: var(--r-pill);
+  color: var(--accent-ink);
+  background: linear-gradient(180deg, var(--accent-soft), var(--accent));
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--accent) 45%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+/* both halves fill the 52px height, so the wood name and 넣기 share one centre line */
+.wood-split button { display: flex; align-items: center; transition: background 0.15s; }
+.wood-split .pick {
+  flex: none; gap: 7px; padding: 0 6px 0 14px;
+  border-radius: var(--r-pill) 0 0 var(--r-pill);
+  font: 700 13px/1 var(--font); white-space: nowrap;
+  background: color-mix(in srgb, var(--accent-ink) 13%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--accent-ink) 24%, transparent);
+}
+.wood-split .pick .ico { width: 14px; height: 14px; stroke-width: 2.4; opacity: 0.7; }
+.wood-split .pick:active, .wood-split .pick[aria-expanded="true"] { background: color-mix(in srgb, var(--accent-ink) 30%, transparent); }
+.wood-split .add {
+  flex: 1; min-width: 0; justify-content: center; gap: 6px;
+  border-radius: 0 var(--r-pill) var(--r-pill) 0;
+  font: 700 16px/1 var(--font);
+}
+.wood-split .add:active { background: rgba(255, 255, 255, 0.22); }
+/* narrow phones: the name alone says which wood, then 넣기 drops its icon */
+@media (max-width: 374.98px) { .wood-split .pick .log-art { display: none; } }
+@media (max-width: 339.98px) { .wood-split .add .ico { display: none; } }
+
+/* 불멍 · dock on wide screens: the three woods; a click adds that wood and makes it the chosen one */
+.wood-chips { display: flex; gap: 4px; padding: 4px; border-radius: var(--r-pill); background: var(--ui-fill); }
+.wood-chip {
+  height: 40px; padding: 0 14px 0 12px; display: flex; align-items: center; gap: 8px;
+  border-radius: var(--r-pill); font: 600 14px/1 var(--font); color: var(--ui-dim);
+  transition: background 0.2s, color 0.2s, transform 0.15s var(--ease);
+}
+.wood-chip:hover { color: var(--ui-ink); }
+.wood-chip:active { transform: scale(0.97); }
+.wood-chip.on { background: linear-gradient(180deg, var(--accent-soft), var(--accent)); color: var(--accent-ink); font-weight: 700; }
 .drop-zone, .drop-label, .drag-ghost { position: absolute; z-index: 5; pointer-events: none; opacity: 0; transition: opacity 0.25s; }
 .drop-zone {
   border-radius: 50%;

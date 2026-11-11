@@ -56,7 +56,7 @@ const COPY: Record<SceneId, Copy> = {
     aside: '<span class="meter">불 세기<span class="bar"><i data-bind="intensity"></i></span></span>',
     title: '장작 타는 소리',
     sub: '<span class="meter"><span>장작 <b data-bind="logs">3</b>개 · 불 세기</span><span class="bar"><i data-bind="intensity"></i></span></span>',
-    keys: [{ keys: ['Space'], text: '장작 넣기' }, { keys: ['←', '→'], text: '장면 바꾸기' }, { keys: ['M'], text: '소리' }],
+    keys: [{ keys: ['Space'], text: '고른 장작 넣기' }, { keys: ['←', '→'], text: '장면 바꾸기' }, { keys: ['M'], text: '소리' }],
     land: '불멍',
   },
   rain: {
@@ -238,7 +238,14 @@ export class SceneView implements View {
     let extra = '';
     switch (this.id) {
       case 'fire':
-        main = `<button class="primary" data-act="add-log" aria-label="장작 넣기 (꾹 누르면 장작 고르기)">${icon('log')}<span>장작 넣기</span><kbd class="only-d">Space</kbd></button>`;
+        // phones: [chosen wood | 넣기]. Wide screens: all three woods; a click adds that wood and makes it the chosen one.
+        main = `
+          <div class="wood-split only-m">
+            <button class="pick" data-act="tray" aria-haspopup="dialog" aria-expanded="false"></button>
+            <button class="add" data-act="add-log" aria-label="장작 넣기">${icon('log')}넣기</button>
+          </div>
+          <div class="wood-chips only-d" role="group" aria-label="장작 넣기">${WOODS.map((w) =>
+            `<button class="wood-chip" data-act="add-wood" data-wood="${w.id}"><span class="log-art mini ${w.id}"></span>${w.label}</button>`).join('')}</div>`;
         break;
       case 'aquarium':
         main = `<button class="primary" data-act="feed">${icon('food')}<span>먹이 주기</span><kbd class="only-d">Space</kbd></button>`;
@@ -500,7 +507,9 @@ export class SceneView implements View {
   private primary() {
     if (this.fire) {
       this.fire.addLogByHand(settings().wood);
-      if (firstTime('wood-tray')) this.toast('버튼을 꾹 누르면 장작을 고를 수 있어요');
+      // the dock shows the woods itself; only the landscape rail still picks one with a long press
+      const rail = this.el.querySelector('.rail-main')?.getClientRects().length;
+      if (rail && firstTime('wood-tray')) this.toast('버튼을 꾹 누르면 장작을 고를 수 있어요');
     } else if (this.aquarium) {
       this.aquarium.feed();
       this.feedToast();
@@ -576,6 +585,16 @@ export class SceneView implements View {
       case 'drizzle':
         this.primary();
         break;
+      case 'tray':
+        this.open('tray-open');
+        break;
+      case 'add-wood': {
+        const kind = t.dataset.wood as WoodKind;
+        save({ wood: kind });
+        this.refreshWood();
+        this.fire?.addLogByHand(kind);
+        break;
+      }
       case 'rain':
         this.setRain(Number(t.dataset.value));
         break;
@@ -693,12 +712,14 @@ export class SceneView implements View {
     if (cls === 'tray-open') {
       this.fire?.setLift(true);
       this.placeDropZone();
+      this.el.querySelector('.wood-split .pick')?.setAttribute('aria-expanded', 'true');
     }
   }
 
   private closeAll() {
     this.el.classList.remove('sheet-open', 'tray-open');
     this.fire?.setLift(false);
+    this.el.querySelector('.wood-split .pick')?.setAttribute('aria-expanded', 'false');
     this.armIdle();
   }
 
@@ -724,10 +745,12 @@ export class SceneView implements View {
     this.armIdle();
   }
 
-  /* ---------- 불멍: long-press tray + drag a log onto the fire ---------- */
+  /* ---------- 불멍: chosen wood on the dock, wood tray, drag a log onto the fire ---------- */
   private setupFire() {
+    this.refreshWood();
     let press = 0;
     this.el.querySelectorAll<HTMLElement>('[data-act="add-log"]').forEach((btn) => {
+      if (btn.closest('.wood-split')) return; // its left half opens the tray, so no long press
       this.listen(btn, 'pointerdown', () => {
         this.longPressed = false;
         window.clearTimeout(press);
@@ -745,6 +768,21 @@ export class SceneView implements View {
       this.listen(w, 'pointerdown', (e: PointerEvent) => this.dragWood(e, w));
     });
     this.listen(window, 'resize', () => this.placeDropZone());
+  }
+
+  /** Show the chosen wood on the dock (split button, chips) and in the tray. */
+  private refreshWood() {
+    const wood = WOODS.find((w) => w.id === settings().wood) ?? WOODS[0];
+    this.el.querySelectorAll<HTMLElement>('[data-wood]').forEach((w) => {
+      const on = w.dataset.wood === wood.id;
+      w.classList.toggle('on', on);
+      if (on) w.setAttribute('aria-current', 'true');
+      else w.removeAttribute('aria-current');
+    });
+    const pick = this.el.querySelector<HTMLElement>('.wood-split .pick');
+    if (!pick) return;
+    pick.innerHTML = `<span class="log-art mini ${wood.id}"></span><span>${wood.label}</span>${icon('chev')}`;
+    pick.setAttribute('aria-label', `장작 고르기 (지금 ${wood.label})`);
   }
 
   private placeDropZone() {
@@ -800,7 +838,7 @@ export class SceneView implements View {
       el.classList.remove('lifted');
       if (cancelled) return;
       save({ wood: kind });
-      this.el.querySelectorAll('.wood').forEach((w) => w.classList.toggle('on', w === el));
+      this.refreshWood();
       if (!moved) {
         fire.addLogByHand(kind);
         this.closeAll();
