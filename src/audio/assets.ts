@@ -18,6 +18,11 @@ export function loadBuffer(ctx: BaseAudioContext, url: string): Promise<AudioBuf
   return p;
 }
 
+/** Forget a decoded sound so its memory can be freed (it is fetched again from the HTTP cache if needed). */
+export function releaseBuffer(url: string) {
+  cache.delete(url);
+}
+
 /** A slice of a buffer: where to start, how long, where the hit is, how loud it peaks. */
 export interface Hit {
   start: number;

@@ -17,6 +17,8 @@ export interface SoundContext {
   wallOffset(): number;
   /** fetch + decode a recorded sound (cached) */
   load(url: string): Promise<AudioBuffer>;
+  /** drop a decoded sound from the cache */
+  release(url: string): void;
 }
 
 /**
@@ -29,6 +31,7 @@ export abstract class SceneSound {
   private readonly layerNodes = new Map<string, GainNode>();
   private readonly cursors = new Map<string, number>();
   protected readonly sources: AudioScheduledSourceNode[] = [];
+  private readonly loaded = new Set<string>();
 
   constructor(protected readonly env: SoundContext, defs: readonly LayerDef[], mix: Record<string, number> = {}) {
     this.ctx = env.ctx;
@@ -49,6 +52,12 @@ export abstract class SceneSound {
 
   setLayer(id: string, value: number) {
     this.layerNodes.get(id)?.gain.setTargetAtTime(value, this.ctx.currentTime, 0.08);
+  }
+
+  /** Load a recording; it is released again when this sound is disposed. */
+  protected load(url: string): Promise<AudioBuffer> {
+    this.loaded.add(url);
+    return this.env.load(url);
   }
 
   /** Keeps a source to stop when the sound is disposed. */
@@ -89,6 +98,7 @@ export abstract class SceneSound {
         // already stopped
       }
     }
+    for (const url of this.loaded) this.env.release(url);
     this.out.disconnect();
   }
 }
