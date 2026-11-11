@@ -242,10 +242,12 @@ kbd {
 @media (min-width: 768px) and (max-width: 1239px) { .d-keys { display: none; } }
 @media (min-width: 768px) and (max-width: 1099px) { .d-now { display: none; } }
 /* 불멍's dock is wide (three wood chips): key hints stack in the corner, and the status text waits for a wider window */
-[data-scene="fire"] .d-keys, [data-scene="rain"] .d-keys { bottom: 34px; flex-direction: column; align-items: flex-end; gap: 9px; }
+[data-scene="fire"] .d-keys, [data-scene="rain"] .d-keys, [data-scene="aquarium"] .d-keys, [data-scene="sea"] .d-keys, [data-scene="pond"] .d-keys { bottom: 34px; flex-direction: column; align-items: flex-end; gap: 9px; }
 /* 비멍: dragging on the glass wipes the mist, so the browser must not scroll or select instead */
 [data-scene="rain"] canvas.scene { touch-action: none; cursor: grab; }
 [data-scene="rain"] canvas.scene:active { cursor: grabbing; }
+/* 바다: dragging over the sand walks along it */
+[data-scene="sea"] canvas.scene { touch-action: none; }
 @media (min-width: 768px) and (max-width: 1159px) { [data-scene="fire"] .d-now { display: none; } }
 
 /* landscape phone: controls move to a rail on the right */

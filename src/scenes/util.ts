@@ -131,3 +131,51 @@ export function drawDrop(ctx: CanvasRenderingContext2D, x: number, y: number, r:
   ctx.fill();
   ctx.globalAlpha = 1;
 }
+
+/** Seeded random numbers (mulberry32), so scenery stays the same when a scene is laid out again. */
+export function rng(seed: number) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+export const newSeed = () => Math.floor(Math.random() * 0xffffffff);
+
+const lattice = new Float32Array(65536);
+{
+  const r = rng(20261111);
+  for (let i = 0; i < lattice.length; i++) lattice[i] = r();
+}
+
+/** Smooth 2D value noise, 0..1. */
+export function vnoise(x: number, y: number) {
+  const xi = Math.floor(x);
+  const yi = Math.floor(y);
+  const fx = x - xi;
+  const fy = y - yi;
+  const u = fx * fx * (3 - 2 * fx);
+  const v = fy * fy * (3 - 2 * fy);
+  const a = lattice[((xi & 255) << 8) | (yi & 255)];
+  const b = lattice[(((xi + 1) & 255) << 8) | (yi & 255)];
+  const c = lattice[((xi & 255) << 8) | ((yi + 1) & 255)];
+  const d = lattice[(((xi + 1) & 255) << 8) | ((yi + 1) & 255)];
+  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+}
+
+/** A soft blob from a glow sprite; works where canvas filters don't. */
+export function soft(x: CanvasRenderingContext2D, sprite: HTMLCanvasElement, cx: number, cy: number, rx: number, ry: number, a: number) {
+  x.globalAlpha = a;
+  x.drawImage(sprite, cx - rx, cy - ry, rx * 2, ry * 2);
+  x.globalAlpha = 1;
+}
+
+export const wrapAngle = (a: number) => {
+  while (a > Math.PI) a -= TAU;
+  while (a < -Math.PI) a += TAU;
+  return a;
+};

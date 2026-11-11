@@ -1,4 +1,5 @@
 import type { WoodKind } from '../scenes/fire';
+import { seasonNow, type Season } from '../scenes/pond';
 import type { SceneId, WaterId } from '../scenes/registry';
 
 export interface Settings {
@@ -10,6 +11,10 @@ export interface Settings {
   thunder: boolean;
   wave: number;
   drizzle: boolean;
+  /** 어항: 달빛 조명. */
+  moonlight: boolean;
+  /** 연못: the season. Starts as the season outside. */
+  season: Season;
   autoTend: boolean;
   wood: WoodKind;
   water: WaterId;
@@ -29,6 +34,8 @@ const DEFAULTS: Settings = {
   thunder: false,
   wave: 1,
   drizzle: false,
+  moonlight: false,
+  season: seasonNow(),
   autoTend: true,
   wood: 'oak',
   water: 'aquarium',

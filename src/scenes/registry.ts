@@ -40,10 +40,10 @@ export function createScene(id: SceneId, variant: SceneVariant, s: Settings): Sc
     case 'rain':
       return new Rain(variant, { intensity: s.rain, thunder: variant === 'full' && s.thunder });
     case 'aquarium':
-      return new Aquarium(variant);
+      return new Aquarium(variant, { moon: variant === 'full' && s.moonlight });
     case 'sea':
       return new Sea(variant, { size: s.wave });
     case 'pond':
-      return new Pond(variant, { drizzle: variant === 'full' && s.drizzle });
+      return new Pond(variant, { drizzle: variant === 'full' && s.drizzle, season: s.season });
   }
 }

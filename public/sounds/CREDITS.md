@@ -13,3 +13,7 @@ No attribution is required; listed here so the sources are easy to find again.
 | `rain/heavy.m4a` | [Rain heavy 2 (rural)](https://freesound.org/people/jmbphilmes/sounds/200272/) (#200272) | jmbphilmes | mono, levelled to -25 dBFS RMS with soft peak limiting, AAC 96 kbps |
 | `rain/thunder.m4a` | [peal of thunder - distant](https://freesound.org/people/bastipictures/sounds/243782/) (#243782) | bastipictures | mono, -8.6 dB, AAC 96 kbps |
 | `rain/wind.m4a` | [AMBIENCE_INTERIOR_WIND_NOISE_WINDOW](https://freesound.org/people/pblzr/sounds/816508/) (#816508) | pblzr | 90 s from 0:32, mono, -8.6 dB, AAC 96 kbps |
+| `water/aquarium.m4a` | [Indoor Nice Fish Tank Ambiance](https://freesound.org/people/7778/sounds/197805/) (#197805) | 7778 | Freesound preview, mono, +7 dB, AAC 96 kbps |
+| `water/sea.m4a` | [Beach atmos gentle waves](https://freesound.org/people/jedg/sounds/505812/) (#505812) | jedg | Freesound preview, 124 s from 0:08, mono, +19 dB with peak limiting, AAC 96 kbps |
+| `water/pond.m4a` | [Village pond with bird sounds and natural background](https://freesound.org/people/Garuda1982/sounds/759738/) (#759738) | Garuda1982 | Freesound preview, 150 s from 0:20, mono, +8 dB with peak limiting, AAC 96 kbps |
+| `water/steps.m4a` | [footsteps in wet coarse sand](https://freesound.org/people/bruno.auzet/sounds/539175/) (#539175) | bruno.auzet | Freesound preview, first 45 s, mono, +3 dB, AAC 96 kbps |

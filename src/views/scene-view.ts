@@ -7,7 +7,7 @@ import { Aquarium } from '../scenes/aquarium';
 import type { Scene } from '../scenes/base';
 import { Fire, type WoodKind } from '../scenes/fire';
 import { SceneHost } from '../scenes/host';
-import { Pond } from '../scenes/pond';
+import { Pond, SEASONS } from '../scenes/pond';
 import { Rain } from '../scenes/rain';
 import {
   GROUPS, WATER, createScene, groupOf, groupRoute, isWater, routeOf, type GroupId, type SceneId,
@@ -70,28 +70,30 @@ const COPY: Record<SceneId, Copy> = {
     land: '비멍',
   },
   aquarium: {
-    now: '보글보글 · 물고기 <b data-bind="fish">10</b>마리',
-    hint: '물속을 톡 치면 그 자리에 먹이가 떨어져요',
+    now: '보글보글 · 물고기 <b data-bind="fish">17</b>마리',
+    aside: '조명 <span data-bind="light">낮</span>',
+    hint: '수면 위를 톡 치면 먹이가 떨어져요',
     title: '어항 · 보글보글',
-    sub: '물고기 <b data-bind="fish">10</b>마리',
-    keys: [{ text: '클릭한 자리에 먹이' }, { keys: ['Space'], text: '먹이 주기' }, { keys: ['M'], text: '소리' }],
+    sub: '물고기 <b data-bind="fish">17</b>마리 · 조명 <span data-bind="light">낮</span>',
+    keys: [{ text: '수면 위를 클릭하면 먹이 · 유리는 톡톡' }, { keys: ['L'], text: '달빛 조명' }],
     land: '물멍 · 어항',
   },
   sea: {
     now: '파도 소리 · 밤바다',
     aside: '파도 <span data-bind="wave">보통</span>',
+    hint: '모래를 톡 치면 발자국이 남아요',
     title: '밤바다 · 파도 소리',
     sub: '파도 <span data-bind="wave">보통</span>',
-    keys: [{ keys: ['↑', '↓'], text: '파도 크기' }, { keys: ['←', '→'], text: '장면 바꾸기' }, { keys: ['M'], text: '소리' }],
+    keys: [{ text: '모래를 클릭하거나 끌면 발자국' }, { keys: ['↑', '↓'], text: '파도 크기' }],
     land: '물멍 · 바다',
   },
   pond: {
     now: '물방울 · 바람 소리',
-    aside: '빗방울 <span data-bind="drizzle">꺼짐</span>',
+    aside: '<span data-bind="season">가을</span> · 빗방울 <span data-bind="drizzle">꺼짐</span>',
     hint: '물을 톡 치면 물결이 퍼져요',
     title: '연못 · 물방울 소리',
-    sub: '빗방울 <span data-bind="drizzle">꺼짐</span>',
-    keys: [{ text: '클릭하면 물결' }, { keys: ['Space'], text: '빗방울' }, { keys: ['M'], text: '소리' }],
+    sub: '<span data-bind="season">가을</span> · 잉어 <b data-bind="koi">5</b>마리 · 빗방울 <span data-bind="drizzle">꺼짐</span>',
+    keys: [{ text: '클릭하면 물결' }, { keys: ['Space'], text: '먹이' }, { keys: ['R'], text: '빗방울' }, { keys: ['S'], text: '계절' }],
     land: '물멍 · 연못',
   },
 };
@@ -123,6 +125,7 @@ export class SceneView implements View {
     this.el.dataset.scene = id;
     this.el.innerHTML = this.template();
     parent.append(this.el);
+    if (isWater(id)) this.setupWater();
 
     this.scene.hooks = {
       onStat: (key, value) => this.onStat(key, value),
@@ -141,6 +144,7 @@ export class SceneView implements View {
     this.listen(document, 'fullscreenchange', () => this.refreshFullscreen());
     if (this.fire) this.setupFire();
     if (this.rain) this.setupRain();
+    if (this.sea) this.setupSea();
 
     const audioTimer = window.setInterval(() => audio.update(id, this.scene.audioState()), AUDIO_STATE_EVERY);
     this.cleanups.push(() => window.clearInterval(audioTimer));
@@ -254,9 +258,12 @@ export class SceneView implements View {
         break;
       case 'aquarium':
         main = `<button class="primary" data-act="feed">${icon('food')}<span>먹이 주기</span><kbd class="only-d">Space</kbd></button>`;
+        extra = `<button class="dock-btn" data-act="moonlight" aria-pressed="false" aria-label="달빛 조명">${icon('moon')}<span class="only-d">달빛</span></button>`;
         break;
       case 'pond':
-        main = `<button class="primary" data-act="drizzle" aria-pressed="false">${icon('drop')}<span data-bind="drizzle-btn">빗방울 떨어뜨리기</span></button>`;
+        main = `<button class="primary" data-act="feed">${icon('food')}<span>먹이 주기</span><kbd class="only-d">Space</kbd></button>`;
+        extra = `<button class="dock-btn" data-act="drizzle" aria-pressed="false" aria-label="빗방울">${icon('drop')}<span class="only-d">빗방울</span></button>
+          <button class="dock-btn" data-act="season" aria-label="계절 바꾸기">${icon('leaf')}<span class="only-d" data-bind="season">가을</span></button>`;
         break;
       case 'rain':
         main = this.seg(RAIN_LEVELS, 'rain', s.rain, '비 세기');
@@ -273,7 +280,7 @@ export class SceneView implements View {
       ${extra}
       <span class="sep only-d"></span>
       <div class="vol only-d"><button class="vol-btn" data-act="mute" data-bind-mute aria-label="소리 끄기">${icon('volume')}</button><input class="range" type="range" min="0" max="100" data-act="volume" aria-label="음량"></div>
-      ${this.id === 'rain' ? '' : `<button class="dock-btn only-m" data-act="sheet" aria-label="소리 섞기">${icon('sliders')}</button>`}`;
+      ${this.id === 'rain' || this.id === 'pond' ? '' : `<button class="dock-btn only-m" data-act="sheet" aria-label="소리 섞기">${icon('sliders')}</button>`}`;
   }
 
   private railHtml() {
@@ -285,7 +292,7 @@ export class SceneView implements View {
       rain: { act: 'rain-cycle', icon: 'rain', label: '비 세기 바꾸기' },
       aquarium: { act: 'feed', icon: 'food', label: '먹이 주기' },
       sea: { act: 'wave-cycle', icon: 'waves', label: '파도 크기 바꾸기' },
-      pond: { act: 'drizzle', icon: 'drop', label: '빗방울' },
+      pond: { act: 'feed', icon: 'food', label: '먹이 주기' },
     } as const;
     const m = main[this.id];
     return `
@@ -371,6 +378,11 @@ export class SceneView implements View {
       this.el.querySelectorAll('[data-act="thunder"]').forEach((b) => b.setAttribute('aria-pressed', String(on)));
       this.syncSeg('rain', this.rain.intensity, RAIN_LEVELS);
     }
+    if (this.aquarium) {
+      const on = this.aquarium.moon;
+      this.bind('light', on ? '달빛' : '낮');
+      this.el.querySelectorAll('[data-act="moonlight"]').forEach((b) => b.setAttribute('aria-pressed', String(on)));
+    }
     if (this.sea) {
       this.bind('wave', nearest(WAVE_LEVELS, this.sea.size).label);
       this.syncSeg('wave', this.sea.size, WAVE_LEVELS);
@@ -378,7 +390,7 @@ export class SceneView implements View {
     if (this.pond) {
       const on = this.pond.drizzle;
       this.bind('drizzle', on ? '켜짐' : '꺼짐');
-      this.bind('drizzle-btn', on ? '빗방울 그치기' : '빗방울 떨어뜨리기');
+      this.bind('season', SEASONS.find((x) => x.id === this.pond!.season)?.label ?? '');
       this.el.querySelectorAll('[data-act="drizzle"]').forEach((b) => b.setAttribute('aria-pressed', String(on)));
     }
   }
@@ -501,9 +513,15 @@ export class SceneView implements View {
     if (this.fire) {
       // 불멍: a tap on the fire stirs it; logs go in with the dock button or by dragging
       if (!this.fire.pokeAt(x, y)) return;
-    } else if (this.rain) return; // 비멍 wipes the glass with its own drag handlers
-    else this.scene.tap(x, y);
-    if (this.aquarium) this.feedToast();
+    } else if (this.rain || this.sea) return; // 비멍 wipes the glass, 바다 walks the sand: both with their own drag handlers
+    else if (this.aquarium) {
+      const what = this.aquarium.poke(x, y);
+      if (what === 'feed') {
+        this.feedToast();
+        this.el.classList.add('hint-done');
+      } else if (what === 'knock' && firstTime('glass-knock')) this.toast('유리를 치면 물고기가 놀라요 · 먹이는 수면 위에서');
+      return;
+    } else this.scene.tap(x, y);
     this.el.classList.add('hint-done');
   };
 
@@ -534,6 +552,45 @@ export class SceneView implements View {
     for (const type of ['pointerup', 'pointercancel']) this.listen(canvas, type, () => rain.wipeEnd());
   }
 
+  /* ---------- 물멍: a seat by the water ---------- */
+  private setupWater() {
+    const scene = this.aquarium ?? this.sea ?? this.pond;
+    if (!scene) return;
+    // the controls rest on the cabinet / the dry sand / the bank's stones, and the tabs float above the water
+    const place = () => {
+      const view = this.el.getBoundingClientRect();
+      const tops = ['.m-status', '.dock']
+        .map((sel) => this.$(sel).getBoundingClientRect())
+        .filter((r) => r.height > 0)
+        .map((r) => r.top);
+      const bottoms = ['.subscenes', '.topbar']
+        .map((sel) => this.$(sel).getBoundingClientRect())
+        .filter((r) => r.height > 0)
+        .map((r) => r.bottom);
+      scene.setEdges(
+        bottoms.length ? Math.max(...bottoms) - view.top : null,
+        tops.length ? Math.min(...tops) - view.top : null,
+      );
+    };
+    place();
+    this.listen(window, 'resize', place);
+  }
+
+  /* ---------- 바다: footprints on the sand ---------- */
+  private setupSea() {
+    const sea = this.sea!;
+    const canvas = this.host.canvas;
+    this.listen(canvas, 'pointerdown', (e: PointerEvent) => {
+      if (this.blocking) return;
+      canvas.setPointerCapture(e.pointerId);
+      if (sea.walkStart(...this.host.toScene(e.clientX, e.clientY))) this.el.classList.add('hint-done');
+    });
+    this.listen(canvas, 'pointermove', (e: PointerEvent) => {
+      if (sea.walkMove(...this.host.toScene(e.clientX, e.clientY))) this.armIdle();
+    });
+    for (const type of ['pointerup', 'pointercancel']) this.listen(canvas, type, () => sea.walkEnd());
+  }
+
   private feedToast() {
     if (Date.now() - this.lastFeedToast < 10_000) return;
     this.lastFeedToast = Date.now();
@@ -551,10 +608,30 @@ export class SceneView implements View {
       this.feedToast();
       this.el.classList.add('hint-done');
     } else if (this.pond) {
-      this.pond.setDrizzle(!this.pond.drizzle);
-      save({ drizzle: this.pond.drizzle });
-      this.refreshLabels();
+      this.pond.feed();
+      if (Date.now() - this.lastFeedToast > 10_000) {
+        this.lastFeedToast = Date.now();
+        this.toast('잉어들이 먹이를 먹으러 와요');
+      }
     }
+  }
+
+  private toggleDrizzle() {
+    if (!this.pond) return;
+    this.pond.setDrizzle(!this.pond.drizzle);
+    save({ drizzle: this.pond.drizzle });
+    this.refreshLabels();
+    this.toast(this.pond.drizzle ? '빗방울이 떨어져요' : '빗방울이 그쳤어요');
+  }
+
+  private nextSeason() {
+    if (!this.pond) return;
+    const i = SEASONS.findIndex((x) => x.id === this.pond!.season);
+    const next = SEASONS[(i + 1) % SEASONS.length];
+    this.pond.setSeason(next.id);
+    save({ season: next.id });
+    this.refreshLabels();
+    this.toast(`연못의 ${next.label}`);
   }
 
   private stepLevel(dir: 1 | -1) {
@@ -602,6 +679,15 @@ export class SceneView implements View {
     this.toast(on ? '천둥 켜짐 · 가끔 번쩍여요' : '천둥 꺼짐');
   }
 
+  private toggleMoon() {
+    if (!this.aquarium) return;
+    const on = !this.aquarium.moon;
+    this.aquarium.setMoon(on);
+    save({ moonlight: on });
+    this.refreshLabels();
+    this.toast(on ? '달빛 조명 · 물고기들이 느려져요' : '낮 조명');
+  }
+
   private toggleMute() {
     const s = settings();
     if (s.volume === 0) save({ volume: 0.6, muted: false });
@@ -618,8 +704,13 @@ export class SceneView implements View {
         else this.primary();
         break;
       case 'feed':
-      case 'drizzle':
         this.primary();
+        break;
+      case 'drizzle':
+        this.toggleDrizzle();
+        break;
+      case 'season':
+        this.nextSeason();
         break;
       case 'tray':
         this.open('tray-open');
@@ -643,6 +734,9 @@ export class SceneView implements View {
         break;
       case 'thunder':
         this.toggleThunder();
+        break;
+      case 'moonlight':
+        this.toggleMoon();
         break;
       case 'sheet':
         this.open('sheet-open');
@@ -728,6 +822,15 @@ export class SceneView implements View {
         break;
       case 'KeyT':
         this.toggleThunder();
+        break;
+      case 'KeyR':
+        this.toggleDrizzle();
+        break;
+      case 'KeyS':
+        this.nextSeason();
+        break;
+      case 'KeyL':
+        this.toggleMoon();
         break;
       case 'KeyM':
         this.toggleMute();

@@ -1,0 +1,19 @@
+/* 물멍 · 어항 v2 시안 — mong.css · fire-v2.css(개요 틀) 위에 얹는 부품. 전부 시안에만 있어요. */
+
+.theme-water .changes em { color: var(--water-300); }
+
+/* 독 안에서 켜진 조명 버튼. mong.css 의 .dock .icon-btn 배경이 .on 을 덮어서 따로 적어요 */
+.dock .icon-btn.on { background: color-mix(in srgb, var(--accent) 30%, transparent); color: var(--accent-soft); }
+
+/* 톡 치면 먹이가 떨어지는 장면 */
+canvas[data-aqua2] { cursor: pointer; }
+
+/* 바다는 끌어서 걷고, 연못은 톡 쳐요 */
+canvas[data-sea2] { cursor: pointer; touch-action: none; }
+canvas[data-pond2] { cursor: pointer; }
+.dock .primary.on { filter: saturate(0.7) brightness(0.86); }
+
+/* 정한 것 · 정해야 할 것 */
+.next { flex: none; width: 520px; }
+.next p { margin: 0 0 14px; color: var(--board-dim); }
+.next p b { color: var(--board-ink); }
