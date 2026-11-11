@@ -150,6 +150,12 @@ export class FireSound extends SceneSound {
   }
 
   event(name: string, data?: Record<string, number | string>) {
+    if (name === 'poke') {
+      // 뒤적이기: the embers scatter, with the same rush of crackles a landing log makes
+      this.boost = 1;
+      this.boostAt = this.ctx.currentTime;
+      return;
+    }
     if (name !== 'add') return;
     const impactIn = typeof data?.impactIn === 'number' ? data.impactIn : 0.25;
     const impact = this.ctx.currentTime + impactIn;

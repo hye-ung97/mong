@@ -22,6 +22,8 @@ interface Log {
   kind: WoodKind; cracks: Crack[]; ash: Ash[];
   /** How hard it is burning right now, 0..1. */
   power: number;
+  /** A small turn it was given by the last poke; settles back by itself. */
+  jolt: number;
   /** Its bark, painted once. */
   tex: HTMLCanvasElement;
 }
@@ -43,6 +45,10 @@ interface Field {
 
 const MAX_LOGS = 5;
 const DROP_TIME = 0.7; // s for a new log to fall and settle
+/** With less wood than this burning, and nothing catching fire, only embers are left. */
+const EMBERS_BELOW = 0.6;
+/** A log this far burnt is char: it no longer counts as a log. */
+const SPENT = 0.8;
 /** First contact of the bounce (easeOutBounce reaches 1 at x = 1/2.75). */
 const FIRST_CONTACT = DROP_TIME / 2.75;
 
@@ -258,7 +264,7 @@ export class Fire extends Scene {
   /** The light everything else is lit by: follows the flames, with a living flicker. */
   private light = 0.6;
   private wind = 0;
-  /** A jolt (a log landing) that wakes the coals for a moment. */
+  /** A jolt (a log landing, a poke) that wakes the coals for a moment. */
   private kick = 0;
   private mood: Mood = { bright: 1, tall: 1, turb: 1, sparks: 1 };
   private statTimer = 0;
@@ -298,6 +304,7 @@ export class Fire extends Scene {
       ignite: 0,
       drop: 0,
       power: 0,
+      jolt: 0,
       life: rand(85, 125) * WOOD[o.kind].life,
       fast: false,
       cracks: Array.from({ length: 13 }, () => ({
@@ -572,8 +579,30 @@ export class Fire extends Scene {
     this.emit('land', { kind: L.kind });
   }
 
-  tap() {
-    this.addLogByHand();
+  /**
+   * 뒤적이기: a tap on the fire stirs it. Sparks fly, the coals wake up and the flames jump for a
+   * couple of seconds. Returns whether the tap was on the fire.
+   */
+  pokeAt(x: number, y: number) {
+    const s = this.s;
+    if (Math.hypot((x - this.cx) / (170 * s), (y - (this.by - 60 * s)) / (170 * s)) >= 1) return false;
+    if (this.kick > 0.85) return true; // just poked: let it settle a moment before the next one
+    const burst = Math.round(46 * (0.5 + this.coal) * this.motion);
+    for (let i = 0; i < burst; i++) this.spawnSpark(true);
+    this.flare = Math.max(this.flare, 0.9);
+    this.kick = 1;
+    this.coal = Math.min(1, this.coal + 0.25);
+    for (const L of this.logs) {
+      if (L.drop < 1) continue;
+      L.jolt = rand(-0.05, 0.05);
+      L.burn = Math.min(0.99, L.burn + 0.015); // stirring burns the wood a little faster
+    }
+    this.emit('poke');
+    return true;
+  }
+
+  tap(x: number, y: number) {
+    this.pokeAt(x, y);
   }
 
   audioState() {
@@ -632,6 +661,7 @@ export class Fire extends Scene {
       turb += W.turb * L.power;
       sparks += W.sparks * L.power;
       wsum += L.power;
+      if (L.jolt) L.jolt *= Math.pow(0.02, dt);
     }
     this.logs = this.logs.filter((L) => L.burn < 1);
     this.mood = wsum > 0.01
@@ -696,7 +726,9 @@ export class Fire extends Scene {
     if (this.statTimer <= 0) {
       this.statTimer = 0.3;
       this.stat('intensity', clamp(this.intensity / 1.2, 0, 1));
-      this.stat('logs', this.logs.filter((L) => L.drop >= 1).length);
+      this.stat('logs', this.logs.filter((L) => L.drop >= 1 && L.burn < SPENT).length);
+      // 잔불: the flames are gone and no new log is catching
+      this.stat('embers', this.fuel < EMBERS_BELOW && this.logs.every((L) => L.ignite >= 1) ? 1 : 0);
     }
   }
 
@@ -823,7 +855,7 @@ export class Fire extends Scene {
     const char = clamp(L.burn * 1.5 + L.ignite * 0.18, 0, 1);
     ctx.save();
     ctx.translate(this.cx + L.x * s, this.by + L.y * s - (1 - d) * 280 * s);
-    ctx.rotate(L.a + (1 - d) * 0.5 * (L.a < 0 ? -1 : 1));
+    ctx.rotate(L.a + (1 - d) * 0.5 * (L.a < 0 ? -1 : 1) + L.jolt * this.kick);
     ctx.globalAlpha = 1 - smooth(0.88, 1, L.burn);
     roundRect(ctx, -len / 2, -th / 2, len, th, th / 2);
     ctx.save();

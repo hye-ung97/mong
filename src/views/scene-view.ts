@@ -56,7 +56,8 @@ const COPY: Record<SceneId, Copy> = {
     aside: '<span class="meter">불 세기<span class="bar"><i data-bind="intensity"></i></span></span>',
     title: '장작 타는 소리',
     sub: '<span class="meter"><span>장작 <b data-bind="logs">3</b>개 · 불 세기</span><span class="bar"><i data-bind="intensity"></i></span></span>',
-    keys: [{ keys: ['Space'], text: '고른 장작 넣기' }, { keys: ['←', '→'], text: '장면 바꾸기' }, { keys: ['M'], text: '소리' }],
+    hint: '불을 톡 치면 뒤적여요',
+    keys: [{ keys: ['Space'], text: '고른 장작 넣기' }, { text: '불을 클릭하면 뒤적여요' }, { keys: ['M'], text: '소리' }],
     land: '불멍',
   },
   rain: {
@@ -208,6 +209,7 @@ export class SceneView implements View {
         ${sub}
         <div class="bottom">
           ${c.hint ? `<div class="hint glass only-m">${icon('hand', 'sm')}${c.hint}</div>` : ''}
+          ${this.fire ? `<div class="hint hint-embers glass" role="status">${icon('log', 'sm')}장작을 넣으면 다시 타올라요</div>` : ''}
           <div class="m-status only-m"><span class="now">${EQ}${c.now}</span>${c.aside ? `<span class="aside">${c.aside}</span>` : ''}</div>
           <div class="dock glass">${this.dockHtml()}</div>
         </div>
@@ -354,7 +356,8 @@ export class SceneView implements View {
       this.el.querySelectorAll<HTMLElement>('[data-bind="intensity"]').forEach((n) => {
         n.style.width = `${Math.round(value * 100)}%`;
       });
-    } else this.bind(key, value);
+    } else if (key === 'embers') this.el.classList.toggle('is-embers', value > 0);
+    else this.bind(key, value);
   }
 
   private refreshLabels() {
@@ -492,8 +495,10 @@ export class SceneView implements View {
   private readonly onSceneTap = (e: PointerEvent) => {
     if (this.blocking) return;
     const [x, y] = this.host.toScene(e.clientX, e.clientY);
-    if (this.fire) this.fire.addLogByHand(settings().wood);
-    else this.scene.tap(x, y);
+    if (this.fire) {
+      // 불멍: a tap on the fire stirs it; logs go in with the dock button or by dragging
+      if (!this.fire.pokeAt(x, y)) return;
+    } else this.scene.tap(x, y);
     if (this.aquarium) this.feedToast();
     this.el.classList.add('hint-done');
   };
