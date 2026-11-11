@@ -1,0 +1,78 @@
+/* 불멍 v2 시안 — mong.css 위에 얹는 새 부품. 여기 있는 것은 아직 src/ 에 없어요. */
+
+/* ---------- board: brief ---------- */
+.brief {
+  display: grid;
+  grid-template-columns: 1.1fr 1.5fr 1fr;
+  gap: 56px;
+  padding: 56px;
+  border-radius: 28px;
+  background: var(--board-panel);
+  border: 1px solid var(--board-line);
+}
+.brief h1 { margin: 26px 0 14px; font: 700 40px/1.2 var(--font); letter-spacing: -0.03em; }
+.brief .lead { margin: 0 0 22px; font: 500 18px/1.6 var(--font); color: var(--board-dim); }
+.brief h3 { margin: 0 0 18px; font: 700 13px/1 var(--font); letter-spacing: 0.06em; color: var(--board-dim); }
+.changes { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.changes li { padding: 18px 20px; border-radius: 16px; background: rgba(255, 255, 255, 0.04); }
+.changes b { display: block; margin-bottom: 6px; font: 700 16px/1.3 var(--font); }
+.changes span { font: 500 14px/1.6 var(--font); color: var(--board-dim); }
+.changes em { display: block; margin-bottom: 8px; font: 600 12px/1 var(--font); font-style: normal; color: var(--fire-300); }
+.brief .not-in-code ul { margin: 6px 0 0; padding-left: 18px; }
+.brief .not-in-code li { margin-bottom: 3px; }
+.frame-tag { position: absolute; z-index: 5; top: 104px; left: 50%; transform: translateX(-50%); padding: 7px 12px; border-radius: var(--r-pill); white-space: nowrap; font: 700 12px/1 var(--font); color: var(--ui-ink); background: var(--ui-glass-strong); border: 1px solid var(--ui-line); }
+
+/* ---------- 장작 버튼: 고른 나무 + 넣기 ---------- */
+.log-art.mini { width: 30px; height: 10px; border-radius: 5px; box-shadow: none; }
+.log-art.mini::before { display: none; }
+.log-art.mini::after { width: 7px; right: -1px; }
+.wood-split {
+  flex: 1; height: 52px; display: flex; overflow: hidden;
+  border-radius: var(--r-pill);
+  color: var(--accent-ink);
+  background: linear-gradient(180deg, var(--accent-soft), var(--accent));
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--accent) 45%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+.wood-split .pick {
+  display: flex; align-items: center; gap: 7px; padding: 0 6px 0 14px;
+  font: 700 13px/1 var(--font); white-space: nowrap;
+  background: color-mix(in srgb, var(--accent-ink) 13%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--accent-ink) 24%, transparent);
+}
+.wood-split .pick .ico { width: 14px; height: 14px; stroke-width: 2.4; opacity: 0.7; }
+.wood-split .pick.open { background: color-mix(in srgb, var(--accent-ink) 30%, transparent); }
+/* mong.css 의 홈 카드용 .go(40×40 원)가 같이 걸려서 '넣기'만 6px 위로 떠 있었어요. 크기를 풀어서 '고른 나무'와 같은 높이로 맞춰요. */
+.wood-split .go { flex: 1; width: auto; height: auto; border-radius: 0; display: flex; align-items: center; justify-content: center; gap: 6px; font: 700 16px/1 var(--font); }
+
+/* ---------- 장작 고르기 트레이 v2 ---------- */
+.tray2 { left: 8px; right: 8px; bottom: 8px; padding: 10px 14px 24px; border-radius: var(--r-sheet); }
+.tray2 .tray-head { margin-bottom: 14px; }
+.woods2 { display: flex; gap: 8px; }
+.wood2 { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 18px 10px 12px; border-radius: 20px; background: var(--ui-fill); text-align: center; }
+.wood2.on { background: color-mix(in srgb, var(--accent) 16%, transparent); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.wood2 b { margin: 12px 0 5px; font: 700 15px/1 var(--font); }
+.wood2 .say { min-height: 30px; font: 500 11.5px/1.3 var(--font); color: var(--ui-dim); }
+.traits { width: 100%; margin-top: 10px; padding-top: 10px; display: grid; gap: 7px; border-top: 1px solid var(--ui-line); }
+.trait { display: flex; align-items: center; justify-content: space-between; font: 500 11px/1 var(--font); color: var(--ui-faint); }
+.dots { display: flex; gap: 3px; }
+.dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.16); }
+.dots i.f { background: var(--accent); }
+.tend-row { margin-top: 10px; padding: 13px 14px 13px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-radius: 18px; background: var(--ui-fill); }
+.tend-row b { display: block; margin-bottom: 4px; font: 700 14px/1 var(--font); }
+.tend-row small { font: 500 12px/1.3 var(--font); color: var(--ui-dim); }
+.switch { position: relative; flex: none; width: 46px; height: 28px; border-radius: 14px; background: var(--accent); }
+.switch::after { content: ""; position: absolute; top: 3px; right: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4); }
+
+/* ---------- 뒤적이기 ---------- */
+.poke-ring { left: 50%; top: 420px; width: 76px; height: 76px; margin-left: -38px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.7); background: rgba(255, 255, 255, 0.14); pointer-events: none; animation: poke 5s var(--ease) infinite; }
+@keyframes poke { 0%, 100% { transform: scale(0.7); opacity: 0; } 4% { transform: scale(0.8); opacity: 1; } 22% { transform: scale(1.5); opacity: 0; } }
+
+/* ---------- 데스크톱: 장작이 독에 나와 있어요 ---------- */
+.wood-chips { display: flex; gap: 4px; padding: 4px; border-radius: var(--r-pill); background: var(--ui-fill); }
+.wood-chip { height: 40px; padding: 0 14px 0 12px; display: flex; align-items: center; gap: 8px; border-radius: var(--r-pill); font: 600 14px/1 var(--font); color: var(--ui-dim); }
+.wood-chip.on { background: linear-gradient(180deg, var(--accent-soft), var(--accent)); color: var(--accent-ink); font-weight: 700; }
+.wood-chip kbd { margin-left: 2px; }
+.wood-chip.on kbd { background: rgba(0, 0, 0, 0.1); border-color: rgba(0, 0, 0, 0.16); color: var(--accent-ink); }
+
+/* 독이 넓어져서 단축키 안내는 오른쪽에 세로로 쌓아요 */
+.d-keys.stack { bottom: 34px; flex-direction: column; align-items: flex-end; gap: 9px; }

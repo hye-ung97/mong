@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="doan:canvas" content="fire-v2">
+<meta name="doan:width" content="2800">
+<title>불멍 v2 시안</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/mong.css">
+<link rel="stylesheet" href="../assets/fire-v2.css">
+</head>
+<body class="board theme-fire">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-timer" viewBox="0 0 24 24"><path d="M10 2h4"/><path d="m12 14 3-3"/><circle cx="12" cy="14" r="8"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></symbol>
+    <symbol id="i-max" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
+    <symbol id="i-log" viewBox="0 0 24 24"><path d="M5.5 8.5h11a3.5 3.5 0 0 1 0 7h-11a3.5 3.5 0 0 1 0-7z"/><ellipse cx="16.5" cy="12" rx="1.4" ry="2"/><path d="M4.5 12h6"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-4 0v0M14 10V4a2 2 0 0 0-4 0v2M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></symbol>
+    <symbol id="i-status" viewBox="0 0 70 12">
+      <g fill="currentColor" stroke="none">
+        <rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4.5" y="6" width="3" height="6" rx="1"/><rect x="9" y="3.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="1" width="3" height="11" rx="1"/>
+        <path d="M30 3.2a10 10 0 0 1 13 0l-1.4 1.5a8 8 0 0 0-10.2 0zM32.4 5.9a6.4 6.4 0 0 1 8.2 0l-1.5 1.5a4.2 4.2 0 0 0-5.2 0zM36.5 11.5l-2.1-2.2a3 3 0 0 1 4.2 0z"/>
+        <rect x="49" y="1" width="18" height="10" rx="3" fill="none" stroke="currentColor" stroke-opacity=".45"/>
+        <rect x="51" y="3" width="14" height="6" rx="1.6"/>
+        <rect x="68" y="4.2" width="1.6" height="3.6" rx=".8" opacity=".45"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ================= 시안 개요 ================= -->
+<section class="brief" data-doan-frame="brief" data-doan-title="불멍 v2 · 개요">
+  <div>
+    <div class="ov-brand"><span class="orb lg"></span>mong · 불멍 v2</div>
+    <h1>진짜 모닥불 앞에 앉은 것처럼</h1>
+    <p class="lead">불꽃을 새로 그리고, 숨어 있던 장작 고르기를 꺼내고, 불을 돌보는 손맛을 하나 더했어요.</p>
+    <div class="ov-meta"><span>디자인 시안</span><span>2026.11.11</span><span>보드에서 직접 눌러 볼 수 있어요</span></div>
+  </div>
+  <div>
+    <h3>바뀌는 것</h3>
+    <ul class="changes">
+      <li><em>불꽃</em><b>불길이 갈라지고 날려요</b><span>지금은 둥근 빛을 겹쳐서 뭉게뭉게 보여요. v2는 불길이 혀처럼 갈라지고, 끝이 떨어져 나가고, 바람에 기울어요.</span></li>
+      <li><em>빛</em><b>주변이 불빛을 받아요</b><span>땅 · 돌 · 나무가 불빛에 따라 같이 일렁이고, 돌 그림자가 바깥으로 길게 져요. 불이 약해지면 밤이 가까이 와요.</span></li>
+      <li><em>장작</em><b>고르기를 버튼에 꺼냈어요</b><span>지금은 ‘장작 넣기’를 꾹 눌러야만 나와요. 버튼 왼쪽에 고른 나무를 늘 보여주고, 누르면 트레이가 열려요.</span></li>
+      <li><em>돌보기</em><b>뒤적이기와 잔불</b><span>불을 톡 치면 뒤적여서 불티가 날려요. 장작이 다 타면 숯이 숨 쉬는 잔불이 남아요.</span></li>
+    </ul>
+  </div>
+  <div>
+    <div class="not-in-code" data-doan-id="brief-not-in-code">
+      <b>아직 코드에 없는 것</b>
+      지금 코드에는 장작 3종, 끌어 넣기 트레이, 모바일의 ‘고른 나무 + 넣기’ 버튼, 데스크톱 장작 칩까지 있어요. 폰 가로 화면은 시안이 없어서 아직 꾹 눌러서 골라요. 아래는 시안에만 있어요.
+      <ul>
+        <li>새 불꽃 · 불빛 · 숯 그리기 (<code>.doan/assets/fire-v2.js</code>)</li>
+        <li>트레이의 나무 성격 점수, ‘알아서 넣기’ 위치</li>
+        <li>뒤적이기, 잔불 안내, 불 상태 이름</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 01 모바일 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">01</span><h2>불멍 v2 · 모바일</h2><p>더 가까이 앉은 시점. 불이 화면 폭의 4분의 3을 채워요</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-fire" data-doan-frame="fire2-mobile" data-doan-implements="src/views/scene-view.ts" data-doan-title="불멍 v2 · 기본">
+      <canvas class="scene" data-fire2 data-woods="oak,pine,birch"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass"><a class="on">불멍</a><a>비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="ui m-bottom">
+        <div class="m-status">
+          <span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span><b data-stat="stage">활활</b> · 장작 <b data-stat="logs">3</b>개</span>
+          <span class="meter">불 세기<span class="bar"><i data-stat="intensity" data-stat-mode="width"></i></span></span>
+        </div>
+        <div class="dock glass" data-doan-id="fire2-dock">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <div class="wood-split" data-doan-id="fire2-wood-split">
+            <button class="pick" aria-label="장작 고르기"><span class="log-art mini" data-wood-art></span><span data-wood-name>참나무</span><svg class="ico"><use href="#i-chev"/></svg></button>
+            <button class="go" data-fire2-act="add"><svg class="ico"><use href="#i-log"/></svg>넣기</button>
+          </div>
+          <button class="icon-btn" aria-label="소리 조절"><svg class="ico"><use href="#i-sliders"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-fire" data-wood="pine" data-doan-frame="fire2-tray" data-doan-implements="src/views/scene-view.ts" data-doan-title="불멍 v2 · 장작 고르기">
+      <canvas class="scene" data-fire2 data-fy="0.47" data-scale="0.98" data-kinds="oak,pine,birch" data-hold></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass"><a class="on">불멍</a><a>비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="ui tray2 glass-strong" data-doan-id="fire2-tray-sheet">
+        <div class="grab"></div>
+        <div class="tray-head"><h4>장작 고르기</h4><span>눌러서 넣거나, 끌어다 불에 놓아요</span></div>
+        <div class="woods2">
+          <button class="wood2" data-fire2-act="add" data-wood="oak" data-label="참나무">
+            <span class="log-art"></span><b>참나무</b><span class="say">묵직하게<br>오래 타요</span>
+            <span class="traits">
+              <span class="trait">오래<span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i></span></span>
+              <span class="trait">타닥<span class="dots"><i class="f"></i><i></i><i></i></span></span>
+              <span class="trait">밝기<span class="dots"><i class="f"></i><i class="f"></i><i></i></span></span>
+            </span>
+          </button>
+          <button class="wood2 on" data-fire2-act="add" data-wood="pine" data-label="소나무">
+            <span class="log-art pine"></span><b>소나무</b><span class="say">타닥타닥<br>불티가 많이 튀어요</span>
+            <span class="traits">
+              <span class="trait">오래<span class="dots"><i class="f"></i><i class="f"></i><i></i></span></span>
+              <span class="trait">타닥<span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i></span></span>
+              <span class="trait">밝기<span class="dots"><i class="f"></i><i class="f"></i><i></i></span></span>
+            </span>
+          </button>
+          <button class="wood2" data-fire2-act="add" data-wood="birch" data-label="자작나무">
+            <span class="log-art birch"></span><b>자작나무</b><span class="say">불꽃이 높고<br>환해요</span>
+            <span class="traits">
+              <span class="trait">오래<span class="dots"><i class="f"></i><i></i><i></i></span></span>
+              <span class="trait">타닥<span class="dots"><i class="f"></i><i class="f"></i><i></i></span></span>
+              <span class="trait">밝기<span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i></span></span>
+            </span>
+          </button>
+        </div>
+        <div class="tend-row" data-doan-id="fire2-tend"><span><b>장작 알아서 넣기</b><small>불이 약해지면 고른 장작을 하나씩 넣어요</small></span><span class="switch"></span></div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-fire" data-doan-frame="fire2-poke" data-doan-implements="src/views/scene-view.ts" data-doan-title="불멍 v2 · 뒤적이기">
+      <canvas class="scene" data-fire2 data-auto-poke="5" data-hold></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass"><a class="on">불멍</a><a>비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="ui poke-ring" data-doan-id="fire2-poke-ring"></div>
+      <div class="ui m-bottom">
+        <div class="hint glass" data-doan-id="fire2-poke-hint"><svg class="ico sm"><use href="#i-hand"/></svg>불을 톡 치면 뒤적여요</div>
+        <div class="m-status">
+          <span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span><b data-stat="stage">활활</b> · 장작 <b data-stat="logs">3</b>개</span>
+          <span class="meter">불 세기<span class="bar"><i data-stat="intensity" data-stat-mode="width"></i></span></span>
+        </div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <div class="wood-split">
+            <button class="pick" aria-label="장작 고르기"><span class="log-art mini" data-wood-art></span><span data-wood-name>참나무</span><svg class="ico"><use href="#i-chev"/></svg></button>
+            <button class="go" data-fire2-act="add"><svg class="ico"><use href="#i-log"/></svg>넣기</button>
+          </div>
+          <button class="icon-btn" aria-label="소리 조절"><svg class="ico"><use href="#i-sliders"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-fire" data-doan-frame="fire2-embers" data-doan-implements="src/views/scene-view.ts" data-doan-title="불멍 v2 · 잔불">
+      <canvas class="scene" data-fire2 data-state="embers" data-hold></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass"><a class="on">불멍</a><a>비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="ui m-bottom">
+        <div class="hint glass" data-doan-id="fire2-embers-hint"><svg class="ico sm"><use href="#i-log"/></svg>장작을 넣으면 다시 타올라요</div>
+        <div class="m-status">
+          <span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span><b data-stat="stage">잔불</b> · 장작 <b data-stat="logs">0</b>개</span>
+          <span class="meter">불 세기<span class="bar"><i data-stat="intensity" data-stat-mode="width"></i></span></span>
+        </div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <div class="wood-split">
+            <button class="pick" aria-label="장작 고르기"><span class="log-art mini" data-wood-art></span><span data-wood-name>참나무</span><svg class="ico"><use href="#i-chev"/></svg></button>
+            <button class="go" data-fire2-act="add"><svg class="ico"><use href="#i-log"/></svg>넣기</button>
+          </div>
+          <button class="icon-btn" aria-label="소리 조절"><svg class="ico"><use href="#i-sliders"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes">
+      <h4>장작 고르기</h4>
+      <ul>
+        <li>버튼을 둘로 나눴어요. 왼쪽은 <b>지금 고른 나무</b>, 오른쪽은 <b>넣기</b>. 한 번 누르면 전처럼 바로 들어가요.</li>
+        <li>왼쪽을 누르면 트레이가 열려요. 꾹 누르기는 없애요.</li>
+        <li>나무마다 <b>껍질 · 불꽃 · 불티</b>가 달라요. 참나무는 낮고 잔잔하게, 소나무는 일렁임이 크고 불티가 많이, 자작나무는 높고 환하게.</li>
+        <li>점 3개는 코드의 값(타는 시간 · 불티 · 밝기)을 그대로 옮긴 거예요.</li>
+        <li>‘장작 알아서 넣기’를 소리 시트에서 여기로 옮겼어요. 알아서 넣을 때도 고른 나무를 써요.</li>
+      </ul>
+      <h4>뒤적이기</h4>
+      <ul>
+        <li>불을 톡 치면 숯이 밝아지고 불티가 한꺼번에 날려요. 불꽃이 2~3초 솟았다 가라앉아요.</li>
+        <li>지금은 장면을 누르면 장작이 들어가요. v2에서는 <b>누르면 뒤적이기, 장작은 버튼과 끌어 넣기</b>로 나눠요.</li>
+      </ul>
+      <h4>잔불</h4>
+      <ul>
+        <li>‘알아서 넣기’를 끄고 두면 불꽃이 잦아들고 숯만 남아요. 숯은 하나씩 따로 숨 쉬듯 밝아졌다 어두워져요.</li>
+        <li>주변 불빛도 같이 줄어서 밤이 가까이 와요. 재촉하지 않고, 안내 한 줄만 보여줘요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 02 데스크톱 · 비교 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">02</span><h2>데스크톱 · 지금과 비교</h2><p>넓은 화면에서는 장작 세 가지가 독에 바로 나와 있어요</p></div>
+  <div class="row-body">
+
+    <div class="screen desk theme-fire" data-wood="oak" data-doan-frame="fire2-desktop" data-doan-implements="src/views/scene-view.ts" data-doan-title="불멍 v2 · 데스크톱">
+      <canvas class="scene" data-fire2 data-woods="oak,pine,birch"></canvas>
+      <div class="ui d-top">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <nav class="tabs glass"><a class="on">불멍</a><a>비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="전체화면"><svg class="ico"><use href="#i-max"/></svg></button>
+      </div>
+      <div class="ui d-now">
+        <strong><span class="eq"><i></i><i></i><i></i><i></i></span>장작 타는 소리</strong>
+        <span class="meter"><span><b data-stat="stage">활활</b> · 장작 <b data-stat="logs">3</b>개</span><span class="bar"><i data-stat="intensity" data-stat-mode="width"></i></span></span>
+      </div>
+      <div class="ui d-dock glass" data-doan-id="fire2-d-dock">
+        <button class="chip-btn"><svg class="ico"><use href="#i-timer"/></svg>30:00</button>
+        <span class="sep"></span>
+        <div class="wood-chips" data-doan-id="fire2-d-woods">
+          <button class="wood-chip on" data-fire2-act="add" data-wood="oak"><span class="log-art mini"></span>참나무</button>
+          <button class="wood-chip" data-fire2-act="add" data-wood="pine"><span class="log-art mini pine"></span>소나무</button>
+          <button class="wood-chip" data-fire2-act="add" data-wood="birch"><span class="log-art mini birch"></span>자작나무</button>
+        </div>
+        <span class="sep"></span>
+        <div class="vol"><svg class="ico"><use href="#i-volume"/></svg><div class="slider"><i style="width:72%"></i><b style="left:72%"></b></div></div>
+      </div>
+      <div class="ui d-keys stack"><span><kbd>Space</kbd> 고른 장작 넣기</span><span>불을 클릭하면 뒤적여요</span></div>
+    </div>
+
+    <div class="screen phone theme-fire" data-doan-frame="fire-now" data-doan-implements="src/scenes/fire.ts" data-doan-title="지금 · 구현된 불멍">
+      <canvas class="scene" data-scene="fire"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs glass"><a class="on">불멍</a><a>비멍</a><a>물멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <div class="frame-tag">지금 코드의 불멍</div>
+      <div class="ui m-bottom">
+        <div class="m-status">
+          <span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>타닥타닥 · 장작 <b data-stat="logs">3</b>개</span>
+          <span class="meter">불 세기<span class="bar"><i data-stat="intensity" data-stat-mode="width"></i></span></span>
+        </div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="타이머"><svg class="ico"><use href="#i-timer"/></svg></button>
+          <button class="primary" data-action="add-log"><svg class="ico"><use href="#i-log"/></svg>장작 넣기</button>
+          <button class="icon-btn" aria-label="소리 조절"><svg class="ico"><use href="#i-sliders"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes">
+      <h4>데스크톱</h4>
+      <ul>
+        <li>자리가 넉넉해서 장작 세 가지를 독에 꺼냈어요. <b>누른 나무가 바로 들어가고</b>, 그 나무가 고른 나무가 돼요.</li>
+        <li><kbd>Space</kbd>는 마지막에 고른 나무를 넣어요.</li>
+      </ul>
+      <h4>장면이 달라진 곳</h4>
+      <ul>
+        <li><b>불꽃</b>: 장작 위에서 따로 올라와 가운데로 모여요. 뿌리는 옅어서 장작이 비쳐 보여요.</li>
+        <li><b>장작</b>: 불 한가운데부터 까맣게 타고, 탄 자리에 재가 앉아요. 나무마다 껍질이 달라요.</li>
+        <li><b>숯</b>: 바닥의 숯 조각이 하나씩 따로 밝아졌다 어두워져요.</li>
+        <li><b>불티</b>: 짧은 꼬리를 끌며 바람 방향으로 날려요.</li>
+        <li><b>배경</b>: 지평선을 올리고 나무를 키워서 숲 속 빈터에 앉은 느낌으로. 불 쪽 나뭇가지는 불빛을 받아요.</li>
+      </ul>
+      <h4>그대로인 것</h4>
+      <ul>
+        <li>장작 3종의 타는 시간 · 소리, 끌어 넣기, 최대 5개, 타이머와 소리 시트.</li>
+        <li>소리는 그대로예요. 뒤적일 때는 지금 있는 불티 ‘파삭’ 소리를 써요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<script src="../assets/mong-scenes.js"></script>
+<script src="../assets/fire-v2.js"></script>
+</body>
+</html>
