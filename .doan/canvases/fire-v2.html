@@ -54,9 +54,8 @@
   <div>
     <div class="not-in-code" data-doan-id="brief-not-in-code">
       <b>아직 코드에 없는 것</b>
-      지금 코드에는 장작 3종, 끌어 넣기 트레이, 모바일의 ‘고른 나무 + 넣기’ 버튼, 데스크톱 장작 칩까지 있어요. 폰 가로 화면은 시안이 없어서 아직 꾹 눌러서 골라요. 아래는 시안에만 있어요.
+      지금 코드에는 새 불꽃 · 불빛 · 숯 그리기(<code>src/scenes/fire.ts</code>), 장작 3종, 끌어 넣기 트레이, 모바일의 ‘고른 나무 + 넣기’ 버튼, 데스크톱 장작 칩까지 있어요. 폰 가로 화면은 시안이 없어서 아직 꾹 눌러서 골라요. 아래는 시안에만 있어요.
       <ul>
-        <li>새 불꽃 · 불빛 · 숯 그리기 (<code>.doan/assets/fire-v2.js</code>)</li>
         <li>트레이의 나무 성격 점수, ‘알아서 넣기’ 위치</li>
         <li>뒤적이기, 잔불 안내, 불 상태 이름</li>
       </ul>
@@ -214,7 +213,7 @@
 
 <!-- ================= 02 데스크톱 · 비교 ================= -->
 <section class="row">
-  <div class="row-head"><span class="row-no">02</span><h2>데스크톱 · 지금과 비교</h2><p>넓은 화면에서는 장작 세 가지가 독에 바로 나와 있어요</p></div>
+  <div class="row-head"><span class="row-no">02</span><h2>데스크톱 · 이전과 비교</h2><p>넓은 화면에서는 장작 세 가지가 독에 바로 나와 있어요</p></div>
   <div class="row-body">
 
     <div class="screen desk theme-fire" data-wood="oak" data-doan-frame="fire2-desktop" data-doan-implements="src/views/scene-view.ts" data-doan-title="불멍 v2 · 데스크톱">
@@ -242,7 +241,7 @@
       <div class="ui d-keys stack"><span><kbd>Space</kbd> 고른 장작 넣기</span><span>불을 클릭하면 뒤적여요</span></div>
     </div>
 
-    <div class="screen phone theme-fire" data-doan-frame="fire-now" data-doan-implements="src/scenes/fire.ts" data-doan-title="지금 · 구현된 불멍">
+    <div class="screen phone theme-fire" data-doan-frame="fire-now" data-doan-title="이전 · v1 불멍">
       <canvas class="scene" data-scene="fire"></canvas>
       <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
       <div class="ui m-top">
@@ -250,7 +249,7 @@
         <nav class="tabs glass"><a class="on">불멍</a><a>비멍</a><a>물멍</a></nav>
         <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
       </div>
-      <div class="frame-tag">지금 코드의 불멍</div>
+      <div class="frame-tag">v2 이전의 불멍</div>
       <div class="ui m-bottom">
         <div class="m-status">
           <span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>타닥타닥 · 장작 <b data-stat="logs">3</b>개</span>
