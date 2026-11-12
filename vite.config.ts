@@ -1,7 +1,15 @@
+import { readdirSync } from 'node:fs';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
+/** Every recording, e.g. "sounds/fire/bed.m4a" — the installed app downloads these in the background (src/lib/offline.ts). */
+const soundFiles = readdirSync('public/sounds', { recursive: true, encoding: 'utf8' })
+  .filter((f) => /\.(m4a|mp3)$/.test(f))
+  .map((f) => `sounds/${f.replaceAll('\\', '/')}`)
+  .sort();
+
 export default defineConfig({
+  define: { __SOUND_FILES__: JSON.stringify(soundFiles) },
   plugins: [
     VitePWA({
       // A new version installs in the background and takes over on the next visit,
@@ -26,7 +34,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // App shell is precached. Recordings (11MB) are not: each one is kept the first time it plays.
+        // App shell is precached. Recordings (11MB) are not: each one is kept the first time it plays,
+        // and the installed app fetches the rest in the background (src/lib/offline.ts).
         globPatterns: ['**/*.{js,css,html,svg,png}'],
         runtimeCaching: [
           {
