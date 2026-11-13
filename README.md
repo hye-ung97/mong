@@ -36,7 +36,7 @@ src/
   app.ts               라우팅, 화면 전환
   views/
     home-view.ts       홈: 움직이는 미리보기 카드 4장
-    scene-view.ts      장면 화면: 도크, 소리·타이머 시트, 장작 트레이, 몰입 모드, 타이머 종료, 단축키
+    scene-view.ts      장면 화면: 도크, 설정 시트(타이머 · 소리 섞기), 장작 트레이, 몰입 모드, 타이머 종료, 단축키
   scenes/              Canvas 2D 장면 (fire, rain, aquarium, sea, pond, sand, star) + 공용 루프(host.ts)
   audio/
     engine.ts          AudioContext, 장면 간 크로스페이드, 홈 미리듣기, 타이머 페이드

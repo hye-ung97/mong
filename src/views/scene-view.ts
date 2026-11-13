@@ -39,6 +39,12 @@ const WOODS: readonly { id: WoodKind; label: string; desc: string }[] = [
 const TIMER_CHOICES = [15, 30, 60, 0] as const;
 const timerLabel = (m: number) => (m === 0 ? '계속' : m === 60 ? '1시간' : `${m}분`);
 
+/**
+ * What the settings button says beside its sliders icon on wide screens: 설정, or the time left while a timer runs.
+ * Phones show the icon alone, with a dot while a timer runs.
+ */
+const sheetLabel = (on: boolean, left: number) => (on ? formatClock(left) : '설정');
+
 interface KeyHint { keys?: string[]; text: string }
 interface Copy {
   /** mobile status line, left */
@@ -333,13 +339,12 @@ export class SceneView implements View {
         break;
     }
     return `
-      <button class="dock-btn" data-act="sheet" aria-label="소리와 타이머">${icon('timer')}<span class="only-d" data-bind="timer">타이머</span></button>
+      <button class="dock-btn" data-act="sheet" aria-label="설정">${icon('sliders')}<span class="only-d" data-bind="timer"></span></button>
       <span class="sep only-d"></span>
       ${main}
       ${extra}
       <span class="sep only-d"></span>
-      <div class="vol only-d"><button class="vol-btn" data-act="mute" data-bind-mute aria-label="소리 끄기">${icon('volume')}</button><input class="range" type="range" min="0" max="100" data-act="volume" aria-label="음량"></div>
-      ${this.id === 'rain' || this.id === 'pond' || this.id === 'sand' || this.id === 'star' ? '' : `<button class="dock-btn only-m" data-act="sheet" aria-label="소리 섞기">${icon('sliders')}</button>`}`;
+      <div class="vol only-d"><button class="vol-btn" data-act="mute" data-bind-mute aria-label="소리 끄기">${icon('volume')}</button><input class="range" type="range" min="0" max="100" data-act="volume" aria-label="음량"></div>`;
   }
 
   private railHtml() {
@@ -360,7 +365,7 @@ export class SceneView implements View {
       <div class="rail-group">${tabs}</div>
       <button class="rail-main" data-act="${m.act}" aria-label="${m.label}">${icon(m.icon)}</button>
       <div class="rail-group">
-        <button class="icon-btn" data-act="sheet" aria-label="소리와 타이머">${icon('timer')}</button>
+        <button class="icon-btn" data-act="sheet" aria-label="설정">${icon('sliders')}</button>
         <button class="icon-btn" data-act="mute" data-bind-mute aria-label="소리 끄기">${icon('volume')}</button>
       </div>`;
   }
@@ -380,9 +385,9 @@ export class SceneView implements View {
           ? `<h4>화면</h4><label class="switch-row"><span><b>별자리 알려 주기</b><small>가끔 별자리 하나를 이어 이름을 보여 줘요</small></span><input class="switch" type="checkbox" data-act="star-guide" ${s.starGuide ? 'checked' : ''}></label>`
           : '';
     return `
-      <div class="sheet glass-strong" role="dialog" aria-modal="true" aria-label="소리와 타이머">
+      <div class="sheet glass-strong" role="dialog" aria-modal="true" aria-label="설정">
         <div class="grab"></div>
-        <div class="sheet-head"><h3>소리와 타이머</h3><button class="icon-btn" data-act="close" aria-label="닫기">${icon('x')}</button></div>
+        <div class="sheet-head"><h3>설정</h3><button class="icon-btn" data-act="close" aria-label="닫기">${icon('x')}</button></div>
         <p class="sub" data-bind="timer-sub"></p>
         <h4>타이머</h4>
         <div class="chips" role="radiogroup" aria-label="타이머">${TIMER_CHOICES.map((m) =>
@@ -542,11 +547,15 @@ export class SceneView implements View {
   private refreshTimer() {
     const on = timer.phase !== 'off';
     const left = timer.remaining;
-    this.bind('timer', on ? formatClock(left) : '타이머');
+    const mins = Math.max(1, Math.ceil(left / 60_000));
+    this.bind('timer', sheetLabel(on, left));
     this.bind('clock', on ? formatClock(left) : '');
     this.el.classList.toggle('has-timer', on);
+    // phones show only the icon and a dot, so the button's name carries the time left
+    this.el.querySelectorAll('[data-act="sheet"]').forEach((b) =>
+      b.setAttribute('aria-label', on ? `설정, 타이머 ${mins}분 남음` : '설정'));
     this.bind('timer-sub', on
-      ? `${Math.max(1, Math.ceil(left / 60_000))}분 남았어요. 끝나기 전에 소리가 천천히 작아져요.`
+      ? `${mins}분 남았어요. 끝나기 전에 소리가 천천히 작아져요.`
       : '타이머가 끝나면 소리가 3분 동안 천천히 작아져요.');
     this.el.querySelectorAll<HTMLButtonElement>('[data-act="timer"]').forEach((b) => {
       const sel = Number(b.dataset.value) === (on ? timer.minutes : 0);
