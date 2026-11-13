@@ -7,16 +7,18 @@ import { Pond } from './pond';
 import { Rain } from './rain';
 import { Sand } from './sand';
 import { Sea } from './sea';
+import { Star } from './star';
 
-export type SceneId = 'fire' | 'rain' | 'aquarium' | 'sea' | 'pond' | 'sand';
+export type SceneId = 'fire' | 'rain' | 'aquarium' | 'sea' | 'pond' | 'sand' | 'star';
 export type WaterId = 'aquarium' | 'sea' | 'pond';
-export type GroupId = 'fire' | 'rain' | 'water' | 'sand';
+export type GroupId = 'fire' | 'rain' | 'water' | 'sand' | 'star';
 
 export const GROUPS: readonly { id: GroupId; label: string; icon: IconName }[] = [
   { id: 'fire', label: '불멍', icon: 'flame' },
   { id: 'rain', label: '비멍', icon: 'rain' },
   { id: 'water', label: '물멍', icon: 'fish' },
   { id: 'sand', label: '모래멍', icon: 'sand' },
+  { id: 'star', label: '별멍', icon: 'star' },
 ];
 
 export const WATER: readonly { id: WaterId; label: string }[] = [
@@ -25,7 +27,7 @@ export const WATER: readonly { id: WaterId; label: string }[] = [
   { id: 'pond', label: '연못' },
 ];
 
-export const SCENE_IDS: readonly SceneId[] = ['fire', 'rain', 'aquarium', 'sea', 'pond', 'sand'];
+export const SCENE_IDS: readonly SceneId[] = ['fire', 'rain', 'aquarium', 'sea', 'pond', 'sand', 'star'];
 
 export const isWater = (id: SceneId): id is WaterId => id === 'aquarium' || id === 'sea' || id === 'pond';
 export const groupOf = (id: SceneId): GroupId => (isWater(id) ? 'water' : id);
@@ -52,5 +54,10 @@ export function createScene(id: SceneId, variant: SceneVariant, s: Settings): Sc
       return variant === 'card'
         ? new Sand(variant, { speed: 1 })
         : new Sand(variant, { speed: s.sandSpeed, palette: s.sandPalette, autoEmpty: s.sandAutoEmpty });
+    case 'star':
+      // the home card is the season outside at midnight, without the constellation names
+      return variant === 'card'
+        ? new Star(variant, { season: s.starSeason, phase: 'night', hold: true })
+        : new Star(variant, { season: s.starSeason, phase: s.starPhase, hold: s.starHold, fireflies: s.starFireflies, guide: s.starGuide });
   }
 }

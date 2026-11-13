@@ -14,6 +14,8 @@ import {
 } from '../scenes/registry';
 import { SAND_PALETTES, Sand, type SandPalette } from '../scenes/sand';
 import { Sea } from '../scenes/sea';
+import { STAR_PHASES, STAR_SEASONS, Star, type StarPhase } from '../scenes/star';
+import { starLayersFor } from '../audio/sounds/star';
 import { EQ, wordmark, type View } from './view';
 
 const IDLE_AFTER = 4000; // ms without input before the UI fades away
@@ -107,9 +109,26 @@ const COPY: Record<SceneId, Copy> = {
     keys: [{ keys: ['↑', '↓'], text: '속도 · <kbd>E</kbd> 비우기' }, { text: '화면을 끌면 모래가 따라와요' }],
     land: '모래멍',
   },
+  star: {
+    now: '<span class="now-on"><span data-bind="star-sound">풀벌레 소리</span> · <span data-bind="star-when">여름 초저녁</span></span><span class="now-hush" data-bind="star-hush"></span>',
+    aside: '별똥별 <b data-bind="meteors">0</b>개',
+    hint: '밝은 별을 누르면 별자리를 알려 줘요',
+    title: '<span class="now-on" data-bind="star-sound">풀벌레 소리</span><span class="now-hush">쉿, 숨죽였어요</span>',
+    sub: '<span data-bind="star-when">여름 초저녁</span> · 별똥별 <b data-bind="meteors">0</b>개',
+    keys: [{ keys: ['↑', '↓'], text: '밤 깊이 · <kbd>S</kbd> 계절 · <kbd>C</kbd> 별자리' }, { keys: ['Space'], text: '별똥별 · 밝은 별을 누르면 별자리' }],
+    land: '별멍',
+  },
 };
 
-const GROUP_ORDER: readonly GroupId[] = ['fire', 'rain', 'water', 'sand'];
+/** 별멍: what sounds in each season, and what goes quiet when the grass is touched. */
+const STAR_SOUND: Record<string, { now: string; hush: string }> = {
+  spring: { now: '개구리 소리', hush: '쉿, 개구리가 숨죽였어요' },
+  summer: { now: '풀벌레 소리', hush: '쉿, 풀벌레가 숨죽였어요' },
+  autumn: { now: '귀뚜라미 소리', hush: '쉿, 귀뚜라미가 숨죽였어요' },
+  winter: { now: '겨울바람 소리', hush: '' },
+};
+
+const GROUP_ORDER: readonly GroupId[] = ['fire', 'rain', 'water', 'sand', 'star'];
 
 const swatch = (p: SandPalette, cls = '') => `<span class="swatch pal-${p} ${cls}" aria-hidden="true"></span>`;
 
@@ -163,6 +182,7 @@ export class SceneView implements View {
     if (this.rain) this.setupRain();
     if (this.sea) this.setupSea();
     if (this.sand) this.setupSand();
+    if (this.star) this.setupStar();
 
     const audioTimer = window.setInterval(() => audio.update(id, this.scene.audioState()), AUDIO_STATE_EVERY);
     this.cleanups.push(() => window.clearInterval(audioTimer));
@@ -187,6 +207,7 @@ export class SceneView implements View {
   private get sea() { return this.scene instanceof Sea ? this.scene : null; }
   private get pond() { return this.scene instanceof Pond ? this.scene : null; }
   private get sand() { return this.scene instanceof Sand ? this.scene : null; }
+  private get star() { return this.scene instanceof Star ? this.scene : null; }
 
   private $<T extends Element = HTMLElement>(sel: string): T {
     const n = this.el.querySelector<T>(sel);
@@ -232,9 +253,9 @@ export class SceneView implements View {
           </div>
         </header>
         ${sub}
-        ${c.hint && (this.rain || this.sand) ? `<div class="hint hint-glass glass only-m">${icon('hand', 'sm')}${c.hint}</div>` : ''}
+        ${c.hint && (this.rain || this.sand || this.star) ? `<div class="hint hint-glass glass only-m">${icon('hand', 'sm')}${c.hint}</div>` : ''}
         <div class="bottom">
-          ${c.hint && !this.rain && !this.sand ? `<div class="hint glass only-m">${icon('hand', 'sm')}${c.hint}</div>` : ''}
+          ${c.hint && !this.rain && !this.sand && !this.star ? `<div class="hint glass only-m">${icon('hand', 'sm')}${c.hint}</div>` : ''}
           ${this.fire ? `<div class="hint hint-embers glass" role="status">${icon('log', 'sm')}장작을 넣으면 다시 타올라요</div>` : ''}
           <div class="m-status only-m"><span class="now">${EQ}${c.now}</span>${c.aside ? `<span class="aside">${c.aside}</span>` : ''}</div>
           <div class="dock glass">${this.dockHtml()}</div>
@@ -301,6 +322,15 @@ export class SceneView implements View {
             `<button role="radio" data-act="palette" data-value="${p.id}" aria-label="${p.label}" title="${p.label}">${swatch(p.id)}</button>`).join('')}</div>
           <button class="dock-btn only-d" data-act="sand-empty">${icon('sand')}<span>비우기</span></button>`;
         break;
+      case 'star':
+        // the lit time shows a pin while it is held; fireflies only in summer
+        main = `<div class="seg star-seg" role="group" aria-label="밤 깊이">${STAR_PHASES.map((p) =>
+          `<button data-act="star-phase" data-value="${p.id}">${p.label}${icon('pin', 'pin')}</button>`).join('')}</div>`;
+        extra = `
+          <button class="dock-btn star-flies" data-act="fireflies" aria-pressed="false" aria-label="반딧불이">${icon('firefly')}<span class="only-d">반딧불이</span></button>
+          <button class="dock-btn only-d" data-act="star-guide" aria-pressed="false" aria-label="별자리 알려 주기">${icon('star')}<span>별자리</span></button>
+          <button class="dock-btn" data-act="season" aria-label="계절 바꾸기">${icon('leaf')}<span class="only-d" data-bind="star-season">여름</span></button>`;
+        break;
     }
     return `
       <button class="dock-btn" data-act="sheet" aria-label="소리와 타이머">${icon('timer')}<span class="only-d" data-bind="timer">타이머</span></button>
@@ -309,7 +339,7 @@ export class SceneView implements View {
       ${extra}
       <span class="sep only-d"></span>
       <div class="vol only-d"><button class="vol-btn" data-act="mute" data-bind-mute aria-label="소리 끄기">${icon('volume')}</button><input class="range" type="range" min="0" max="100" data-act="volume" aria-label="음량"></div>
-      ${this.id === 'rain' || this.id === 'pond' || this.id === 'sand' ? '' : `<button class="dock-btn only-m" data-act="sheet" aria-label="소리 섞기">${icon('sliders')}</button>`}`;
+      ${this.id === 'rain' || this.id === 'pond' || this.id === 'sand' || this.id === 'star' ? '' : `<button class="dock-btn only-m" data-act="sheet" aria-label="소리 섞기">${icon('sliders')}</button>`}`;
   }
 
   private railHtml() {
@@ -323,6 +353,7 @@ export class SceneView implements View {
       sea: { act: 'wave-cycle', icon: 'waves', label: '파도 크기 바꾸기' },
       pond: { act: 'feed', icon: 'food', label: '먹이 주기' },
       sand: { act: 'sand-cycle', icon: 'sand', label: '모래 속도 바꾸기' },
+      star: { act: 'meteor', icon: 'star', label: '별똥별' },
     } as const;
     const m = main[this.id];
     return `
@@ -339,13 +370,15 @@ export class SceneView implements View {
     const mix = s.mix[this.id] ?? {};
     const rows = layersOf(this.id).map((l) => {
       const v = Math.round((mix[l.id] ?? l.def) * 100);
-      return `<label class="mix-row">${icon(l.icon, 'sm')}<span>${l.label}</span><input class="range" type="range" min="0" max="100" value="${v}" data-act="mix" data-layer="${l.id}" aria-label="${l.label} 크기"><span class="val">${v}</span></label>`;
+      return `<label class="mix-row" data-layer-row="${l.id}">${icon(l.icon, 'sm')}<span>${l.label}</span><input class="range" type="range" min="0" max="100" value="${v}" data-act="mix" data-layer="${l.id}" aria-label="${l.label} 크기"><span class="val">${v}</span></label>`;
     }).join('');
     const tend = this.fire
       ? `<label class="switch-row"><span><b>장작 알아서 넣기</b><small>불이 약해지면 장작을 하나씩 넣어요</small></span><input class="switch" type="checkbox" data-act="auto-tend" ${s.autoTend ? 'checked' : ''}></label>`
       : this.sand
         ? `<label class="switch-row"><span><b>가득 차면 저절로 비우기</b><small>끄면 가득 찼을 때 모래가 멈춰요</small></span><input class="switch" type="checkbox" data-act="auto-empty" ${s.sandAutoEmpty ? 'checked' : ''}></label>`
-        : '';
+        : this.star
+          ? `<h4>화면</h4><label class="switch-row"><span><b>별자리 알려 주기</b><small>가끔 별자리 하나를 이어 이름을 보여 줘요</small></span><input class="switch" type="checkbox" data-act="star-guide" ${s.starGuide ? 'checked' : ''}></label>`
+          : '';
     return `
       <div class="sheet glass-strong" role="dialog" aria-modal="true" aria-label="소리와 타이머">
         <div class="grab"></div>
@@ -416,6 +449,8 @@ export class SceneView implements View {
         n.style.width = `${Math.round(value * 100)}%`;
       });
     } else if (key === 'embers') this.el.classList.toggle('is-embers', value > 0);
+    else if (key === 'phase' || key === 'hold' || key === 'season') this.refreshLabels();
+    else if (key === 'hush') this.el.classList.toggle('is-hush', value > 0);
     else if (key === 'full') this.toast(value ? '가득 찼어요. 비우고 다시 쌓을게요' : '가득 찼어요. 비우기를 누르면 다시 쌓여요');
     else this.bind(key, value);
   }
@@ -448,6 +483,29 @@ export class SceneView implements View {
         b.setAttribute('aria-checked', String(on));
       });
       this.el.querySelectorAll<HTMLElement>('[data-bind-swatch]').forEach((n) => { n.innerHTML = swatch(pal); });
+    }
+    if (this.star) {
+      const st = this.star;
+      const season = SEASONS.find((x) => x.id === st.season)?.label ?? '';
+      const phase = STAR_PHASES.find((p) => p.id === st.phase)?.label ?? '';
+      this.el.dataset.season = st.season;
+      this.bind('star-season', season);
+      this.bind('star-when', `${season} ${phase}`);
+      this.bind('star-sound', STAR_SOUND[st.season].now);
+      this.bind('star-hush', STAR_SOUND[st.season].hush);
+      this.el.querySelectorAll<HTMLElement>('[data-act="star-phase"]').forEach((b) => {
+        const on = b.dataset.value === st.phase;
+        b.classList.toggle('on', on);
+        b.classList.toggle('held', on && st.hold);
+        b.setAttribute('aria-pressed', String(on));
+        b.setAttribute('aria-label', on ? `${b.textContent} (${st.hold ? '머무는 중, 누르면 다시 흘러가요' : '누르면 여기 머물러요'})` : `${b.textContent}로`);
+      });
+      this.el.querySelectorAll('[data-act="fireflies"]').forEach((b) => b.setAttribute('aria-pressed', String(st.fireflies)));
+      this.el.querySelectorAll('button[data-act="star-guide"]').forEach((b) => b.setAttribute('aria-pressed', String(st.guideOn)));
+      this.el.querySelectorAll<HTMLInputElement>('input[data-act="star-guide"]').forEach((b) => { b.checked = st.guideOn; });
+      // the sound sheet shows only the layers heard in this season
+      const heard = new Set(starLayersFor(STAR_SEASONS.indexOf(st.season)).map((l) => l.id));
+      this.el.querySelectorAll<HTMLElement>('[data-layer-row]').forEach((r) => { r.hidden = !heard.has(r.dataset.layerRow!); });
     }
     if (this.pond) {
       const on = this.pond.drizzle;
@@ -653,6 +711,60 @@ export class SceneView implements View {
     for (const type of ['pointerup', 'pointercancel']) this.listen(canvas, type, () => sea.walkEnd());
   }
 
+  /* ---------- 별멍: the grass under the controls ---------- */
+  private setupStar() {
+    const star = this.star!;
+    // the grass reaches up to just below the controls
+    const place = () => {
+      const view = this.el.getBoundingClientRect();
+      const tops = ['.m-status', '.dock']
+        .map((sel) => this.$(sel).getBoundingClientRect())
+        .filter((r) => r.height > 0)
+        .map((r) => r.top);
+      star.setFloor(tops.length ? Math.min(...tops) - view.top : null);
+    };
+    place();
+    this.listen(window, 'resize', place);
+  }
+
+  /** Tap the lit time again to stay there; another time jumps there. */
+  private choosePhase(phase: StarPhase) {
+    const st = this.star;
+    if (!st) return;
+    const what = st.choose(phase);
+    const label = STAR_PHASES.find((p) => p.id === st.phase)?.label ?? '';
+    if (what === 'hold') this.toast(`${label}에 머물러요`);
+    else if (what === 'flow') this.toast(st.pos < 2 ? '다시 흘러가요' : '새벽이 밝았어요');
+    save({ starPhase: phase, starHold: st.hold });
+    this.refreshLabels();
+  }
+
+  private stepPhase(dir: 1 | -1) {
+    const st = this.star;
+    if (!st) return;
+    const i = STAR_PHASES.findIndex((p) => p.id === st.phase);
+    const next = STAR_PHASES[Math.max(0, Math.min(STAR_PHASES.length - 1, i + dir))];
+    if (next.id !== st.phase) this.choosePhase(next.id);
+  }
+
+  private toggleFireflies() {
+    const st = this.star;
+    if (!st) return;
+    st.setFireflies(!st.fireflies);
+    save({ starFireflies: st.fireflies });
+    this.refreshLabels();
+    this.toast(st.fireflies ? '반딧불이가 날아요' : '반딧불이가 들어갔어요');
+  }
+
+  private setGuide(on: boolean) {
+    const st = this.star;
+    if (!st) return;
+    st.setGuide(on);
+    save({ starGuide: on });
+    this.refreshLabels();
+    this.toast(on ? '별자리를 알려 줄게요' : '별자리 알려 주기를 껐어요');
+  }
+
   /* ---------- 모래멍: the frame, the stream under the hand, tilt ---------- */
   private setupSand() {
     const sand = this.sand!;
@@ -743,6 +855,9 @@ export class SceneView implements View {
       this.aquarium.feed();
       this.feedToast();
       this.el.classList.add('hint-done');
+    } else if (this.star) {
+      this.star.meteor();
+      this.el.classList.add('hint-done');
     } else if (this.pond) {
       this.pond.feed();
       if (Date.now() - this.lastFeedToast > 10_000) {
@@ -761,6 +876,15 @@ export class SceneView implements View {
   }
 
   private nextSeason() {
+    if (this.star) {
+      const st = this.star;
+      const next = STAR_SEASONS[(STAR_SEASONS.indexOf(st.season) + 1) % STAR_SEASONS.length];
+      st.setSeason(next);
+      save({ starSeason: next });
+      // the scene dims and comes back in the new season; the labels follow when it does (the 'season' stat)
+      this.toast(`${SEASONS.find((x) => x.id === next)?.label ?? ''} 밤하늘`);
+      return;
+    }
     if (!this.pond) return;
     const i = SEASONS.findIndex((x) => x.id === this.pond!.season);
     const next = SEASONS[(i + 1) % SEASONS.length];
@@ -851,6 +975,18 @@ export class SceneView implements View {
         break;
       case 'drizzle':
         this.toggleDrizzle();
+        break;
+      case 'star-phase':
+        this.choosePhase(t.dataset.value as StarPhase);
+        break;
+      case 'fireflies':
+        this.toggleFireflies();
+        break;
+      case 'star-guide':
+        if (t.tagName === 'BUTTON') this.setGuide(!this.star?.guideOn);
+        break;
+      case 'meteor':
+        this.primary();
         break;
       case 'season':
         this.nextSeason();
@@ -949,6 +1085,7 @@ export class SceneView implements View {
       // the same switch is in the tray and in the sheet
       this.el.querySelectorAll<HTMLInputElement>('[data-act="auto-empty"]').forEach((b) => { b.checked = t.checked; });
     } else if (t.dataset.act === 'sand-tilt') void this.setTilt(t.checked, t);
+    else if (t.dataset.act === 'star-guide') this.setGuide(t.checked);
   };
 
   private readonly onKey = (e: KeyboardEvent) => {
@@ -976,6 +1113,9 @@ export class SceneView implements View {
         if (this.rain || this.sea || this.sand) {
           e.preventDefault();
           this.stepLevel(e.code === 'ArrowUp' ? 1 : -1);
+        } else if (this.star) {
+          e.preventDefault();
+          this.stepPhase(e.code === 'ArrowUp' ? 1 : -1);
         }
         break;
       case 'KeyE':
@@ -992,6 +1132,9 @@ export class SceneView implements View {
         break;
       case 'KeyL':
         this.toggleMoon();
+        break;
+      case 'KeyC':
+        if (this.star) this.setGuide(!this.star.guideOn);
         break;
       case 'KeyM':
         this.toggleMute();
@@ -1035,6 +1178,7 @@ export class SceneView implements View {
       audio.suspend();
     }, SLEEP_AFTER);
     this.sand?.setTaper(true);
+    this.star?.setTaper(true);
   }
 
   private extend() {
@@ -1042,6 +1186,7 @@ export class SceneView implements View {
     this.el.classList.remove('end-open', 'is-asleep');
     this.host.paused = false;
     this.sand?.setTaper(false);
+    this.star?.setTaper(false);
     audio.resume();
     timer.extend(10);
     this.armIdle();

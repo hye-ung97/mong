@@ -34,7 +34,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // App shell is precached. Recordings (11MB) are not: each one is kept the first time it plays,
+        // App shell is precached. Recordings (19MB) are not: each one is kept the first time it plays,
         // and the installed app fetches the rest in the background (src/lib/offline.ts).
         globPatterns: ['**/*.{js,css,html,svg,png}'],
         runtimeCaching: [

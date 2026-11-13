@@ -1,0 +1,104 @@
+/* 별멍 시안 — mong.css · fire-v2.css(개요 틀) · sand.css(네 번째 멍 부품) 위에 얹는 부품. 전부 시안에만 있어요. */
+
+/* 별멍 색. src/styles/tokens.css 에는 아직 없어요 */
+:root {
+  --star-500: #ecd96a;
+  --star-300: #f8efb6;
+  --star-900: #221d06;
+}
+.theme-star { --accent: var(--star-500); --accent-soft: var(--star-300); --accent-ink: var(--star-900); }
+.theme-star .changes em { color: var(--star-300); }
+
+/* 손으로 건드릴 수 있는 장면 */
+canvas[data-star] { touch-action: none; cursor: crosshair; }
+
+/* 탭이 다섯 개가 되면 모바일에서 안쪽 여백을 더 줄여야 두 동그란 버튼 사이에 들어가요 */
+.tabs.five a { padding: 0 7px; }
+.desk .tabs.five a { padding: 0 14px; }
+
+/* 상태 줄 오른쪽은 별똥별 수 */
+.theme-star .m-status { min-height: 28px; }
+/* 계절: 독의 잎 버튼으로 넘겨요. 반딧불이 버튼은 여름에만 있어요 (star.js 가 .screen 에 data-season 을 적어요) */
+.screen:not([data-season="summer"]) [data-star-act="fireflies"] { display: none; }
+/* 여름엔 독에 버튼이 넷이라 밤 깊이 글자를 한 단계 줄여요 */
+.phone[data-season="summer"] .dock .seg button { font-size: 13px; letter-spacing: -0.01em; }
+
+/* 머물기: 켜진 때를 한 번 더 누르면 그 버튼에 핀이 붙어요 */
+.seg button { position: relative; }
+.seg .pin { display: none; position: absolute; top: -6px; right: -3px; width: 18px; height: 18px; padding: 4px; border-radius: 50%; background: var(--accent-ink); color: var(--accent-soft); stroke-width: 2.4; box-shadow: 0 0 0 1.5px var(--accent-soft); }
+.seg button.held .pin { display: block; }
+.star-toast { top: 150px; z-index: 4; opacity: 0; pointer-events: none; transition: opacity 0.3s var(--ease); }
+.star-toast.show { opacity: 1; }
+
+/* 풀밭을 건드리면 벌레가 숨죽여요: 소리 막대가 가라앉고 문구가 바뀌어요 */
+.now-hush { display: none; }
+.is-hush .now-on { display: none; }
+.is-hush .now-hush { display: inline; }
+.is-hush .eq i { animation: none; transform: scaleY(0.16); opacity: 0.5; }
+
+/* 손가락 (설명용). 위치는 star.js 가 옮겨요 */
+.star-finger {
+  left: 0; top: 0; width: 52px; height: 52px; margin: -26px 0 0 -26px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.16);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease);
+}
+
+/* 소리 시트: 다섯 층이라 줄 간격을 조금 좁혀요 */
+.theme-star .mix { gap: 16px; }
+.theme-star .mix-row { grid-template-columns: 20px 64px 1fr 30px; }
+
+/* 데스크톱 독 */
+.theme-star .d-dock .vol .slider { width: 80px; }
+
+/* 밤 깊이 비교 */
+.night-board { grid-template-columns: repeat(3, 400px); }
+.night-board .pal-cell .screen { width: 400px; height: 520px; }
+.night-board .pal-cell p { max-width: 400px; }
+.sound-notes { width: 600px; }
+.sound-notes .sound { margin-bottom: 18px; }
+.sound-notes .sound td { padding: 10px 10px 10px 0; }
+.sound-notes p { margin: 0; color: var(--board-dim); font-size: 14px; }
+
+/* 밤 깊이 버튼의 세 모습 (머물기 설명용). 화면 아래쪽만 잘라 보여요 */
+.stack-col { flex: none; display: flex; flex-direction: column; gap: 24px; }
+.hold-board { grid-template-columns: repeat(3, 400px); }
+.hold-board .pal-cell .screen.strip { width: 400px; height: 196px; background: linear-gradient(180deg, #2a2350 0%, #6a4268 20%, #a0606a 28%, #0c0d18 29%, #06070e 100%); }
+.hold-board .pal-cell .screen.strip.dawn { background: linear-gradient(180deg, #1c2a52 0%, #5a7cae 20%, #b8c6d8 28%, #0e1220 29%, #070a12 100%); }
+.hold-board .pal-cell .screen.strip.deep { background: linear-gradient(180deg, #050918 0%, #0e1a36 20%, #172846 28%, #04060c 29%, #020308 100%); }
+.hold-board .pal-cell p { max-width: 400px; }
+.strip .m-bottom { bottom: 18px; }
+.strip .star-toast { top: 14px; }
+
+/* 계절 비교 */
+.season-board { grid-template-columns: repeat(4, 320px); }
+.season-board .pal-cell .screen { width: 320px; height: 520px; }
+.season-board .pal-cell p { max-width: 320px; }
+
+/* 정한 것 · 제안 · 남은 것 */
+.notes.decided { width: 440px; }
+.notes.wider { width: 420px; }
+.notes h4.ask { color: var(--star-300); }
+
+/* 홈: 카드가 다섯 장이 되면 한 줄 목록으로는 한 화면에 안 들어가서 두 칸으로 놓아요 */
+.cards-m.five { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cards-m.five .card { height: 156px; }
+.cards-m.five .card.wide { grid-column: 1 / -1; height: 150px; }
+.cards-m.five .card:not(.wide) .go { display: none; }
+.cards-m.five .card-info { left: 14px; right: 12px; bottom: 14px; }
+.cards-m.five .card-info h3 { font-size: 20px; margin-bottom: 5px; }
+.cards-m.five .card-info p { font-size: 12.5px; }
+.cards-m.five .card-tag { top: 10px; left: 10px; }
+
+/* 별자리 알려 주기 켜고 끄기: 소리 시트의 스위치 줄 (fire-v2.css 의 .tend-row · .switch) 과 데스크톱 독의 칩 */
+.star-guide-row { width: 100%; margin: 0 0 22px; text-align: left; color: var(--ui-ink); }
+.star-guide-row .switch { transition: background 0.2s var(--ease); }
+.star-guide-row .switch::after { transition: right 0.2s var(--ease); }
+.star-guide-row:not(.on) .switch { background: rgba(255, 255, 255, 0.18); }
+.star-guide-row:not(.on) .switch::after { right: 21px; }
+.theme-star .sheet .tend-row b { font-size: 14px; }
+/* 독에 ‘별자리’가 늘어 넓어져서, 단축키 안내는 독 오른쪽 위로 올려요 */
+.theme-star .d-keys.stack { bottom: 112px; }

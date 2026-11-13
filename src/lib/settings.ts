@@ -1,6 +1,7 @@
 import type { WoodKind } from '../scenes/fire';
 import { seasonNow, type Season } from '../scenes/pond';
 import type { SandPalette } from '../scenes/sand';
+import type { StarPhase } from '../scenes/star';
 import type { SceneId, WaterId } from '../scenes/registry';
 
 export interface Settings {
@@ -25,6 +26,12 @@ export interface Settings {
   sandAutoEmpty: boolean;
   /** 모래멍: tilting the phone bends the stream. Off until the visitor turns it on. */
   sandTilt: boolean;
+  /** 별멍: the season (starts as the season outside), where the night starts, whether it stays there, fireflies, naming constellations. */
+  starSeason: Season;
+  starPhase: StarPhase;
+  starHold: boolean;
+  starFireflies: boolean;
+  starGuide: boolean;
   /** Last chosen timer in minutes, 0 = no timer. */
   timer: number;
   /** One-time hints already shown. */
@@ -50,6 +57,11 @@ const DEFAULTS: Settings = {
   sandPalette: 'sunset',
   sandAutoEmpty: true,
   sandTilt: false,
+  starSeason: seasonNow(),
+  starPhase: 'dusk',
+  starHold: false,
+  starFireflies: true,
+  starGuide: true,
   timer: 0,
   hints: [],
 };

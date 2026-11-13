@@ -509,3 +509,44 @@ kbd {
   [data-scene="sand"] .dock .seg { width: 200px; }
   [data-scene="sand"] .vol .range { width: 80px; }
 }
+
+/* ---------- 별멍 ---------- */
+/* five tabs: a little less room around each on phones */
+@media (max-width: 767.98px) { .tabs a { padding: 0 7px; } }
+@media (max-width: 374.98px) { .tabs a { padding: 0 5px; font-size: 12.5px; } }
+[data-scene="star"] .d-keys { bottom: 34px; flex-direction: column; align-items: flex-end; gap: 9px; }
+/* the night's three times: the lit one gets a pin while it is held */
+.star-seg button { position: relative; }
+.star-seg .pin { display: none; position: absolute; top: -6px; right: -3px; width: 18px; height: 18px; padding: 4px; border-radius: 50%; background: var(--accent-ink); color: var(--accent-soft); stroke-width: 2.4; box-shadow: 0 0 0 1.5px var(--accent-soft); }
+.star-seg button.held .pin { display: block; }
+@media (max-width: 767.98px) { [data-scene="star"] .star-seg button { font-size: 13px; } }
+/* fireflies only in summer */
+[data-scene="star"]:not([data-season="summer"]) .star-flies { display: none; }
+/* touching the grass: the status line says the bugs went quiet and the level bars settle */
+.now-hush { display: none; }
+.is-hush .now-on { display: none; }
+.is-hush .now-hush { display: inline; }
+.is-hush .eq i { animation: none; transform: scaleY(0.16); opacity: 0.5; }
+.d-now strong .now-hush, .d-now strong .now-on { white-space: nowrap; }
+@media (min-width: 768px) {
+  [data-scene="star"] .dock .seg { width: 230px; }
+  [data-scene="star"] .vol .range { width: 80px; }
+}
+@media (min-width: 768px) and (max-width: 1299px) { [data-scene="star"] .d-now { display: none; } }
+
+/* home: five cards. Phones: two columns with 별멍 across the bottom; wide screens: one row */
+@media (max-width: 767.98px) {
+  .cards { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(118px, 1fr); }
+  .card { max-height: none; }
+  .card.wide { grid-column: 1 / -1; }
+  .card:not(.wide) .go { display: none; }
+  .card:not(.wide) .card-info { left: 14px; right: 12px; bottom: 14px; }
+  .card:not(.wide) .card-title { font-size: 20px; margin-bottom: 5px; }
+  .card:not(.wide) .card-sub { font-size: 12.5px; }
+  .card:not(.wide) .card-tag { top: 10px; left: 10px; }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  .cards { display: flex; }
+  .card .go { display: none; }
+}
+@media (min-width: 768px) { .cards { gap: 16px; } .card-title { font-size: 26px; } }
