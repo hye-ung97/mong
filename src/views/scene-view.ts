@@ -856,7 +856,7 @@ export class SceneView implements View {
 
   private primary() {
     if (this.fire) {
-      this.fire.addLogByHand(settings().wood);
+      this.addLog(settings().wood);
       // the dock shows the woods itself; only the landscape rail still picks one with a long press
       const rail = this.el.querySelector('.rail-main')?.getClientRects().length;
       if (rail && firstTime('wood-tray')) this.toast('버튼을 꾹 누르면 장작을 고를 수 있어요');
@@ -1007,7 +1007,7 @@ export class SceneView implements View {
         const kind = t.dataset.wood as WoodKind;
         save({ wood: kind });
         this.refreshWood();
-        this.fire?.addLogByHand(kind);
+        this.addLog(kind);
         break;
       }
       case 'rain':
@@ -1226,6 +1226,11 @@ export class SceneView implements View {
     this.listen(window, 'resize', () => this.placeDropZone());
   }
 
+  /** Put a log on the fire, or say so when the pit has no room for it. */
+  private addLog(kind: WoodKind, atX?: number) {
+    if (this.fire?.addLogByHand(kind, atX) === false) this.toast('장작이 가득해요 · 조금 타면 더 넣을 수 있어요');
+  }
+
   /** Show the chosen wood on the dock (split button, chips) and in the tray. */
   private refreshWood() {
     const wood = WOODS.find((w) => w.id === settings().wood) ?? WOODS[0];
@@ -1296,13 +1301,13 @@ export class SceneView implements View {
       save({ wood: kind });
       this.refreshWood();
       if (!moved) {
-        fire.addLogByHand(kind);
+        this.addLog(kind);
         this.closeAll();
         return;
       }
       const [x, y] = this.host.toScene(ev.clientX, ev.clientY);
       if (fire.isNearFire(x, y)) {
-        fire.addLogByHand(kind, x);
+        this.addLog(kind, x);
         this.closeAll();
       }
     };

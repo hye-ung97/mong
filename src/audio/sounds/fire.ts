@@ -1,5 +1,6 @@
 import { findHits, findPops, loudestAt, type Hit } from '../assets';
 import { LoopPlayer } from '../loop';
+import type { SceneEventData } from '../../scenes/base';
 import { SceneSound, type LayerDef } from '../sound';
 import { chain, filter, gain, rnd } from '../synth';
 
@@ -20,6 +21,13 @@ const POP_MIN_PEAK = 0.04; // only crackles that are clearly audible in the reco
 const FLARE_AFTER_IMPACT = 1.5; // s from the log landing to the flame catching
 const FLARE_TAIL = 2.3; // s of the flare kept after its burst
 const BOOST_DECAY = 2.5; // s, extra crackling after a log goes in
+const ARMFUL = 1.2; // s: logs landing closer together than this are heard as one armful
+const FLARE_RECOVERY = 4; // s after a whoosh before the fire can flare as loudly again
+/** Each wood lands with its own weight: oak heavy and low, birch light. */
+const WOOD_PITCH: Record<string, number> = { oak: 0.95, pine: 1, birch: 1.06 };
+
+/** A whoosh that has been scheduled: logs landing before it bursts join it instead of adding their own. */
+interface Whoosh { at: number; end: number; gain: GainNode; logs: number; fresh: number }
 
 export const FIRE_LAYERS: readonly LayerDef[] = [
   { id: 'bed', label: '모닥불', icon: 'flame', def: 0.9 },
@@ -50,6 +58,11 @@ export class FireSound extends SceneSound {
   private flareBurst = 1.2;
   /** peak of the drop heard on the comparison page; other drops are matched to it */
   private logRef = 0.1;
+  /** which recorded drop played last, so the same one never plays twice running */
+  private lastDrop = -1;
+  /** when the last few logs landed (audio time) */
+  private thuds: number[] = [];
+  private whoosh: Whoosh | null = null;
 
   start() {
     const c = this.ctx;
@@ -128,51 +141,120 @@ export class FireSound extends SceneSound {
   }
 
   /** Play part of a buffer so that its `onset` lands exactly at `at`. */
-  private playAligned(buf: AudioBuffer, from: number, onset: number, length: number, at: number, level: number, fadeOut: number) {
+  private playAligned(buf: AudioBuffer, o: {
+    from: number; onset: number; length: number; at: number; level: number; fadeOut: number; rate?: number; pan?: number;
+  }) {
     const c = this.ctx;
+    const rate = o.rate ?? 1;
     const now = c.currentTime + 0.01;
-    let when = at - (onset - from);
-    let offset = from;
+    let when = o.at - (o.onset - o.from) / rate;
+    let offset = o.from;
     if (when < now) {
-      offset += now - when;
+      offset += (now - when) * rate;
       when = now;
     }
-    const dur = Math.max(0.05, from + length - offset);
+    const dur = Math.max(0.05, (o.from + o.length - offset) / rate);
     const src = c.createBufferSource();
     src.buffer = buf;
+    src.playbackRate.value = rate;
     const g = c.createGain();
-    g.gain.setValueAtTime(level, when);
-    g.gain.setValueAtTime(level, when + Math.max(0, dur - fadeOut));
-    g.gain.linearRampToValueAtTime(0.0001, when + dur);
-    src.connect(g).connect(this.layer('fx'));
-    src.start(when, offset, dur + 0.02);
-    src.onended = () => g.disconnect();
+    const end = when + dur;
+    g.gain.setValueAtTime(o.level, when);
+    g.gain.setValueAtTime(o.level, Math.max(when, end - o.fadeOut));
+    g.gain.linearRampToValueAtTime(0.0001, end);
+    const out = o.pan && c.createStereoPanner ? c.createStereoPanner() : null;
+    if (out) {
+      out.pan.value = o.pan!;
+      src.connect(g).connect(out).connect(this.layer('fx'));
+    } else src.connect(g).connect(this.layer('fx'));
+    src.start(when, offset, dur * rate + 0.02);
+    src.onended = () => {
+      g.disconnect();
+      out?.disconnect();
+    };
+    return { gain: g, end };
   }
 
-  event(name: string, data?: Record<string, number | string>) {
-    if (name === 'poke') {
-      // 뒤적이기: the embers scatter, with the same rush of crackles a landing log makes
-      this.boost = 1;
-      this.boostAt = this.ctx.currentTime;
+  /**
+   * The log hitting the fire: one of the recorded drops. Logs thrown in together are an armful —
+   * each has its own knock, but a different recording from the one before and quieter than it,
+   * so they tumble in instead of piling the same sound on itself.
+   */
+  private thud(impact: number, data?: SceneEventData) {
+    if (!this.log || !this.logHits.length) return;
+    this.thuds = this.thuds.filter((t) => impact - t < ARMFUL);
+    const before = this.thuds.length;
+    this.thuds.push(impact);
+    let i = Math.floor(Math.random() * this.logHits.length);
+    if (i === this.lastDrop) i = (i + 1) % this.logHits.length;
+    this.lastDrop = i;
+    const h = this.logHits[i];
+    this.playAligned(this.log, {
+      from: h.start,
+      onset: h.onset,
+      length: h.dur,
+      at: impact,
+      level: (LOG_GAIN * (this.logRef / Math.max(0.02, h.peak))) / (1 + 0.4 * before),
+      fadeOut: 0.25,
+      rate: (WOOD_PITCH[String(data?.kind)] ?? 1) * rnd(0.96, 1.04),
+      pan: typeof data?.pan === 'number' ? data.pan * 0.4 : 0,
+    });
+  }
+
+  private whooshLevel(w: Pick<Whoosh, 'logs' | 'fresh'>) {
+    return FLARE_GAIN * w.fresh * Math.min(1.4, 1 + 0.15 * (w.logs - 1));
+  }
+
+  /**
+   * The flame catching on a moment after a log lands. An armful catches as one fire: logs that
+   * land while a whoosh is on its way make that one a little bigger instead of adding their own.
+   */
+  private catchFire(impact: number) {
+    if (!this.flare) return;
+    const now = this.ctx.currentTime;
+    const w = this.whoosh;
+    if (w && now < w.at - 0.05) {
+      w.logs += 1;
+      const level = this.whooshLevel(w);
+      w.gain.gain.cancelScheduledValues(now);
+      w.gain.gain.setValueAtTime(level, now);
+      w.gain.gain.setValueAtTime(level, w.end - 0.8);
+      w.gain.gain.linearRampToValueAtTime(0.0001, w.end);
       return;
     }
+    const at = impact + FLARE_AFTER_IMPACT;
+    // a fire that has only just flared has less left to give
+    const fresh = w ? Math.max(0.4, Math.min(1, (at - w.at) / FLARE_RECOVERY)) : 1;
+    const from = Math.max(0, this.flareBurst - 1.2);
+    const played = this.playAligned(this.flare, {
+      from,
+      onset: this.flareBurst,
+      length: this.flareBurst - from + FLARE_TAIL,
+      at,
+      level: this.whooshLevel({ logs: 1, fresh }),
+      fadeOut: 0.8,
+    });
+    this.whoosh = { at, end: played.end, gain: played.gain, logs: 1, fresh };
+  }
+
+  /** A rush of crackles (embers scattering) from `at`, never weaker than the one still dying away. */
+  private rush(amount: number, at: number) {
+    const left = this.boost * Math.exp(-Math.max(0, at - this.boostAt) / BOOST_DECAY);
+    this.boost = Math.max(amount, left);
+    this.boostAt = at;
+  }
+
+  event(name: string, data?: SceneEventData) {
+    const now = this.ctx.currentTime;
+    // 뒤적이기: the embers scatter, with the same rush of crackles a landing log makes
+    if (name === 'poke') this.rush(1, now);
+    // burnt wood gave way and the pile slumped
+    else if (name === 'settle') this.rush(0.5, now);
     if (name !== 'add') return;
-    const impactIn = typeof data?.impactIn === 'number' ? data.impactIn : 0.25;
-    const impact = this.ctx.currentTime + impactIn;
-    // the log hitting the fire — one of the recorded drops at random
-    if (this.log && this.logHits.length) {
-      const h = pick(this.logHits);
-      this.playAligned(this.log, h.start, h.onset, h.dur, impact, LOG_GAIN * (this.logRef / Math.max(0.02, h.peak)), 0.25);
-    }
-    // the flame catching on a moment later
-    if (this.flare) {
-      const burstAt = impact + FLARE_AFTER_IMPACT;
-      const from = Math.max(0, this.flareBurst - 1.2);
-      this.playAligned(this.flare, from, this.flareBurst, this.flareBurst - from + FLARE_TAIL, burstAt, FLARE_GAIN, 0.8);
-    }
-    // embers scatter: a short rush of crackles
-    this.boost = 1;
-    this.boostAt = impact + 0.2;
+    const impact = now + (typeof data?.impactIn === 'number' ? data.impactIn : 0.25);
+    this.thud(impact, data);
+    this.catchFire(impact);
+    this.rush(1, impact + 0.2);
   }
 
   dispose() {

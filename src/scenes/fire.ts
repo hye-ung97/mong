@@ -18,8 +18,14 @@ interface Crack { u: number; v: number; l: number; a: number; p: number }
 interface Ash { u: number; v: number; r: number }
 interface Log {
   x: number; y: number; a: number; len: number; th: number;
-  burn: number; ignite: number; drop: number; life: number; fast: boolean;
+  burn: number; ignite: number; drop: number; life: number;
   kind: WoodKind; cracks: Crack[]; ash: Ash[];
+  /** Seconds until it is thrown in: logs added together go in one after another. */
+  wait: number;
+  /** Laid by hand when the fire was built: it stays where it was put instead of finding its own rest. */
+  laid: boolean;
+  /** How fast it is falling because what held it up has burnt away (scene units / s). */
+  vy: number;
   /** How hard it is burning right now, 0..1. */
   power: number;
   /** A small turn it was given by the last poke; settles back by itself. */
@@ -41,16 +47,57 @@ interface Field {
   canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D; img: ImageData;
   bloom: HTMLCanvasElement; bctx: CanvasRenderingContext2D;
   heat: Float32Array; hgt: Float32Array; base: Float32Array;
+  /** How far the pile stands above its first lay in each column, and how far up the flames root there. */
+  pile: Float32Array; lift: Float32Array;
 }
 
-const MAX_LOGS = 5;
+/** What the pit holds. Past this a new log has nowhere to go until some of the wood has burnt down. */
+const MAX_LOGS = 8;
 const DROP_TIME = 0.7; // s for a new log to fall and settle
+const DROP_GAP = 0.16; // s between logs that are thrown in together
+/** The pit floor, in scene units below the fire point: where the low side of a log comes to rest. */
+const FLOOR = 22;
+/** How far a log sinks in between the ones under it, as a share of its thickness. */
+const NESTLE = 0.5;
+/** A log this far burnt has crumbled: it holds nothing up any more. */
+const GIVES_WAY = 0.9;
+const GRAVITY = 900; // scene units / s², for a log whose support has burnt away
+/** How high the fire stands as first laid (scene units above the fire point). */
+const LAID_TOP = 28;
+const LAID_CREST = 46;
+/** Wood burning at full strength that makes a full fire; more than this still adds, but slowly. */
+const FULL_FIRE = 3.3;
+const FLAME_H = 240; // scene units: a full column of flame at reach 1
 /** With less wood than this burning, and nothing catching fire, only embers are left. */
 const EMBERS_BELOW = 0.6;
 /** A log this far burnt is char: it no longer counts as a log. */
 const SPENT = 0.8;
 /** First contact of the bounce (easeOutBounce reaches 1 at x = 1/2.75). */
 const FIRST_CONTACT = DROP_TIME / 2.75;
+
+/** A log shrinks as it burns down. */
+const logLen = (L: Log) => L.len * (1 - 0.3 * smooth(0.55, 1, L.burn));
+const logTh = (L: Log) => L.th * (1 - 0.35 * smooth(0.5, 1, L.burn));
+/** Half its thickness measured straight up (it lies at an angle). */
+const halfUp = (L: Log) => logTh(L) / 2 / Math.cos(L.a);
+/** Its centre line at scene-x `x` (y grows downward). */
+const lineAt = (L: Log, x: number) => L.y + (x - L.x) * Math.tan(L.a);
+
+/** `fuel` of the three logs the fire is built with: the flames are as tall as they have always been. */
+const LAID_FUEL = 3.1;
+/** Flame height grows with the heat given off to this power (Heskestad: L ∝ Q^0.4). */
+const REACH_POWER = 0.4;
+
+/**
+ * How tall the flames stand for the wood that is burning, as a multiple of the height the fire
+ * starts with. `fuel` is roughly how many logs burn at full strength: about 3.1 as built, up to
+ * about 8 when the pit is full. Twice the wood makes flames about 1.3× as tall, as in a real fire.
+ * The floor is there because a fire with little wood already burns low through its smaller heat
+ * field; the cap keeps the flames inside the field.
+ */
+export function flameReach(fuel: number) {
+  return clamp(Math.pow(Math.max(0, fuel) / LAID_FUEL, REACH_POWER), 0.8, 1.4);
+}
 
 /* ---------- tileable noise: shapes the flames, flickers the light, lets each coal breathe ---------- */
 const NS = 256;
@@ -257,7 +304,13 @@ export class Fire extends Scene {
   /** Add a log by itself when the fire runs low, so a long session never goes dark. */
   autoTend = true;
   private added = 0;
+  /** Scene time from which the next log may be thrown in. */
+  private nextDrop = 0;
   private fuel = 0;
+  /** Flame height for the wood that is burning (see `flameReach`), eased so it swells and sinks. */
+  private reach = 1;
+  /** How far the pile stands above its first lay (scene units): sparks and smoke start that much higher. */
+  private rise = 0;
   private intensity = 0.6;
   /** How hot the bed of coals is. It builds up as logs burn and outlasts the flames. */
   private coal = 0.6;
@@ -294,7 +347,7 @@ export class Fire extends Scene {
       [0, 5, 0.05, 184, 29, 0.12],
     ];
     for (const [x, y, a, len, th, burn] of start) {
-      this.logs.push(this.makeLog({ x, y, a, len, th, burn, ignite: 1, drop: 1, kind: 'oak' }));
+      this.logs.push(this.makeLog({ x, y, a, len, th, burn, ignite: 1, drop: 1, kind: 'oak', laid: true }));
     }
   }
 
@@ -305,8 +358,10 @@ export class Fire extends Scene {
       drop: 0,
       power: 0,
       jolt: 0,
+      wait: 0,
+      laid: false,
+      vy: 0,
       life: rand(85, 125) * WOOD[o.kind].life,
-      fast: false,
       cracks: Array.from({ length: 13 }, () => ({
         u: rand(-0.4, 0.32), v: rand(-0.32, 0.34), l: rand(0.04, 0.13), a: rand(-0.7, 0.7), p: rand(0, TAU),
       })),
@@ -350,7 +405,7 @@ export class Fire extends Scene {
     /* flame heat field */
     const cell = Math.max(1.6, 2.3 * s);
     const cols = Math.round((400 * s) / cell);
-    const rows = Math.round((430 * s) / cell);
+    const rows = Math.round((520 * s) / cell); // room for a tall pile under a big fire
     const fc = document.createElement('canvas');
     fc.width = cols;
     fc.height = rows;
@@ -363,6 +418,7 @@ export class Fire extends Scene {
       canvas: fc, ctx: fctx, img: fctx.createImageData(cols, rows),
       bloom: bc, bctx: bc.getContext('2d')!,
       heat: new Float32Array(cols), hgt: new Float32Array(cols), base: new Float32Array(cols),
+      pile: new Float32Array(cols), lift: new Float32Array(cols),
     };
 
     /* stones around the pit */
@@ -552,23 +608,108 @@ export class Fire extends Scene {
     return Math.hypot((x - this.cx) / (175 * s), (y - (this.by - 40 * s)) / (130 * s)) < 1;
   }
 
-  /** A log the visitor added (resets the auto-tend clock). */
+  /** Whether the pit can take another log. */
+  get hasRoom() {
+    return this.logs.filter((L) => L.burn < SPENT).length < MAX_LOGS;
+  }
+
+  /** A log the visitor added (resets the auto-tend clock). False when the pit is full. */
   addLogByHand(kind: WoodKind = 'oak', atX?: number) {
+    if (!this.addLog(kind, atX)) return false;
     this.sinceAdd = 0;
-    this.addLog(kind, atX);
+    return true;
   }
 
   addLog(kind: WoodKind = 'oak', atX?: number) {
-    if (this.logs.length >= MAX_LOGS) {
-      const oldest = this.logs.reduce((a, b) => (a.burn > b.burn ? a : b));
-      oldest.fast = true;
-    }
+    if (!this.hasRoom) return false;
     this.added += 1;
-    const side = this.added % 2 ? 1 : -1;
-    const x = atX === undefined ? rand(-26, 26) : clamp((atX - this.cx) / this.s, -30, 30);
-    this.logs.push(this.makeLog({ x, y: rand(-24, -10), a: side * rand(0.14, 0.52), len: rand(140, 172), th: rand(23, 29), kind }));
+    // logs lean out from the middle with their low end on the outside, so the pile grows as a mound
+    const at = atX === undefined ? 0 : clamp((atX - this.cx) / this.s, -44, 44);
+    const side = Math.abs(at) > 8 ? Math.sign(at) : this.added % 2 ? 1 : -1;
+    const x = atX === undefined ? side * rand(4, 40) : at;
+    // an armful goes in one log after another, not all in the same instant
+    const wait = Math.max(0, this.nextDrop - this.t);
+    this.nextDrop = this.t + wait + DROP_GAP;
+    this.logs.push(this.makeLog({ x, y: 0, a: side * rand(0.12, 0.5), len: rand(140, 172), th: rand(23, 29), kind, wait }));
     this.cool = 4;
-    this.emit('add', { kind, impactIn: FIRST_CONTACT });
+    this.emit('add', { kind, impactIn: wait + FIRST_CONTACT, pan: clamp(x / 60, -1, 1) });
+    return true;
+  }
+
+  /**
+   * Where log `i` comes to rest: leaning on the pit floor, or lying on whichever earlier log
+   * stands highest under its middle. Later logs always lie on earlier ones.
+   */
+  private restY(i: number) {
+    const L = this.logs[i];
+    const up = halfUp(L);
+    let y = FLOOR - Math.abs(Math.sin(L.a)) * logLen(L) * 0.3 - up;
+    for (let j = 0; j < i; j++) {
+      const S = this.logs[j];
+      if (S.drop < 1 || S.burn > GIVES_WAY) continue;
+      // only the middle of a log carries weight: its ends stick out of the pile
+      if (Math.abs(L.x - S.x) > logLen(S) * Math.cos(S.a) * 0.35) continue;
+      y = Math.min(y, lineAt(S, L.x) - halfUp(S) - up + NESTLE * logTh(L));
+    }
+    return y;
+  }
+
+  /** Keep a log on its support. When the wood under it burns away it drops, and the pile slumps. */
+  private settle(L: Log, rest: number, dt: number) {
+    const gap = rest - L.y;
+    if (L.vy === 0 && gap < 1) {
+      L.y += gap * Math.min(1, dt * 8);
+      return;
+    }
+    L.vy += GRAVITY * dt;
+    L.y += L.vy * dt;
+    if (L.y < rest) return;
+    L.y = rest;
+    if (L.vy > 90) this.slump(L);
+    L.vy = 0;
+  }
+
+  /** Burnt wood crumbled under this log and it dropped: sparks fly up, the coals wake. */
+  private slump(L: Log) {
+    const burst = Math.round(12 * WOOD[L.kind].sparks * this.motion);
+    for (let i = 0; i < burst; i++) this.spawnSpark(true);
+    this.flare = Math.max(this.flare, 0.35);
+    this.kick = Math.max(this.kick, 0.45);
+    L.jolt = rand(-0.05, 0.05);
+    this.emit('settle');
+  }
+
+  /** Measure the pile: how high it stands, and how far up the flames root in each column. */
+  private measurePile(dt: number) {
+    const F = this.field;
+    const { cols, cell, pile, lift } = F;
+    const s = this.s;
+    const col0 = (this.cx - F.x0) / cell;
+    pile.fill(0);
+    let top = 0;
+    for (const L of this.logs) {
+      if (L.drop < 1 || L.burn > GIVES_WAY) continue;
+      const up = halfUp(L);
+      top = Math.max(top, up - L.y);
+      const half = (logLen(L) / 2) * Math.cos(L.a);
+      const a = Math.max(0, Math.ceil(col0 + ((L.x - half) * s) / cell));
+      const b = Math.min(cols - 1, Math.floor(col0 + ((L.x + half) * s) / cell));
+      for (let i = a; i <= b; i++) {
+        const over = up - lineAt(L, ((i - col0) * cell) / s) - LAID_CREST;
+        if (over > pile[i]) pile[i] = over;
+      }
+    }
+    const k = Math.min(1, dt * 3);
+    this.rise += (Math.max(0, top - LAID_TOP) - this.rise) * k;
+    // flames root inside the pile rather than on top of it: a smoothed share of the extra height
+    const r = Math.max(1, Math.round((16 * s) / cell));
+    let sum = 0;
+    for (let i = 0; i < Math.min(r, cols); i++) sum += pile[i];
+    for (let i = 0; i < cols; i++) {
+      if (i + r < cols) sum += pile[i + r];
+      if (i - r - 1 >= 0) sum -= pile[i - r - 1];
+      lift[i] += ((0.6 * sum) / (2 * r + 1) - lift[i]) * k;
+    }
   }
 
   private land(L: Log) {
@@ -612,7 +753,7 @@ export class Fire extends Scene {
   private spawnSpark(burst: boolean) {
     const s = this.s;
     const x = this.cx + rand(-50, 50) * s;
-    const y = this.by - rand(burst ? 0 : 30, burst ? 40 : 130) * s;
+    const y = this.by - (rand(burst ? 0 : 30, burst ? 40 : 130) + this.rise * rand(0.3, 1)) * s;
     this.sparks.push({
       x,
       y,
@@ -643,14 +784,21 @@ export class Fire extends Scene {
     let turb = 0;
     let sparks = 0;
     let wsum = 0;
-    for (const L of this.logs) {
+    for (let i = 0; i < this.logs.length; i++) {
+      const L = this.logs[i];
+      if (L.wait > 0) {
+        L.wait -= dt;
+        continue;
+      }
       if (L.drop < 1) {
+        L.y = this.restY(i); // it falls toward wherever the pile will catch it
         L.drop = Math.min(1, L.drop + dt / DROP_TIME);
         if (L.drop === 1) this.land(L);
         continue;
       }
+      if (!L.laid) this.settle(L, this.restY(i), dt);
       L.ignite = Math.min(1, L.ignite + dt / 3.5);
-      const burnt = (dt / L.life) * (0.35 + 0.65 * L.ignite) * (L.fast ? 7 : 1);
+      const burnt = (dt / L.life) * (0.35 + 0.65 * L.ignite);
       L.burn += burnt;
       this.coal = Math.min(1, this.coal + burnt * 0.5);
       L.power = L.ignite * (1 - smooth(0.5, 1, L.burn));
@@ -681,7 +829,11 @@ export class Fire extends Scene {
     this.kick = Math.max(0, this.kick - dt / 1.4);
     this.wind = 0.5 * Math.sin(t * 0.13) + 0.32 * Math.sin(t * 0.31 + 1.7) + 0.18 * Math.sin(t * 0.83 + 0.4);
     this.fuel = fuel;
-    this.intensity = clamp(fuel / 3.3 + this.flare * 0.2, 0.03, 1.25);
+    this.reach += (flameReach(fuel) - this.reach) * Math.min(1, dt * 1.2);
+    this.measurePile(dt);
+    // up to a full fire the strength follows the wood; past that more wood still adds, but slowly
+    const strength = fuel <= FULL_FIRE ? fuel / FULL_FIRE : 1 + 0.25 * Math.min(1, (fuel - FULL_FIRE) / 4);
+    this.intensity = clamp(strength + this.flare * 0.2, 0.03, 1.25);
     const flicker = 0.8 + 0.4 * ns(t * 26, 11.5) + 0.12 * (ns(t * 90, 71.3) - 0.5);
     this.light = clamp((this.intensity * 0.92 + this.coal * 0.16) * flicker, 0, 1.3);
 
@@ -695,7 +847,7 @@ export class Fire extends Scene {
       this.acc.smoke -= 1;
       this.smoke.push({
         x: this.cx + rand(-26, 26) * s,
-        y: this.by - (70 + 150 * this.intensity) * s,
+        y: this.by - (70 + 150 * this.intensity * this.reach + this.rise) * s,
         vx: rand(-6, 6) * s,
         vy: -rand(20, 36) * s,
         life: 0,
@@ -735,7 +887,7 @@ export class Fire extends Scene {
   /** Fill the heat field for this moment and turn it into flame colours. */
   private renderFlames() {
     const F = this.field;
-    const { cols, rows, cell, heat, hgt, base } = F;
+    const { cols, rows, cell, heat, hgt, base, lift } = F;
     const s = this.s;
     const t = this.t;
     const m = this.mood;
@@ -756,7 +908,8 @@ export class Fire extends Scene {
     }
     const core = Math.min(1, this.fuel / 2.2) * 0.55 + this.flare * 0.3;
     const cw = (54 * s) / cell;
-    const maxH = rows * 0.56 * m.tall;
+    const maxH = ((FLAME_H * s) / cell) * m.tall * this.reach;
+    let crest = 0; // the highest row any flame can reach this frame
     for (let i = 0; i < cols; i++) {
       const u = (i - cxc) / cw;
       let hN = heat[i] + core * Math.exp(-u * u);
@@ -765,7 +918,8 @@ export class Fire extends Scene {
       hN = Math.min(hN, 1.5);
       heat[i] = 0.36 + 0.36 * hN;
       hgt[i] = maxH * Math.pow(hN / 1.5, 0.72) * (0.45 + 0.95 * smooth(0.18, 0.92, ns((i * cell * 0.3) / s + 9, t * 10)));
-      base[i] = (12 * s * Math.min(1, hN)) / cell;
+      base[i] = ((12 * Math.min(1, hN) + lift[i]) * s) / cell;
+      crest = Math.max(crest, base[i] + hgt[i] * 1.5);
     }
     const data = F.img.data;
     const fs = cell / s; // noise is sampled in scene units so every size looks alike
@@ -774,15 +928,23 @@ export class Fire extends Scene {
     const warp = (34 * m.turb) / fs;
     const lean = this.wind * 0.13;
     const conv = 0.32; // flames lean in toward the middle as they rise
+    const span = (430 * s) / cell; // rows the sway and the lean are measured against
+    const fadeAt = rows * 0.8;
     const a1 = 1.05 * m.turb;
     const a2 = 0.6 * m.turb;
     let o = 0;
     for (let j = 0; j < rows; j++) {
       const yUp = rows - 1 - j;
-      const yn = yUp / rows;
+      if (yUp > crest + 1) {
+        // nothing burns this high right now: clear the row without sampling any noise
+        data.fill(0, o, o + cols * 4);
+        o += cols * 4;
+        continue;
+      }
+      const yn = yUp / span;
       const ny1 = j * fs * 0.42 + rise;
       const ny2 = j * fs * 1.05 + rise2;
-      const bend = lean * yn * yn * rows + 0.5;
+      const bend = lean * yn * yn * span + 0.5;
       for (let i = 0; i < cols; i++, o += 4) {
         const n1 = ns(i * fs * 0.62 + 31.7, ny1);
         const cf = i + (n1 - 0.5) * warp * (0.5 + yn * 2) - bend + (i - cxc) * conv * yn;
@@ -801,6 +963,7 @@ export class Fire extends Scene {
           + ((n1 - 0.5) * a1 * (0.12 + kk) + (n2 - 0.5) * a2 * (0.2 + kk)) * tear;
         if (kk > 0.9) v *= tear;
         v *= 0.12 + 0.88 * smooth(-3, 0.22 * H + 2, up); // thin at the very root so the wood shows through
+        if (yUp > fadeAt) v *= (rows - yUp) / (rows - fadeAt); // a tall tongue fades out instead of being cut off
         const q = (v <= 0 ? 0 : v >= 1 ? 255 : (v * 255) | 0) << 2;
         data[o] = LUT[q];
         data[o + 1] = LUT[q + 1];
@@ -849,9 +1012,10 @@ export class Fire extends Scene {
   private drawLog(ctx: CanvasRenderingContext2D, L: Log) {
     const s = this.s;
     const light = clamp(this.light, 0, 1.2);
+    if (L.wait > 0) return; // not thrown in yet
     const d = L.drop < 1 ? easeOutBounce(L.drop) : 1;
-    const len = L.len * s * (1 - 0.3 * smooth(0.55, 1, L.burn));
-    const th = L.th * s * (1 - 0.35 * smooth(0.5, 1, L.burn));
+    const len = logLen(L) * s;
+    const th = logTh(L) * s;
     const char = clamp(L.burn * 1.5 + L.ignite * 0.18, 0, 1);
     ctx.save();
     ctx.translate(this.cx + L.x * s, this.by + L.y * s - (1 - d) * 280 * s);
