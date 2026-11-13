@@ -2,6 +2,7 @@ import { audio } from './audio/engine';
 import { keepAwake } from './lib/device';
 import { save, settings } from './lib/settings';
 import { timer } from './lib/timer';
+import { showNewVersions } from './lib/update';
 import { isWater, routeOf, type SceneId, type WaterId } from './scenes/registry';
 import { HomeView } from './views/home-view';
 import { SceneView } from './views/scene-view';
@@ -62,4 +63,6 @@ export function startApp(root: HTMLElement) {
   window.addEventListener('pointerdown', () => audio.unlock(), { capture: true });
   window.addEventListener('keydown', () => audio.unlock(), { capture: true });
   render();
+  // a new version shows up by itself on the home screen, or in a scene whose sound has not been turned on yet
+  showNewVersions(() => currentKey !== 'home' && audio.ready);
 }

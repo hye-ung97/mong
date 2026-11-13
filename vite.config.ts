@@ -12,8 +12,8 @@ export default defineConfig({
   define: { __SOUND_FILES__: JSON.stringify(soundFiles) },
   plugins: [
     VitePWA({
-      // A new version installs in the background and takes over on the next visit,
-      // so nobody gets reloaded in the middle of 멍.
+      // A new version installs in the background and takes over as soon as it is ready. The open page then
+      // reloads itself to show it, but never in the middle of 멍 (src/lib/update.ts).
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
