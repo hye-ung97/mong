@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="doan:canvas" content="snow">
+<meta name="doan:width" content="2800">
+<title>눈멍 시안</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/mong.css">
+<link rel="stylesheet" href="../assets/fire-v2.css">
+<link rel="stylesheet" href="../assets/sand.css">
+<link rel="stylesheet" href="../assets/star.css">
+<link rel="stylesheet" href="../assets/snow.css">
+</head>
+<body class="board theme-snow">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-4 0v0M14 10V4a2 2 0 0 0-4 0v2M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></symbol>
+    <!-- 코드에 이미 있는 아이콘 (src/icons.ts): 설정 -->
+    <!-- 코드에 이미 있는 아이콘 (src/icons.ts) -->
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-foot" viewBox="0 0 24 24"><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"/><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"/><path d="M16 17h4M4 13h4"/></symbol>
+    <symbol id="i-wind" viewBox="0 0 24 24"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2M9.6 4.6A2 2 0 1 1 11 8H2M12.6 19.4A2 2 0 1 0 14 16H2"/></symbol>
+    <symbol id="i-log" viewBox="0 0 24 24"><path d="M5.5 8.5h11a3.5 3.5 0 0 1 0 7h-11a3.5 3.5 0 0 1 0-7z"/><ellipse cx="16.5" cy="12" rx="1.4" ry="2"/><path d="M4.5 12h6"/></symbol>
+    <symbol id="i-rain" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.24"/><path d="M16 14v6M8 14v6M12 16v6"/></symbol>
+    <symbol id="i-fish" viewBox="0 0 24 24"><path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z"/><path d="M18 12v.5"/><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"/><path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5 .23 6.5C6.58 18.03 7 16 7 13.33"/></symbol>
+    <symbol id="i-sand" viewBox="0 0 24 24"><path d="M6 2h12M6 22h12"/><path d="M7 2v4a5 5 0 0 0 2 4l3 2 3-2a5 5 0 0 0 2-4V2"/><path d="M7 22v-4a5 5 0 0 1 2-4l3-2 3 2a5 5 0 0 1 2 4v4"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3c.8 5.4 3.6 8.2 9 9-5.4.8-8.2 3.6-9 9-.8-5.4-3.6-8.2-9-9 5.4-.8 8.2-3.6 9-9z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-headphones" viewBox="0 0 24 24"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></symbol>
+    <!-- 새 아이콘 (제안): 먼 전차 · 시계탑 종 -->
+    <symbol id="i-tram" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="12" rx="3"/><path d="M5 11h14M9 21l1.5-4M15 21l-1.5-4M8 2h8M12 2v3"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21a2 2 0 0 0 4 0M12 3v2"/></symbol>
+    <symbol id="i-max" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></symbol>
+    <!-- 새 아이콘 (제안): 눈송이 -->
+    <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 2v20M3.3 7l17.4 10M20.7 7 3.3 17"/><path d="m9.5 3.5 2.5 2 2.5-2M9.5 20.5l2.5-2 2.5 2M3.6 10.6l3-1.1-.5-3.2M20.4 13.4l-3 1.1.5 3.2M3.6 13.4l3 1.1-.5 3.2M20.4 10.6l-3-1.1.5-3.2"/></symbol>
+    <symbol id="i-status" viewBox="0 0 70 12">
+      <g fill="currentColor" stroke="none">
+        <rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4.5" y="6" width="3" height="6" rx="1"/><rect x="9" y="3.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="1" width="3" height="11" rx="1"/>
+        <path d="M30 3.2a10 10 0 0 1 13 0l-1.4 1.5a8 8 0 0 0-10.2 0zM32.4 5.9a6.4 6.4 0 0 1 8.2 0l-1.5 1.5a4.2 4.2 0 0 0-5.2 0zM36.5 11.5l-2.1-2.2a3 3 0 0 1 4.2 0z"/>
+        <rect x="49" y="1" width="18" height="10" rx="3" fill="none" stroke="currentColor" stroke-opacity=".45"/>
+        <rect x="51" y="3" width="14" height="6" rx="1.6"/>
+        <rect x="68" y="4.2" width="1.6" height="3.6" rx=".8" opacity=".45"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ================= 시안 개요 ================= -->
+<section class="brief" data-doan-frame="brief" data-doan-title="눈멍 · 개요">
+  <div>
+    <div class="ov-brand"><span class="orb lg"></span>mong · 눈멍</div>
+    <h1>삿포로의 겨울밤, 눈 밟기</h1>
+    <p class="lead">눈 오는 삿포로에서 새 눈을 밟아요. 한 걸음마다 뽀드득 소리가 나고, 찍힌 발자국은 내리는 눈에 천천히 덮여요. 물멍의 어항 · 바다 · 연못처럼, 눈멍 안에 <b>시계탑</b>과 <b>발밑</b> 두 장면을 두고 바꿔 가며 봐요.</p>
+    <div class="ov-meta"><span>디자인 시안 · 두 장면 · 설정 · 홈 · 폰과 데스크톱</span><span>2026.11.16</span><span>보드에서 화면을 눌러 직접 밟아 볼 수 있어요</span></div>
+  </div>
+  <div>
+    <h3>두 장면</h3>
+    <ul class="changes">
+      <li><em>시계탑 (이전 C안) · 처음 장면</em><b>길 건너에서 본 시계탑 앞에 눈이 쌓여요</b><span>누르면 발자국, 끌면 눈이 쓸려서 붉은 벽돌 보도가 드러나요. 손대지 않고 바라보기에 좋아서 눈멍을 처음 열면 이 장면이에요. 홈 카드도 시계탑이에요.</span></li>
+      <li><em>발밑 (이전 A안)</em><b>가로등 아래 새 눈을 내려다봐요</b><span>누른 자리에 발자국이 찍혀요. 끌면 손가락을 따라 걸어가요. 발자국과 소리가 가장 또렷해요.</span></li>
+      <li><em>두 장면 모두</em><b>눈 세기 세 단계, 발자국은 눈에 덮여요</b><span>가루눈 · 눈 · 함박눈. 세게 내릴수록 발자국이 빨리 덮여요. 덮이는 데 2분 반 · 1분 20초 · 40초쯤 걸려요. 고른 눈 세기는 장면을 바꿔도 그대로예요.</span></li>
+      <li><em>뺀 것</em><b>걷는 길 (이전 B안)</b><span>걸음이 아직 인위적이라 이번에는 빼요.</span></li>
+    </ul>
+  </div>
+  <div>
+    <div class="not-in-code" data-doan-id="brief-not-in-code">
+      <b>코드에 들어갔어요. 소리만 아직 합성음이에요</b>
+      <ul>
+        <li>시계탑 · 발밑 장면, 여섯 번째 탭, 장면 전환, 설정 시트, 홈 카드 여섯 장(데스크톱은 세 칸 두 줄), 눈멍 색, 아이콘이 코드에 있어요 (src/scenes/clocktower.ts · underfoot.ts · snow.ts)</li>
+        <li>소리는 <b>합성음</b>이에요 (src/audio/sounds/snow.ts). 다른 멍처럼 녹음(CC0)으로 바꿀 예정이에요 (08 참고)</li>
+        <li>동그란 손가락과 저절로 찍히는 발자국은 보드 설명용이에요</li>
+        <li>타이머 종료 화면은 다른 멍과 같아요</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 01 시계탑 · 폰 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">01</span><h2>시계탑 · 폰</h2><p>제안 · 길 건너에서 시계탑을 바라보는 자리 (이전 C안)</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-snow" data-doan-frame="snow-alt-3" data-doan-implements="src/scenes/clocktower.ts" data-doan-title="시계탑 · 기본">
+      <canvas class="scene" data-snow data-view="street" data-fall="0.6" data-trail="7"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs six glass" data-doan-id="c-tabs"><a>불멍</a><a>비멍</a><a>물멍</a><a>모래멍</a><a>별멍</a><a class="on">눈멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass" data-doan-id="street-subscenes"><a class="on">시계탑</a><a>발밑</a></nav>
+      <div class="ui m-bottom">
+        <div class="m-status" data-doan-id="c-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>시계탑 앞 · <span data-stat="fall">눈</span></span><span>발자국 <span data-stat="steps">0걸음</span></span></div>
+        <div class="dock glass" data-doan-id="c-dock">
+          <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+          <div class="seg" data-doan-id="c-seg">
+            <button data-snow-act="fall" data-value="0.3">가루눈</button>
+            <button class="on" data-snow-act="fall" data-value="0.6">눈</button>
+            <button data-snow-act="fall" data-value="1">함박눈</button>
+          </div>
+          <button class="icon-btn" data-snow-act="fresh" aria-label="새 눈으로 덮기" data-doan-id="c-fresh-btn"><svg class="ico"><use href="#i-snow"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-snow" data-doan-frame="snow-alt-3-sweep" data-doan-implements="src/scenes/clocktower.ts" data-doan-title="시계탑 · 눈 쓰는 순간">
+      <canvas class="scene" data-snow data-view="street" data-fall="0.6" data-auto data-cover="9"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs six glass"><a>불멍</a><a>비멍</a><a>물멍</a><a>모래멍</a><a>별멍</a><a class="on">눈멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass"><a class="on">시계탑</a><a>발밑</a></nav>
+      <div class="ui snow-finger" data-snow-finger data-doan-id="c-finger"></div>
+      <div class="ui hint top below-sub glass" data-doan-id="c-hint"><svg class="ico sm"><use href="#i-hand"/></svg>누르면 발자국, 끌면 눈을 쓸어요</div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>시계탑 앞 · <span data-stat="fall">눈</span></span><span>발자국 <span data-stat="steps">0걸음</span></span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+          <div class="seg">
+            <button data-snow-act="fall" data-value="0.3">가루눈</button>
+            <button class="on" data-snow-act="fall" data-value="0.6">눈</button>
+            <button data-snow-act="fall" data-value="1">함박눈</button>
+          </div>
+          <button class="icon-btn" data-snow-act="fresh" aria-label="새 눈으로 덮기"><svg class="ico"><use href="#i-snow"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes">
+      <h4>자리</h4>
+      <ul>
+        <li>길 건너에서 <b>삿포로 시계탑</b>을 바라봐요. 흰 나무 벽, 붉은 지붕, 붉은 별, 불 켜진 창이 있고 뒤로 높은 빌딩이 둘러싸고 있어요.</li>
+        <li>시곗바늘은 지금 시각을 가리켜요.</li>
+        <li>화면 아래 절반이 눈 쌓인 앞마당이에요. 여기를 밟고 쓸어요.</li>
+      </ul>
+      <h4>밟기와 쓸기</h4>
+      <ul>
+        <li><b>눌렀다 떼면</b> 발자국이 찍혀요. 가까운 곳은 크고 먼 곳은 작아요.</li>
+        <li><b>끌면</b> 눈이 쓸려서 눈 아래 <b>붉은 벽돌 보도</b>가 드러나요. 눈가루가 쓰는 쪽으로 날려요.</li>
+        <li>쓴 자리도 발자국처럼 새 눈에 다시 덮여요. 발자국보다 조금 더 오래 남아요.</li>
+      </ul>
+      <h4>두 장면 사이에서</h4>
+      <ul>
+        <li><b>눈멍을 처음 열면 이 장면이에요.</b> 그다음부터는 마지막에 본 장면을 기억해요.</li>
+        <li>불멍 · 비멍처럼 <b>그냥 바라보기</b>에 좋은 장면이에요. 쓸기까지 한 화면에 들어가요.</li>
+        <li>발자국이 작고 옆에서 보는 모양이라 밟는 느낌은 발밑보다 약해요. 밟는 맛은 발밑이 맡아요.</li>
+        <li>시안에서는 지붕과 가로등 위 눈 두께가 고정이에요. 실제로는 시간이 지나며 두꺼워지게 할 수 있어요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 02 발밑 · 폰 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">02</span><h2>발밑 · 폰</h2><p>제안 · 서서 발밑을 내려다보는 자리 (이전 A안)</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-snow" data-doan-frame="snow-alt-1" data-doan-implements="src/scenes/underfoot.ts" data-doan-title="발밑 · 기본">
+      <canvas class="scene" data-snow data-view="foot" data-fall="0.6" data-trail="8"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs six glass" data-doan-id="a-tabs"><a>불멍</a><a>비멍</a><a>물멍</a><a>모래멍</a><a>별멍</a><a class="on">눈멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass" data-doan-id="foot-subscenes"><a>시계탑</a><a class="on">발밑</a></nav>
+      <div class="ui m-bottom">
+        <div class="m-status" data-doan-id="a-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>눈 오는 밤 · <span data-stat="fall">눈</span></span><span>발자국 <span data-stat="steps">0걸음</span></span></div>
+        <div class="dock glass" data-doan-id="a-dock">
+          <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+          <div class="seg" data-doan-id="a-seg">
+            <button data-snow-act="fall" data-value="0.3">가루눈</button>
+            <button class="on" data-snow-act="fall" data-value="0.6">눈</button>
+            <button data-snow-act="fall" data-value="1">함박눈</button>
+          </div>
+          <button class="icon-btn" data-snow-act="fresh" aria-label="새 눈으로 덮기" data-doan-id="a-fresh-btn"><svg class="ico"><use href="#i-snow"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-snow" data-doan-frame="snow-alt-1-step" data-doan-implements="src/scenes/underfoot.ts" data-doan-title="발밑 · 걸어가는 순간">
+      <canvas class="scene" data-snow data-view="foot" data-fall="1" data-auto data-cover="10"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs six glass"><a>불멍</a><a>비멍</a><a>물멍</a><a>모래멍</a><a>별멍</a><a class="on">눈멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass"><a>시계탑</a><a class="on">발밑</a></nav>
+      <div class="ui snow-finger" data-snow-finger data-doan-id="a-finger"></div>
+      <div class="ui hint top below-sub glass" data-doan-id="a-hint"><svg class="ico sm"><use href="#i-hand"/></svg>눌러서 밟고, 끌면 걸어가요</div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>눈 오는 밤 · <span data-stat="fall">함박눈</span></span><span>발자국 <span data-stat="steps">0걸음</span></span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+          <div class="seg">
+            <button data-snow-act="fall" data-value="0.3">가루눈</button>
+            <button data-snow-act="fall" data-value="0.6">눈</button>
+            <button class="on" data-snow-act="fall" data-value="1">함박눈</button>
+          </div>
+          <button class="icon-btn" data-snow-act="fresh" aria-label="새 눈으로 덮기"><svg class="ico"><use href="#i-snow"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes">
+      <h4>자리</h4>
+      <ul>
+        <li>가로등 아래 서서 <b>발밑의 새 눈</b>을 내려다봐요. 화면 전체가 밟을 수 있는 눈이에요.</li>
+        <li>주황빛 가로등이 가운데를 비추고 가장자리는 어두워요. 눈 결이 가끔 반짝여요.</li>
+        <li>삿포로는 <b>시계탑이 새겨진 맨홀 뚜껑</b>으로만 드러나요. 뚜껑 위는 눈이 녹아 있어요.</li>
+      </ul>
+      <h4>밟기</h4>
+      <ul>
+        <li>누르면 그 자리에 발자국 하나, 왼발과 오른발이 번갈아 찍혀요.</li>
+        <li>끌면 걸음 간격마다 발자국이 이어져요. 발끝은 <b>가는 쪽</b>을 향해요.</li>
+        <li>찍힐 때 가장자리로 눈가루가 튀고 부스러기가 남아요.</li>
+        <li>눈송이 버튼을 누르면 새 눈이 한꺼번에 덮어서 처음으로 돌아가요.</li>
+      </ul>
+      <h4>두 장면 사이에서</h4>
+      <ul>
+        <li>밟는 느낌과 뽀드득 소리가 <b>가장 직접적</b>인 장면이에요. 풍경이 없는 대신 시계탑 장면이 삿포로를 보여 줘요.</li>
+        <li>위의 <b>시계탑 · 발밑</b>을 누르면 장면이 바뀌어요. 물멍의 어항 · 바다 · 연못과 같은 자리예요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 03 시계탑 · 데스크톱 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">03</span><h2>시계탑 · 데스크톱</h2><p>제안 · 넓은 화면에서는 앞마당이 넓어져요</p></div>
+  <div class="row-body">
+
+    <div class="screen desk theme-snow" data-doan-frame="snow-street-desktop" data-doan-implements="src/scenes/clocktower.ts" data-doan-title="시계탑 · 데스크톱">
+      <canvas class="scene" data-snow data-view="street" data-fall="0.6" data-trail="9"></canvas>
+      <div class="ui d-top">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <nav class="tabs six glass"><a>불멍</a><a>비멍</a><a>물멍</a><a>모래멍</a><a>별멍</a><a class="on">눈멍</a></nav>
+        <div class="d-top-right">
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+          <button class="icon-btn glass" aria-label="전체화면"><svg class="ico"><use href="#i-max"/></svg></button>
+        </div>
+      </div>
+      <nav class="ui subscenes glass desk-sub"><a class="on">시계탑</a><a>발밑</a></nav>
+      <div class="ui d-shade" aria-hidden="true"></div>
+      <div class="ui d-now">
+        <strong><span class="eq"><i></i><i></i><i></i><i></i></span>눈 오는 밤 · 시계탑</strong>
+        <span><span data-stat="fall">눈</span> · 발자국 <span data-stat="steps">0걸음</span></span>
+      </div>
+      <div class="ui d-dock glass" data-doan-id="street-d-dock">
+        <button class="chip-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg>설정</button>
+        <span class="sep"></span>
+        <div class="seg narrow">
+          <button data-snow-act="fall" data-value="0.3">가루눈</button>
+          <button class="on" data-snow-act="fall" data-value="0.6">눈</button>
+          <button data-snow-act="fall" data-value="1">함박눈</button>
+        </div>
+        <button class="chip-btn" data-snow-act="fresh"><svg class="ico"><use href="#i-snow"/></svg>새 눈</button>
+        <span class="sep"></span>
+        <div class="vol"><svg class="ico"><use href="#i-volume"/></svg><div class="slider"><i style="width:60%"></i><b style="left:60%"></b></div></div>
+      </div>
+      <div class="ui d-keys stack" data-doan-id="street-d-keys"><span><kbd>↑</kbd><kbd>↓</kbd> 눈 세기 · <kbd>N</kbd> 새 눈</span><span>클릭하면 발자국, 끌면 눈을 쓸어요</span></div>
+    </div>
+
+    <aside class="notes">
+      <h4>폰과 다른 점</h4>
+      <ul>
+        <li>위쪽 가운데에 탭, 그 아래에 <b>시계탑 · 발밑</b> 장면 전환이 있어요. 물멍 데스크톱과 같은 자리예요.</li>
+        <li>아래 가운데 독에 설정, 눈 세기, <b>새 눈</b>, 음량을 한 줄로 놓았어요. 폰에서는 눈송이 아이콘이던 새 눈 버튼에 글자를 붙였어요.</li>
+        <li>왼쪽 아래에 지금 장면과 눈 세기 · 발자국 수, 오른쪽 아래에 단축키를 적어요.</li>
+        <li>시계탑은 가운데에 두고, 넓어진 양옆으로 빌딩과 가로등이 더 보여요. 탑 꼭대기가 장면 전환에 가리지 않게 땅을 조금 내렸어요.</li>
+      </ul>
+      <h4>마우스와 키보드</h4>
+      <ul>
+        <li>클릭하면 발자국, 누른 채 끌면 눈이 쓸려서 붉은 벽돌 보도가 드러나요.</li>
+        <li>폰보다 앞마당이 넓어서 쓸 자리가 많아요. 쓴 자리는 발자국보다 조금 더 오래 남았다가 새 눈에 덮여요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 04 발밑 · 데스크톱 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">04</span><h2>발밑 · 데스크톱</h2><p>제안 · 넓은 화면에서는 가로등 빛이 더 넓게 퍼져요</p></div>
+  <div class="row-body">
+
+    <div class="screen desk theme-snow" data-doan-frame="snow-foot-desktop" data-doan-implements="src/scenes/underfoot.ts" data-doan-title="발밑 · 데스크톱">
+      <canvas class="scene" data-snow data-view="foot" data-fall="0.6" data-trail="12"></canvas>
+      <div class="ui d-top">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <nav class="tabs six glass"><a>불멍</a><a>비멍</a><a>물멍</a><a>모래멍</a><a>별멍</a><a class="on">눈멍</a></nav>
+        <div class="d-top-right">
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+          <button class="icon-btn glass" aria-label="전체화면"><svg class="ico"><use href="#i-max"/></svg></button>
+        </div>
+      </div>
+      <nav class="ui subscenes glass desk-sub"><a>시계탑</a><a class="on">발밑</a></nav>
+      <div class="ui d-shade" aria-hidden="true"></div>
+      <div class="ui d-now">
+        <strong><span class="eq"><i></i><i></i><i></i><i></i></span>눈 오는 밤 · 발밑</strong>
+        <span><span data-stat="fall">눈</span> · 발자국 <span data-stat="steps">0걸음</span></span>
+      </div>
+      <div class="ui d-dock glass" data-doan-id="foot-d-dock">
+        <button class="chip-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg>설정</button>
+        <span class="sep"></span>
+        <div class="seg narrow">
+          <button data-snow-act="fall" data-value="0.3">가루눈</button>
+          <button class="on" data-snow-act="fall" data-value="0.6">눈</button>
+          <button data-snow-act="fall" data-value="1">함박눈</button>
+        </div>
+        <button class="chip-btn" data-snow-act="fresh"><svg class="ico"><use href="#i-snow"/></svg>새 눈</button>
+        <span class="sep"></span>
+        <div class="vol"><svg class="ico"><use href="#i-volume"/></svg><div class="slider"><i style="width:60%"></i><b style="left:60%"></b></div></div>
+      </div>
+      <div class="ui d-keys stack" data-doan-id="foot-d-keys"><span><kbd>↑</kbd><kbd>↓</kbd> 눈 세기 · <kbd>N</kbd> 새 눈</span><span>클릭하면 발자국, 끌면 걸어가요</span></div>
+    </div>
+
+    <aside class="notes">
+      <h4>폰과 다른 점</h4>
+      <ul>
+        <li>탭 · 장면 전환 · 독 · 단축키 자리는 시계탑과 같아요. 장면을 바꿔도 손에 익은 자리가 그대로예요.</li>
+        <li>넓은 화면에서는 맨홀 뚜껑을 안쪽으로 옮겨 다 보이게 했어요.</li>
+      </ul>
+      <h4>마우스와 키보드</h4>
+      <ul>
+        <li>클릭하면 그 자리에 발자국, 누른 채 끌면 마우스를 따라 걸어가요. 발자국은 폰보다 조금 크게 찍혀요.</li>
+        <li><kbd>↑</kbd> <kbd>↓</kbd> 로 눈 세기를 바꾸고, <kbd>N</kbd> 으로 새 눈을 덮어요. 단축키는 새로 제안하는 거예요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 05 설정 시트 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">05</span><h2>설정 시트</h2><p>제안 · 독 왼쪽의 설정 버튼을 누르면 열려요. 다른 멍과 같은 틀에 눈멍 소리를 넣었어요</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-snow" data-doan-frame="snow-sheet" data-doan-implements="src/views/scene-view.ts" data-doan-title="눈멍 · 설정 시트">
+      <canvas class="scene" data-snow data-view="street" data-fall="0.6" data-trail="6"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs six glass"><a>불멍</a><a>비멍</a><a>물멍</a><a>모래멍</a><a>별멍</a><a class="on">눈멍</a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass"><a class="on">시계탑</a><a>발밑</a></nav>
+      <div class="scrim"></div>
+      <div class="ui sheet glass-strong" data-doan-id="snow-sheet-panel">
+        <div class="grab"></div>
+        <div class="sheet-head"><h3>설정</h3><button class="icon-btn" aria-label="닫기"><svg class="ico"><use href="#i-x"/></svg></button></div>
+        <p class="sub">타이머가 끝나면 소리가 3분 동안 천천히 작아져요.</p>
+        <h4>타이머</h4>
+        <div class="chips"><button>15분</button><button class="on">30분</button><button>1시간</button><button>계속</button></div>
+        <h4>소리 섞기</h4>
+        <div class="mix" data-doan-id="snow-mix">
+          <div class="mix-row"><svg class="ico sm"><use href="#i-foot"/></svg><span>뽀드득</span><div class="slider"><i style="width:80%"></i><b style="left:80%"></b></div><span class="val">80</span></div>
+          <div class="mix-row"><svg class="ico sm"><use href="#i-wind"/></svg><span>눈 오는 밤</span><div class="slider"><i style="width:55%"></i><b style="left:55%"></b></div><span class="val">55</span></div>
+          <div class="mix-row"><svg class="ico sm"><use href="#i-tram"/></svg><span>먼 전차</span><div class="slider"><i style="width:30%"></i><b style="left:30%"></b></div><span class="val">30</span></div>
+          <div class="mix-row"><svg class="ico sm"><use href="#i-bell"/></svg><span>시계탑 종</span><div class="slider"><i style="width:50%"></i><b style="left:50%"></b></div><span class="val">50</span></div>
+        </div>
+        <h4>화면</h4>
+        <div class="tend-row snow-cover-row" data-doan-id="snow-cover-toggle"><span><b>발자국을 눈으로 덮기</b><small>끄면 찍은 발자국과 쓴 자리가 그대로 남아요</small></span><span class="switch"></span></div>
+        <button class="btn-block">완료</button>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen desk theme-snow" data-doan-frame="snow-sheet-desktop" data-doan-implements="src/views/scene-view.ts" data-doan-title="눈멍 · 설정 · 데스크톱">
+      <canvas class="scene" data-snow data-view="street" data-fall="0.6" data-trail="9"></canvas>
+      <div class="ui d-top">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <nav class="tabs six glass"><a>불멍</a><a>비멍</a><a>물멍</a><a>모래멍</a><a>별멍</a><a class="on">눈멍</a></nav>
+        <div class="d-top-right">
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+          <button class="icon-btn glass" aria-label="전체화면"><svg class="ico"><use href="#i-max"/></svg></button>
+        </div>
+      </div>
+      <nav class="ui subscenes glass desk-sub"><a class="on">시계탑</a><a>발밑</a></nav>
+      <div class="scrim"></div>
+      <div class="ui sheet glass-strong desk-sheet" data-doan-id="snow-sheet-desk-panel">
+        <div class="sheet-head"><h3>설정</h3><button class="icon-btn" aria-label="닫기"><svg class="ico"><use href="#i-x"/></svg></button></div>
+        <p class="sub">타이머가 끝나면 소리가 3분 동안 천천히 작아져요.</p>
+        <h4>타이머</h4>
+        <div class="chips"><button>15분</button><button class="on">30분</button><button>1시간</button><button>계속</button></div>
+        <h4>소리 섞기</h4>
+        <div class="mix">
+          <div class="mix-row"><svg class="ico sm"><use href="#i-foot"/></svg><span>뽀드득</span><div class="slider"><i style="width:80%"></i><b style="left:80%"></b></div><span class="val">80</span></div>
+          <div class="mix-row"><svg class="ico sm"><use href="#i-wind"/></svg><span>눈 오는 밤</span><div class="slider"><i style="width:55%"></i><b style="left:55%"></b></div><span class="val">55</span></div>
+          <div class="mix-row"><svg class="ico sm"><use href="#i-tram"/></svg><span>먼 전차</span><div class="slider"><i style="width:30%"></i><b style="left:30%"></b></div><span class="val">30</span></div>
+          <div class="mix-row"><svg class="ico sm"><use href="#i-bell"/></svg><span>시계탑 종</span><div class="slider"><i style="width:50%"></i><b style="left:50%"></b></div><span class="val">50</span></div>
+        </div>
+        <h4>화면</h4>
+        <div class="tend-row snow-cover-row"><span><b>발자국을 눈으로 덮기</b><small>끄면 찍은 발자국과 쓴 자리가 그대로 남아요</small></span><span class="switch"></span></div>
+        <button class="btn-block">완료</button>
+      </div>
+      <div class="ui d-dock glass">
+        <button class="chip-btn on" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg>설정</button>
+        <span class="sep"></span>
+        <div class="seg narrow">
+          <button data-snow-act="fall" data-value="0.3">가루눈</button>
+          <button class="on" data-snow-act="fall" data-value="0.6">눈</button>
+          <button data-snow-act="fall" data-value="1">함박눈</button>
+        </div>
+        <button class="chip-btn" data-snow-act="fresh"><svg class="ico"><use href="#i-snow"/></svg>새 눈</button>
+        <span class="sep"></span>
+        <div class="vol"><svg class="ico"><use href="#i-volume"/></svg><div class="slider"><i style="width:60%"></i><b style="left:60%"></b></div></div>
+      </div>
+    </div>
+
+    <aside class="notes">
+      <h4>틀은 다른 멍과 같아요</h4>
+      <ul>
+        <li>위에서부터 <b>타이머 · 소리 섞기 · 화면 · 완료</b>예요. 별멍 · 모래멍 시트와 같은 순서예요.</li>
+        <li>폰은 아래에서 올라오는 시트, 데스크톱은 독 위에 뜨는 420px 창이에요. 데스크톱에서는 설정 버튼이 켜진 색으로 바뀌어요.</li>
+        <li>시계탑과 발밑은 <b>같은 소리 섞기</b>를 써요. 장면을 바꿔도 맞춰 둔 소리가 그대로예요.</li>
+      </ul>
+      <h4>소리 섞기 네 층</h4>
+      <ul>
+        <li><b>뽀드득</b>: 밟을 때마다 나는 소리의 크기. 눈을 쓸 때 사락사락 소리도 이 크기를 따라요.</li>
+        <li><b>눈 오는 밤</b>: 눈이 소리를 먹은 먹먹한 공기와 낮은 바람. 늘 깔려요.</li>
+        <li><b>먼 전차</b>: 가끔 멀리서 지나가는 삿포로 노면전차.</li>
+        <li><b>시계탑 종</b>: <b>10분마다 한 번</b>, 멀리서 ‘댕’ 하고 울려요. 정각에도 똑같이 한 번이에요. 30분 타이머면 서너 번 들려서 시간이 흐르는 게 느껴져요. 0으로 내리면 울리지 않아요.</li>
+      </ul>
+      <h4>화면</h4>
+      <ul>
+        <li><b>발자국을 눈으로 덮기</b>: 처음엔 켜져 있어요. 끄면 발자국과 쓴 자리가 덮이지 않고 남아서, 걸어온 길을 그대로 볼 수 있어요. 새 눈 버튼으로는 언제든 지울 수 있어요.</li>
+        <li>스위치 하나라 시트가 폰 화면 절반쯤에서 멈춰요. 뒤로 시계탑이 보여요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 06 홈 · 폰 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">06</span><h2>홈 · 폰</h2><p>정함 · 여섯 장 모두 같은 크기, 두 칸 세 줄</p></div>
+  <div class="row-body">
+
+    <div class="screen phone" data-doan-frame="snow-home" data-doan-implements="src/views/home-view.ts" data-doan-title="홈 · 카드 여섯 장">
+      <div class="home-bg"></div>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui home-head">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <h1>오늘은 어떤 멍?</h1>
+        <p>소리를 켜고, 아무 생각 없이 바라보세요.</p>
+      </div>
+      <div class="ui cards-m six" data-doan-id="snow-home-cards">
+        <a class="card theme-fire">
+          <canvas class="scene" data-fire2 data-fy="0.6" data-scale="1.35" data-auto-add="10"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-log"/></svg>장작 넣기</span>
+          <div class="card-info"><div><h3>불멍</h3><p>타닥타닥, 장작 타는 소리</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+        <a class="card theme-rain">
+          <canvas class="scene" data-rain2 data-frame="none" data-intensity="0.6"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-rain"/></svg>비 세기 조절</span>
+          <div class="card-info"><div><h3>비멍</h3><p>창가에 앉아 듣는 빗소리</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+        <a class="card theme-water">
+          <canvas class="scene" data-scene="aquarium" data-scale="1.1"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-fish"/></svg>먹이 주기 · 물결</span>
+          <div class="card-info"><div><h3>물멍</h3><p>어항 · 바다 · 연못</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+        <a class="card theme-sand">
+          <canvas class="scene" data-sand data-palette="sunset" data-speed="1" data-prefill="0.45"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-sand"/></svg>색모래 붓기</span>
+          <div class="card-info"><div><h3>모래멍</h3><p>사르르, 색모래 쌓이는 소리</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+        <a class="card theme-star">
+          <canvas class="scene" data-star data-season="autumn" data-night="night" data-floor="34" data-top="70" data-turn="-34" data-meteor="6" data-guide="0"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-star"/></svg>별자리 · 별똥별</span>
+          <div class="card-info"><div><h3>별멍</h3><p>풀밭에 누워 듣는 밤소리</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+        <a class="card theme-snow" data-doan-id="snow-home-card">
+          <canvas class="scene" data-snow data-view="street" data-card data-fall="0.6" data-trail="3"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-snow"/></svg>발자국 · 눈 쓸기</span>
+          <div class="card-info"><div><h3>눈멍</h3><p>뽀드득, 새 눈 밟는 소리</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+      </div>
+      <div class="ui home-foot"><svg class="ico sm"><use href="#i-headphones"/></svg>이어폰을 끼면 더 좋아요</div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes">
+      <h4>눈멍 카드</h4>
+      <ul>
+        <li>카드에는 <b>시계탑</b>이 작게 움직여요. 눈이 내리고 앞마당에 발자국이 조금 찍혀 있어요. 누르면 시계탑 장면으로 들어가요.</li>
+        <li>카드 왼쪽 위 태그와 왼쪽 아래 글자를 비우려고 시계탑을 오른쪽에 붙였어요.</li>
+        <li>설명은 다른 멍처럼 소리로 ‘뽀드득, 새 눈 밟는 소리’, 태그는 할 수 있는 것으로 ‘발자국 · 눈 쓸기’예요.</li>
+      </ul>
+      <h4>여섯 장 모두 같은 크기</h4>
+      <ul>
+        <li>다섯 장일 때 넓게 놓였던 별멍 카드도 <b>다른 카드와 같은 크기</b>가 돼요. 두 칸 세 줄로 딱 맞아요. 카드 높이는 그대로예요.</li>
+        <li>멍이 더 늘어도 같은 규칙으로 아래에 한 줄씩 붙어요.</li>
+      </ul>
+    </aside>
+
+    <aside class="notes" data-doan-id="home-previews">
+      <h4>다른 멍 미리보기</h4>
+      <ul>
+        <li>불멍과 비멍 카드를 <b>지금 앱과 같은 모습</b>으로 바꿨어요. 불멍은 돌로 둘러싼 장작불과 나무 그림자, 비멍은 창밖 도시 불빛이에요.</li>
+        <li>모래멍 · 별멍 카드는 원래 앱과 같아요.</li>
+        <li>물멍 카드는 보드에 실제 앱 어항을 그리는 스크립트가 없어서 예전 그림 그대로예요. 실제 앱은 붉은 수초, 유목, 물고기 떼가 더 있어요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 07 홈 · 데스크톱 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">07</span><h2>홈 · 데스크톱</h2><p>정함 · 폰과 같은 규칙으로 세 장씩 두 줄</p></div>
+  <div class="row-body">
+
+    <div class="screen desk" data-doan-frame="snow-home-d-grid" data-doan-implements="src/views/home-view.ts" data-doan-title="홈 · 데스크톱 · 세 장씩 두 줄">
+      <div class="home-bg"></div>
+      <div class="ui d-top">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <button class="icon-btn glass" aria-label="전체화면"><svg class="ico"><use href="#i-max"/></svg></button>
+      </div>
+      <div class="ui home-d-head compact"><h1>오늘은 어떤 멍?</h1><p>소리를 켜고, 아무 생각 없이 바라보세요.</p></div>
+      <div class="ui cards-d grid3" data-doan-id="snow-home-d-grid-cards">
+        <a class="card theme-fire">
+          <canvas class="scene" data-fire2 data-fx="0.7" data-fy="0.74" data-scale="1.2" data-auto-add="14"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-log"/></svg>장작 넣기</span>
+          <div class="card-info"><div><h3>불멍</h3><p>타닥타닥, 장작 타는 소리</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+        <a class="card theme-rain">
+          <canvas class="scene" data-rain2 data-frame="none" data-intensity="0.6"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-rain"/></svg>비 세기 조절</span>
+          <div class="card-info"><div><h3>비멍</h3><p>창가에 앉아 듣는 빗소리</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+        <a class="card theme-water">
+          <canvas class="scene" data-scene="aquarium" data-scale="0.9"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-fish"/></svg>먹이 주기 · 물결</span>
+          <div class="card-info"><div><h3>물멍</h3><p>어항 · 바다 · 연못</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+        <a class="card theme-sand">
+          <canvas class="scene" data-sand data-palette="sunset" data-speed="1" data-prefill="0.45"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-sand"/></svg>색모래 붓기</span>
+          <div class="card-info"><div><h3>모래멍</h3><p>사르르, 색모래 쌓이는 소리</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+        <a class="card theme-star">
+          <canvas class="scene" data-star data-season="autumn" data-night="night" data-floor="44" data-top="60" data-meteor="6" data-guide="0"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-star"/></svg>별자리 · 별똥별</span>
+          <div class="card-info"><div><h3>별멍</h3><p>풀밭에 누워 듣는 밤소리</p></div><span class="go glass"><svg class="ico"><use href="#i-arrow"/></svg></span></div>
+        </a>
+        <a class="card theme-snow is-hover" data-doan-id="snow-home-d-grid-snow">
+          <canvas class="scene" data-snow data-view="street" data-card data-fall="0.6" data-trail="4"></canvas>
+          <span class="card-tag glass"><span class="eq"><i></i><i></i><i></i><i></i></span>소리 미리 듣는 중</span>
+          <div class="card-info"><div><h3>눈멍</h3><p>뽀드득, 새 눈 밟는 소리</p></div><span class="enter">들어가기<svg class="ico sm"><use href="#i-arrow"/></svg></span></div>
+        </a>
+      </div>
+      <div class="ui home-d-foot">
+        <span><svg class="ico sm"><use href="#i-headphones"/></svg>이어폰을 끼면 더 좋아요</span>
+        <span><kbd>1</kbd>~<kbd>6</kbd> 바로 들어가기</span>
+      </div>
+    </div>
+
+    <aside class="notes" data-doan-id="home-d-notes">
+      <h4>세 장씩 두 줄</h4>
+      <ul>
+        <li>폰처럼 <b>여섯 장 모두 같은 크기</b>예요. 폰은 두 칸 세 줄, 데스크톱은 세 칸 두 줄이에요.</li>
+        <li>카드는 가로로 넓어요(1280 화면에서 368 × 238). 카드 사이는 16px예요. 두 줄이 들어가게 ‘오늘은 어떤 멍?’을 46에서 38px로 줄였어요.</li>
+        <li>넓은 카드라 불멍은 실제 앱처럼 불을 오른쪽에 두고, 눈멍은 시계탑을 오른쪽에 둬서 왼쪽 아래 글자 자리를 비워요.</li>
+        <li>마우스를 올리면 카드가 살짝 떠오르고 소리를 미리 들려주고, ‘들어가기’ 버튼이 나와요. <kbd>1</kbd>~<kbd>6</kbd>으로 바로 들어가요.</li>
+        <li>멍이 더 늘면 세 장씩 아래로 한 줄이 붙어요.</li>
+      </ul>
+      <h4>코드에서 바뀌는 것</h4>
+      <ul>
+        <li>지금 코드는 넓은 화면에서 카드를 <b>한 줄</b>로 놓아요(src/styles/app.css 의 .cards). 세 칸 격자로 바꿔야 해요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 08 소리 · 정해야 할 것 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">08</span><h2>두 장면 비교 · 소리 · 정해야 할 것</h2><p>만들기 전에 볼 것</p></div>
+  <div class="row-body">
+
+    <aside class="notes compare-wide" data-doan-frame="snow-compare" data-doan-title="두 장면 한눈에">
+      <h4>두 장면 한눈에</h4>
+      <table class="alt-compare">
+        <tr><th></th><th>시계탑 · 처음 장면</th><th>발밑</th></tr>
+        <tr><td>보는 곳</td><td>길 건너 거리를 옆에서</td><td>발밑의 눈을 위에서</td></tr>
+        <tr><td>삿포로</td><td>시계탑, 붉은 벽돌 보도</td><td>맨홀 뚜껑, 가로등 빛</td></tr>
+        <tr><td>누르기</td><td>앞마당에 작은 발자국</td><td>누른 자리에 큰 발자국</td></tr>
+        <tr><td>끌기</td><td>눈을 쓸어요</td><td>손가락을 따라 걸어가요</td></tr>
+        <tr><td>손 안 대면</td><td>눈이 내리고 시계가 가요</td><td>눈이 내리고 발자국이 덮여요</td></tr>
+        <tr><td>어울리는 때</td><td>가만히 바라보고 싶을 때</td><td>손으로 만지작거리고 싶을 때</td></tr>
+        <tr><td>만들 양</td><td>보통</td><td>적음</td></tr>
+      </table>
+    </aside>
+
+    <aside class="notes snow-wide" data-doan-frame="snow-sound" data-doan-implements="src/audio/sounds/snow.ts" data-doan-title="소리 계획">
+      <h4>뽀드득 소리</h4>
+      <ul>
+        <li>보드에서 나는 소리는 <b>시안용 합성음</b>이라 진짜 눈 소리와는 거리가 있어요. 박자와 손맛만 봐 주세요.</li>
+        <li>실제로는 다른 멍처럼 <b>눈 밟는 녹음(CC0)</b>을 써요. 한 걸음씩 잘라서 여러 개를 두고, 매번 다른 걸 골라 음높이와 크기를 조금씩 바꿔요.</li>
+        <li>왼발 · 오른발 소리는 좌우로 살짝 벌려요. 이어폰을 끼면 걷는 느낌이 나요.</li>
+      </ul>
+      <table class="snow-table">
+        <tr><th>층</th><th>소리</th><th>언제</th></tr>
+        <tr><td>뽀드득</td><td>밟는 소리. 걸음마다 다른 녹음. 눈 쓰는 사락사락도 이 크기를 따라요</td><td>밟고 쓸 때마다</td></tr>
+        <tr><td>눈 오는 밤</td><td>눈이 소리를 먹은 먹먹한 공기, 낮은 바람</td><td>늘</td></tr>
+        <tr><td>먼 전차</td><td>멀리 지나가는 노면전차</td><td>가끔</td></tr>
+        <tr><td>시계탑 종</td><td>멀리서 한 번 울리는 종</td><td>10분마다</td></tr>
+      </table>
+      <h4>눈 세기와 소리</h4>
+      <ul>
+        <li>추울수록 눈이 더 뽀드득거려요. <b>가루눈은 높고 마른 소리, 함박눈은 낮고 폭신한 소리</b>로 녹음을 나눠 두는 걸 제안해요.</li>
+      </ul>
+    </aside>
+
+    <aside class="notes snow-mid" data-doan-frame="snow-decide" data-doan-title="정해야 할 것">
+      <h4>정한 것</h4>
+      <ul>
+        <li><b>장면은 시계탑 · 발밑 두 개.</b> 걷는 길(이전 B안)은 빼요.</li>
+        <li><b>처음엔 시계탑.</b> 눈멍을 처음 열면 시계탑이고, 그다음부터는 마지막에 본 장면을 기억해요(01).</li>
+        <li><b>홈 카드도 시계탑</b>이에요(06).</li>
+        <li><b>시계탑 종은 10분마다 한 번.</b> 정각에도 한 번이에요(05).</li>
+        <li><b>홈은 여섯 장 모두 같은 크기.</b> 폰은 두 칸 세 줄, 데스크톱은 세 칸 두 줄이에요(06 · 07).</li>
+      </ul>
+      <h4 class="ask">정해야 할 것</h4>
+      <ul>
+        <li><b>발자국을 눈으로 덮기 기본값.</b> 켜 두는 걸 제안했어요. 끄면 발자국이 쌓이기만 해요(05).</li>
+        <li><b>눈 쓸기.</b> 시계탑에만 넣었어요. 발밑에도 넣으면 끌기가 ‘걸어가기’와 겹쳐서 쓸기 버튼이 따로 필요해요.</li>
+        <li><b>탭 여섯 개.</b> 폰에서 한 줄에 겨우 들어가요. 글자를 12.5px로 줄였어요. 더 좁은 폰에서는 넘치니 옆으로 미는 탭이나 다른 방법이 필요해요.</li>
+        <li><b>단축키.</b> 데스크톱에 <kbd>↑</kbd> <kbd>↓</kbd> 눈 세기, <kbd>N</kbd> 새 눈, 홈에서 <kbd>1</kbd>~<kbd>6</kbd>을 제안했어요. 다른 멍과 겹치지 않는지 봐 주세요.</li>
+        <li><b>별멍의 겨울과 겹치는지.</b> 별멍 겨울에도 눈 덮인 풀밭이 있어요. 눈멍은 도시의 밤과 밟는 소리로 구별했어요.</li>
+        <li><b>눈멍 색.</b> 다른 멍과 겹치지 않게 연분홍으로 잡았어요. 흰색이나 시계탑 지붕의 붉은색도 후보예요.</li>
+        <li><b>시간대.</b> 두 장면 모두 밤이에요. 눈 오는 낮이나 해 질 녘도 원하시면 그릴게요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- 홈 카드의 다른 멍 미리보기 (다른 시안과 같은 스크립트) -->
+<script src="../assets/mong-scenes.js"></script>
+<script src="../assets/fire-v2.js"></script>
+<script src="../assets/rain-v2.js"></script>
+<script src="../assets/sand.js"></script>
+<script src="../assets/star.js"></script>
+<script src="../assets/snow.js"></script>
+</body>
+</html>

@@ -3,7 +3,7 @@ import { keepAwake } from './lib/device';
 import { save, settings } from './lib/settings';
 import { timer } from './lib/timer';
 import { showNewVersions } from './lib/update';
-import { isWater, routeOf, type SceneId, type WaterId } from './scenes/registry';
+import { SNOW, isSnow, isWater, routeOf, type SceneId, type WaterId } from './scenes/registry';
 import { HomeView } from './views/home-view';
 import { SceneView } from './views/scene-view';
 import type { View } from './views/view';
@@ -12,12 +12,16 @@ type Route = { view: 'home' } | { view: 'scene'; id: SceneId };
 
 const WATER_IDS: readonly WaterId[] = ['aquarium', 'sea', 'pond'];
 
-/** #/  ·  #/fire  ·  #/rain  ·  #/water (last used)  ·  #/water/aquarium|sea|pond  ·  #/sand  ·  #/star */
+/** #/  ·  #/fire  ·  #/rain  ·  #/water (last used)  ·  #/water/aquarium|sea|pond  ·  #/sand  ·  #/star  ·  #/snow (last used)  ·  #/snow/clocktower|underfoot */
 function parse(hash: string): Route {
   const [first, second] = hash.replace(/^#\/?/, '').split('/').filter(Boolean);
   if (first === 'fire' || first === 'rain' || first === 'sand' || first === 'star') return { view: 'scene', id: first };
   if (first === 'water') {
     const sub = WATER_IDS.find((w) => w === second) ?? settings().water;
+    return { view: 'scene', id: sub };
+  }
+  if (first === 'snow') {
+    const sub = SNOW.find((s) => s.id === second)?.id ?? settings().snow;
     return { view: 'scene', id: sub };
   }
   return { view: 'home' };
@@ -33,6 +37,7 @@ export function startApp(root: HTMLElement) {
       const canonical = routeOf(route.id);
       if (location.hash !== canonical) history.replaceState(null, '', canonical);
       if (isWater(route.id)) save({ water: route.id });
+      if (isSnow(route.id)) save({ snow: route.id });
     }
     const key = route.view === 'home' ? 'home' : route.id;
     if (key === currentKey) return;

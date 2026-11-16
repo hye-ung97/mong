@@ -295,6 +295,20 @@ kbd {
   box-shadow: 0 6px 24px color-mix(in srgb, var(--accent) 45%, transparent);
 }
 .rail-main[aria-pressed="true"] { background: color-mix(in srgb, var(--accent) 25%, transparent); color: var(--accent-soft); }
+/* six groups on the rail (since 눈멍): smaller buttons on short screens, and it scrolls if it still does not fit */
+@media (orientation: landscape) and (max-height: 500px) {
+  .rail { overflow-y: auto; scrollbar-width: none; }
+  .rail::-webkit-scrollbar { display: none; }
+}
+@media (orientation: landscape) and (max-height: 440px) {
+  .rail { padding: 6px 0; }
+  .rail .icon-btn { width: 38px; height: 38px; }
+  .rail-group { gap: 0; }
+  .rail-main { width: 46px; height: 46px; flex: none; }
+}
+@media (orientation: landscape) and (max-height: 400px) {
+  .rail .icon-btn { width: 34px; height: 34px; }
+}
 
 /* toast, sound pill */
 .toast {
@@ -518,9 +532,20 @@ kbd {
 }
 
 /* ---------- 별멍 ---------- */
-/* five tabs: a little less room around each on phones */
-@media (max-width: 767.98px) { .tabs a { padding: 0 7px; } }
-@media (max-width: 374.98px) { .tabs a { padding: 0 5px; font-size: 12.5px; } }
+/* six tabs (since 눈멍): on phones the labels get a little smaller to fit between the two round buttons */
+@media (max-width: 767.98px) {
+  .topbar .tabs { gap: 0; padding: 4px 3px; }
+  .tabs a { padding: 0 5px; font-size: 12.5px; letter-spacing: -0.02em; }
+  .tabs a.on { gap: 4px; }
+  .tabs a.on::before { width: 5px; height: 5px; }
+}
+@media (max-width: 374.98px) { .tabs a { padding: 0 4px; font-size: 12px; } }
+/* the narrowest phones: the tabs scroll sideways instead of pushing the round buttons off the screen */
+@media (max-width: 349.98px) {
+  .topbar .tabs { min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  .topbar .tabs::-webkit-scrollbar { display: none; }
+  .tabs a { flex: none; }
+}
 [data-scene="star"] .d-keys { bottom: 34px; flex-direction: column; align-items: flex-end; gap: 9px; }
 /* the night's three times: the lit one gets a pin while it is held */
 .star-seg button { position: relative; }
@@ -541,19 +566,47 @@ kbd {
 }
 @media (min-width: 768px) and (max-width: 1299px) { [data-scene="star"] .d-now { display: none; } }
 
-/* home: five cards. Phones: two columns with 별멍 across the bottom; wide screens: one row */
+/* ---------- 눈멍 ---------- */
+/* the tap hint floats just below the scene switch, and toasts below the hint */
+.theme-snow .hint-glass { top: calc(env(safe-area-inset-top) + 112px); }
+@media (max-width: 767.98px) { .scene-view.theme-snow .toast { top: calc(env(safe-area-inset-top) + 158px); } }
+/* bright snow under the controls: a dim shade keeps the status line and key hints readable */
+.scene-view.theme-snow .chrome::before {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 260px; pointer-events: none;
+  background: linear-gradient(180deg, rgba(8, 12, 30, 0), rgba(8, 12, 30, 0.55));
+}
+.scene-view.theme-snow .m-status, .scene-view.theme-snow .d-now, .scene-view.theme-snow .d-keys { text-shadow: 0 1px 6px rgba(8, 12, 30, 0.7); }
+.scene-view.theme-snow .d-keys { color: var(--ui-dim); }
+/* a press leaves a footprint, a drag sweeps (시계탑) or walks (발밑): the browser must not scroll instead */
+.scene-view.theme-snow canvas.scene { touch-action: none; }
+[data-scene="clocktower"] .d-keys, [data-scene="underfoot"] .d-keys { bottom: 34px; flex-direction: column; align-items: flex-end; gap: 9px; }
+@media (min-width: 768px) and (max-width: 1259px) { .scene-view.theme-snow .d-now { display: none; } }
+
+/* home: six cards, all the same size. Phones: two columns, three rows; wide screens: three columns, two rows */
 @media (max-width: 767.98px) {
   .cards { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(118px, 1fr); }
   .card { max-height: none; }
-  .card.wide { grid-column: 1 / -1; }
-  .card:not(.wide) .go { display: none; }
-  .card:not(.wide) .card-info { left: 14px; right: 12px; bottom: 14px; }
-  .card:not(.wide) .card-title { font-size: 20px; margin-bottom: 5px; }
-  .card:not(.wide) .card-sub { font-size: 12.5px; }
-  .card:not(.wide) .card-tag { top: 10px; left: 10px; }
-}
-@media (orientation: landscape) and (max-height: 500px) {
-  .cards { display: flex; }
   .card .go { display: none; }
+  .card .card-info { left: 14px; right: 12px; bottom: 14px; }
+  .card .card-title { font-size: 20px; margin-bottom: 5px; }
+  .card .card-sub { font-size: 12.5px; }
+  .card .card-tag { top: 10px; left: 10px; }
 }
-@media (min-width: 768px) { .cards { gap: 16px; } .card-title { font-size: 26px; } }
+@media (min-width: 768px) {
+  .home-head h1 { margin: clamp(40px, 7dvh, 72px) 0 10px; font-size: 38px; }
+  .home-head p { font-size: 15px; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; gap: 16px; max-width: 1180px; height: clamp(420px, 62dvh, 560px); }
+  .card-title { font-size: 26px; }
+}
+/* landscape phones (some are wider than 768): three columns, two rows, as short as the screen */
+@media (orientation: landscape) and (max-height: 500px) {
+  .home-head h1 { margin-top: 10px; font-size: 26px; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; height: auto; flex: 1; min-height: 0; }
+  .card { min-height: 72px; }
+  .card .go { display: none; }
+  .card .card-info { left: 14px; right: 12px; bottom: 12px; }
+  .card .card-title { font-size: 18px; margin-bottom: 4px; }
+  .card .card-sub { font-size: 12px; }
+  .card .card-tag { top: 8px; left: 8px; }
+}
+@media (orientation: landscape) and (max-height: 400px) { .card .card-tag { display: none; } }

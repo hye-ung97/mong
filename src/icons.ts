@@ -30,6 +30,10 @@ const PATHS = {
   frog: '<path d="M4 14.5c0-3.6 3.6-6 8-6s8 2.4 8 6V16a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><circle cx="8" cy="7.5" r="2.5"/><circle cx="16" cy="7.5" r="2.5"/><path d="M9 15.5c2 1.1 4 1.1 6 0"/>',
   owl: '<path d="M6 4l2.5 3h7L18 4"/><rect x="5" y="6" width="14" height="15" rx="7"/><circle cx="9.5" cy="12" r="2"/><circle cx="14.5" cy="12" r="2"/><path d="M12 15v1.5"/>',
   pin: '<path d="M12 17v5"/><path d="M9 10.8a2 2 0 0 1-1.1 1.8l-1.8.9A2 2 0 0 0 5 15.2V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.8a2 2 0 0 0-1.1-1.7l-1.8-.9A2 2 0 0 1 15 10.8V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>',
+  /* 눈멍: a snowflake (the group and 새 눈), a distant streetcar, the clock tower's bell */
+  snow: '<path d="M12 2v20M3.3 7l17.4 10M20.7 7 3.3 17"/><path d="m9.5 3.5 2.5 2 2.5-2M9.5 20.5l2.5-2 2.5 2M3.6 10.6l3-1.1-.5-3.2M20.4 13.4l-3 1.1.5 3.2M3.6 13.4l3 1.1-.5 3.2M20.4 10.6l-3-1.1.5-3.2"/>',
+  tram: '<rect x="5" y="5" width="14" height="12" rx="3"/><path d="M5 11h14M9 21l1.5-4M15 21l-1.5-4M8 2h8M12 2v3"/>',
+  bell: '<path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21a2 2 0 0 0 4 0M12 3v2"/>',
   x: '<path d="M18 6 6 18M6 6l12 12"/>',
   chev: '<path d="m6 15 6-6 6 6"/>',
 } as const;

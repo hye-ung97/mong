@@ -2,7 +2,7 @@ import type { WoodKind } from '../scenes/fire';
 import { seasonNow, type Season } from '../scenes/pond';
 import type { SandPalette } from '../scenes/sand';
 import type { StarPhase } from '../scenes/star';
-import type { SceneId, WaterId } from '../scenes/registry';
+import type { SceneId, SnowId, WaterId } from '../scenes/registry';
 
 export interface Settings {
   volume: number;
@@ -32,6 +32,10 @@ export interface Settings {
   starHold: boolean;
   starFireflies: boolean;
   starGuide: boolean;
+  /** 눈멍: the scene last seen (starts at 시계탑), how hard it snows (0.3 · 0.6 · 1), whether new snow fills footprints. */
+  snow: SnowId;
+  snowFall: number;
+  snowCover: boolean;
   /** Last chosen timer in minutes, 0 = no timer. */
   timer: number;
   /** One-time hints already shown. */
@@ -62,6 +66,9 @@ const DEFAULTS: Settings = {
   starHold: false,
   starFireflies: true,
   starGuide: true,
+  snow: 'clocktower',
+  snowFall: 0.6,
+  snowCover: true,
   timer: 0,
   hints: [],
 };

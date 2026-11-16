@@ -10,10 +10,11 @@ import { SceneHost } from '../scenes/host';
 import { Pond, SEASONS } from '../scenes/pond';
 import { Rain } from '../scenes/rain';
 import {
-  GROUPS, WATER, createScene, groupOf, groupRoute, isWater, routeOf, type GroupId, type SceneId,
+  GROUPS, SNOW, WATER, createScene, groupOf, groupRoute, isSnow, isWater, routeOf, type GroupId, type SceneId,
 } from '../scenes/registry';
 import { SAND_PALETTES, Sand, type SandPalette } from '../scenes/sand';
 import { Sea } from '../scenes/sea';
+import { SNOW_FALLS, SnowScene } from '../scenes/snow';
 import { STAR_PHASES, STAR_SEASONS, Star, type StarPhase } from '../scenes/star';
 import { starLayersFor } from '../audio/sounds/star';
 import { EQ, wordmark, type View } from './view';
@@ -27,6 +28,7 @@ interface Level { v: number; label: string }
 const RAIN_LEVELS: readonly Level[] = [{ v: 0.25, label: '보슬비' }, { v: 0.6, label: '비' }, { v: 1, label: '장대비' }];
 const WAVE_LEVELS: readonly Level[] = [{ v: 0.6, label: '잔잔' }, { v: 1, label: '보통' }, { v: 1.5, label: '높음' }];
 const SAND_LEVELS: readonly Level[] = [{ v: 0.3, label: '솔솔' }, { v: 0.6, label: '보통' }, { v: 1, label: '콸콸' }];
+const SNOW_LEVELS: readonly Level[] = SNOW_FALLS.map(({ v, label }) => ({ v, label }));
 const nearest = (levels: readonly Level[], v: number) =>
   levels.reduce((a, b) => (Math.abs(b.v - v) < Math.abs(a.v - v) ? b : a));
 
@@ -124,6 +126,24 @@ const COPY: Record<SceneId, Copy> = {
     keys: [{ keys: ['↑', '↓'], text: '밤 깊이 · <kbd>S</kbd> 계절 · <kbd>C</kbd> 별자리' }, { keys: ['Space'], text: '별똥별 · 밝은 별을 누르면 별자리' }],
     land: '별멍',
   },
+  clocktower: {
+    now: '시계탑 앞 · <span data-bind="fall">눈</span>',
+    aside: '발자국 <b data-bind="steps">0</b>걸음',
+    hint: '누르면 발자국, 끌면 눈을 쓸어요',
+    title: '눈 오는 밤 · 시계탑',
+    sub: '<span data-bind="fall">눈</span> · 발자국 <b data-bind="steps">0</b>걸음',
+    keys: [{ keys: ['↑', '↓'], text: '눈 세기 · <kbd>N</kbd> 새 눈' }, { text: '클릭하면 발자국, 끌면 눈을 쓸어요' }],
+    land: '눈멍 · 시계탑',
+  },
+  underfoot: {
+    now: '눈 오는 밤 · <span data-bind="fall">눈</span>',
+    aside: '발자국 <b data-bind="steps">0</b>걸음',
+    hint: '눌러서 밟고, 끌면 걸어가요',
+    title: '눈 오는 밤 · 발밑',
+    sub: '<span data-bind="fall">눈</span> · 발자국 <b data-bind="steps">0</b>걸음',
+    keys: [{ keys: ['↑', '↓'], text: '눈 세기 · <kbd>N</kbd> 새 눈' }, { text: '클릭하면 발자국, 끌면 걸어가요' }],
+    land: '눈멍 · 발밑',
+  },
 };
 
 /** 별멍: what sounds in each season, and what goes quiet when the grass is touched. */
@@ -134,7 +154,7 @@ const STAR_SOUND: Record<string, { now: string; hush: string }> = {
   winter: { now: '겨울바람 소리', hush: '' },
 };
 
-const GROUP_ORDER: readonly GroupId[] = ['fire', 'rain', 'water', 'sand', 'star'];
+const GROUP_ORDER: readonly GroupId[] = ['fire', 'rain', 'water', 'sand', 'star', 'snow'];
 
 const swatch = (p: SandPalette, cls = '') => `<span class="swatch pal-${p} ${cls}" aria-hidden="true"></span>`;
 
@@ -168,6 +188,10 @@ export class SceneView implements View {
     this.el.innerHTML = this.template();
     parent.append(this.el);
     if (isWater(id)) this.setupWater();
+    // the narrowest phones scroll the six tabs sideways: start with this scene's tab in view
+    const tabs = this.el.querySelector<HTMLElement>('.topbar .tabs');
+    const cur = tabs?.querySelector<HTMLElement>('.on');
+    if (tabs && cur && tabs.scrollWidth > tabs.clientWidth) tabs.scrollLeft = cur.offsetLeft - (tabs.clientWidth - cur.offsetWidth) / 2;
 
     this.scene.hooks = {
       onStat: (key, value) => this.onStat(key, value),
@@ -189,6 +213,7 @@ export class SceneView implements View {
     if (this.sea) this.setupSea();
     if (this.sand) this.setupSand();
     if (this.star) this.setupStar();
+    if (this.snow) this.setupSnow();
 
     const audioTimer = window.setInterval(() => audio.update(id, this.scene.audioState()), AUDIO_STATE_EVERY);
     this.cleanups.push(() => window.clearInterval(audioTimer));
@@ -214,6 +239,7 @@ export class SceneView implements View {
   private get pond() { return this.scene instanceof Pond ? this.scene : null; }
   private get sand() { return this.scene instanceof Sand ? this.scene : null; }
   private get star() { return this.scene instanceof Star ? this.scene : null; }
+  private get snow() { return this.scene instanceof SnowScene ? this.scene : null; }
 
   private $<T extends Element = HTMLElement>(sel: string): T {
     const n = this.el.querySelector<T>(sel);
@@ -238,12 +264,12 @@ export class SceneView implements View {
       const on = g.id === group;
       return `<a href="${groupRoute(g.id)}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}>${g.label}</a>`;
     }).join('');
-    const sub = isWater(id)
-      ? `<nav class="subscenes glass" aria-label="물멍 장면">${WATER.map((w) => {
+    const subNav = (label: string, list: readonly { id: SceneId; label: string }[]) =>
+      `<nav class="subscenes glass" aria-label="${label}">${list.map((w) => {
         const on = w.id === id;
         return `<a href="${routeOf(w.id)}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}>${w.label}</a>`;
-      }).join('')}</nav>`
-      : '';
+      }).join('')}</nav>`;
+    const sub = isWater(id) ? subNav('물멍 장면', WATER) : isSnow(id) ? subNav('눈멍 장면', SNOW) : '';
     const keys = c.keys.map((k) =>
       `<span>${(k.keys ?? []).map((key) => `<kbd>${key}</kbd>`).join('')}${k.keys ? ' ' : ''}${k.text}</span>`).join('');
     return `
@@ -259,9 +285,9 @@ export class SceneView implements View {
           </div>
         </header>
         ${sub}
-        ${c.hint && (this.rain || this.sand || this.star) ? `<div class="hint hint-glass glass only-m">${icon('hand', 'sm')}${c.hint}</div>` : ''}
+        ${c.hint && (this.rain || this.sand || this.star || this.snow) ? `<div class="hint hint-glass glass only-m">${icon('hand', 'sm')}${c.hint}</div>` : ''}
         <div class="bottom">
-          ${c.hint && !this.rain && !this.sand && !this.star ? `<div class="hint glass only-m">${icon('hand', 'sm')}${c.hint}</div>` : ''}
+          ${c.hint && !this.rain && !this.sand && !this.star && !this.snow ? `<div class="hint glass only-m">${icon('hand', 'sm')}${c.hint}</div>` : ''}
           ${this.fire ? `<div class="hint hint-embers glass" role="status">${icon('log', 'sm')}장작을 넣으면 다시 타올라요</div>` : ''}
           <div class="m-status only-m"><span class="now">${EQ}${c.now}</span>${c.aside ? `<span class="aside">${c.aside}</span>` : ''}</div>
           <div class="dock glass">${this.dockHtml()}</div>
@@ -337,6 +363,11 @@ export class SceneView implements View {
           <button class="dock-btn only-d" data-act="star-guide" aria-pressed="false" aria-label="별자리 알려 주기">${icon('star')}<span>별자리</span></button>
           <button class="dock-btn" data-act="season" aria-label="계절 바꾸기">${icon('leaf')}<span class="only-d" data-bind="star-season">여름</span></button>`;
         break;
+      case 'clocktower':
+      case 'underfoot':
+        main = this.seg(SNOW_LEVELS, 'snow-fall', s.snowFall, '눈 세기');
+        extra = `<button class="dock-btn" data-act="snow-fresh" aria-label="새 눈으로 덮기">${icon('snow')}<span class="only-d">새 눈</span></button>`;
+        break;
     }
     return `
       <button class="dock-btn" data-act="sheet" aria-label="설정">${icon('sliders')}<span class="only-d" data-bind="timer"></span></button>
@@ -359,6 +390,8 @@ export class SceneView implements View {
       pond: { act: 'feed', icon: 'food', label: '먹이 주기' },
       sand: { act: 'sand-cycle', icon: 'sand', label: '모래 속도 바꾸기' },
       star: { act: 'meteor', icon: 'star', label: '별똥별' },
+      clocktower: { act: 'snow-cycle', icon: 'snow', label: '눈 세기 바꾸기' },
+      underfoot: { act: 'snow-cycle', icon: 'snow', label: '눈 세기 바꾸기' },
     } as const;
     const m = main[this.id];
     return `
@@ -383,7 +416,9 @@ export class SceneView implements View {
         ? `<label class="switch-row"><span><b>가득 차면 저절로 비우기</b><small>끄면 가득 찼을 때 모래가 멈춰요</small></span><input class="switch" type="checkbox" data-act="auto-empty" ${s.sandAutoEmpty ? 'checked' : ''}></label>`
         : this.star
           ? `<h4>화면</h4><label class="switch-row"><span><b>별자리 알려 주기</b><small>가끔 별자리 하나를 이어 이름을 보여 줘요</small></span><input class="switch" type="checkbox" data-act="star-guide" ${s.starGuide ? 'checked' : ''}></label>`
-          : '';
+          : this.snow
+            ? `<h4>화면</h4><label class="switch-row"><span><b>발자국을 눈으로 덮기</b><small>${this.id === 'clocktower' ? '끄면 찍은 발자국과 쓴 자리가 그대로 남아요' : '끄면 찍은 발자국이 그대로 남아요'}</small></span><input class="switch" type="checkbox" data-act="snow-cover" ${s.snowCover ? 'checked' : ''}></label>`
+            : '';
     return `
       <div class="sheet glass-strong" role="dialog" aria-modal="true" aria-label="설정">
         <div class="grab"></div>
@@ -511,6 +546,10 @@ export class SceneView implements View {
       // the sound sheet shows only the layers heard in this season
       const heard = new Set(starLayersFor(STAR_SEASONS.indexOf(st.season)).map((l) => l.id));
       this.el.querySelectorAll<HTMLElement>('[data-layer-row]').forEach((r) => { r.hidden = !heard.has(r.dataset.layerRow!); });
+    }
+    if (this.snow) {
+      this.bind('fall', this.snow.fall.label);
+      this.syncSeg('snow-fall', this.snow.fall.v, SNOW_LEVELS);
     }
     if (this.pond) {
       const on = this.pond.drizzle;
@@ -642,7 +681,7 @@ export class SceneView implements View {
     if (this.fire) {
       // 불멍: a tap on the fire stirs it; logs go in with the dock button or by dragging
       if (!this.fire.pokeAt(x, y)) return;
-    } else if (this.rain || this.sea || this.sand) return; // 비멍 wipes the glass, 바다 walks the sand, 모래멍 pulls the stream: each with its own drag handlers
+    } else if (this.rain || this.sea || this.sand || this.snow) return; // 비멍 wipes the glass, 바다 walks the sand, 모래멍 pulls the stream, 눈멍 steps and sweeps: each with its own drag handlers
     else if (this.aquarium) {
       const what = this.aquarium.poke(x, y);
       if (what === 'feed') {
@@ -848,6 +887,50 @@ export class SceneView implements View {
     save({ sandTilt: on });
   }
 
+  /* ---------- 눈멍: footprints, sweeping (시계탑), walking (발밑) ---------- */
+  private setupSnow() {
+    const snow = this.snow!;
+    const canvas = this.host.canvas;
+    // the scenery stands below the tabs and the scene switch
+    const place = () => {
+      const view = this.el.getBoundingClientRect();
+      const bottoms = ['.subscenes', '.topbar']
+        .map((sel) => this.$(sel).getBoundingClientRect())
+        .filter((r) => r.height > 0)
+        .map((r) => r.bottom);
+      snow.setEdges(bottoms.length ? Math.max(...bottoms) - view.top : null);
+    };
+    place();
+    this.listen(window, 'resize', place);
+    this.listen(canvas, 'pointerdown', (e: PointerEvent) => {
+      if (this.blocking) return;
+      canvas.setPointerCapture(e.pointerId);
+      if (snow.pressStart(...this.host.toScene(e.clientX, e.clientY))) this.el.classList.add('hint-done');
+    });
+    this.listen(canvas, 'pointermove', (e: PointerEvent) => {
+      if (!snow.pressMove(...this.host.toScene(e.clientX, e.clientY))) return;
+      this.el.classList.add('hint-done');
+      this.armIdle();
+    });
+    this.listen(canvas, 'pointerup', () => snow.pressEnd());
+    this.listen(canvas, 'pointercancel', () => snow.pressEnd(true));
+  }
+
+  private setSnowFall(v: number) {
+    if (!this.snow) return;
+    this.snow.setFall(v);
+    save({ snowFall: this.snow.fall.v });
+    this.refreshLabels();
+    this.toast(this.snow.fall.label);
+  }
+
+  /** 새 눈: fresh snow covers every footprint (and swept patch) at once. */
+  private freshSnow() {
+    if (!this.snow) return;
+    this.snow.fresh();
+    this.toast('새 눈이 소복이 덮여요');
+  }
+
   private feedToast() {
     if (Date.now() - this.lastFeedToast < 10_000) return;
     this.lastFeedToast = Date.now();
@@ -916,6 +999,10 @@ export class SceneView implements View {
       const i = SAND_LEVELS.indexOf(nearest(SAND_LEVELS, this.sand.speed));
       const next = SAND_LEVELS[Math.max(0, Math.min(SAND_LEVELS.length - 1, i + dir))];
       this.setSandSpeed(next.v);
+    } else if (this.snow) {
+      const i = SNOW_LEVELS.indexOf(nearest(SNOW_LEVELS, this.snow.fall.v));
+      const next = SNOW_LEVELS[Math.max(0, Math.min(SNOW_LEVELS.length - 1, i + dir))];
+      if (next.v !== this.snow.fall.v) this.setSnowFall(next.v);
     }
   }
 
@@ -929,6 +1016,9 @@ export class SceneView implements View {
     } else if (this.sand) {
       const i = SAND_LEVELS.indexOf(nearest(SAND_LEVELS, this.sand.speed));
       this.setSandSpeed(SAND_LEVELS[(i + 1) % SAND_LEVELS.length].v);
+    } else if (this.snow) {
+      const i = SNOW_LEVELS.indexOf(nearest(SNOW_LEVELS, this.snow.fall.v));
+      this.setSnowFall(SNOW_LEVELS[(i + 1) % SNOW_LEVELS.length].v);
     }
   }
 
@@ -1025,9 +1115,16 @@ export class SceneView implements View {
       case 'sand-empty':
         this.emptySand();
         break;
+      case 'snow-fall':
+        this.setSnowFall(Number(t.dataset.value));
+        break;
+      case 'snow-fresh':
+        this.freshSnow();
+        break;
       case 'rain-cycle':
       case 'wave-cycle':
       case 'sand-cycle':
+      case 'snow-cycle':
         this.cycleLevel();
         break;
       case 'thunder':
@@ -1076,7 +1173,8 @@ export class SceneView implements View {
       save({ volume: v, muted: false });
       audio.refreshVolume();
     } else if (t.dataset.act === 'mix' && t.dataset.layer) {
-      setMix(this.id, t.dataset.layer, v);
+      // 시계탑 and 발밑 share one mix: changing it in one keeps it in the other
+      for (const id of isSnow(this.id) ? SNOW.map((x) => x.id) : [this.id]) setMix(id, t.dataset.layer, v);
       audio.setLayer(this.id, t.dataset.layer, v);
       const val = t.parentElement?.querySelector('.val');
       if (val) val.textContent = t.value;
@@ -1095,6 +1193,10 @@ export class SceneView implements View {
       this.el.querySelectorAll<HTMLInputElement>('[data-act="auto-empty"]').forEach((b) => { b.checked = t.checked; });
     } else if (t.dataset.act === 'sand-tilt') void this.setTilt(t.checked, t);
     else if (t.dataset.act === 'star-guide') this.setGuide(t.checked);
+    else if (t.dataset.act === 'snow-cover' && this.snow) {
+      this.snow.setCover(t.checked);
+      save({ snowCover: t.checked });
+    }
   };
 
   private readonly onKey = (e: KeyboardEvent) => {
@@ -1119,7 +1221,7 @@ export class SceneView implements View {
       }
       case 'ArrowUp':
       case 'ArrowDown':
-        if (this.rain || this.sea || this.sand) {
+        if (this.rain || this.sea || this.sand || this.snow) {
           e.preventDefault();
           this.stepLevel(e.code === 'ArrowUp' ? 1 : -1);
         } else if (this.star) {
@@ -1129,6 +1231,9 @@ export class SceneView implements View {
         break;
       case 'KeyE':
         this.emptySand();
+        break;
+      case 'KeyN':
+        this.freshSnow();
         break;
       case 'KeyT':
         this.toggleThunder();

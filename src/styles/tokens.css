@@ -29,6 +29,9 @@
   --star-500: #ecd96a;
   --star-300: #f8efb6;
   --star-900: #221d06;
+  --snow-500: #f29bb0;
+  --snow-300: #fbd0da;
+  --snow-900: #2b0e17;
 
   /* shape, type, motion */
   --r-pill: 999px;
@@ -46,4 +49,5 @@
 .theme-rain { --accent: var(--rain-500); --accent-soft: var(--rain-300); --accent-ink: var(--rain-900); }
 .theme-sand { --accent: var(--sand-500); --accent-soft: var(--sand-300); --accent-ink: var(--sand-900); }
 .theme-star { --accent: var(--star-500); --accent-soft: var(--star-300); --accent-ink: var(--star-900); }
+.theme-snow { --accent: var(--snow-500); --accent-soft: var(--snow-300); --accent-ink: var(--snow-900); }
 .theme-water { --accent: var(--water-500); --accent-soft: var(--water-300); --accent-ink: var(--water-900); }

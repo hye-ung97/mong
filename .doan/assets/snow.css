@@ -1,0 +1,93 @@
+/* 눈멍 시안 — mong.css · fire-v2.css(개요 틀) · sand.css · star.css 위에 얹는 부품. 전부 시안에만 있어요. */
+
+/* 눈멍 색 (제안). src/styles/tokens.css 에는 아직 없어요 */
+:root {
+  --snow-500: #f29bb0;
+  --snow-300: #fbd0da;
+  --snow-900: #2b0e17;
+}
+.theme-snow { --accent: var(--snow-500); --accent-soft: var(--snow-300); --accent-ink: var(--snow-900); }
+.theme-snow .changes em { color: var(--snow-300); }
+
+/* 손으로 밟고 쓸 수 있는 장면 */
+canvas[data-snow] { touch-action: none; cursor: pointer; }
+
+/* 탭이 여섯 개가 되면 모바일 한 줄에 겨우 들어가요. 안쪽 여백과 글자를 더 줄였어요 (정해야 할 것 참고) */
+.tabs.six { gap: 0; padding: 4px 3px; }
+.tabs.six a { padding: 0 5px; font-size: 12.5px; letter-spacing: -0.02em; }
+.tabs.six a.on { gap: 4px; }
+.tabs.six a.on::before { width: 5px; height: 5px; }
+
+/* 상태 줄. 눈이 밝아서 아래쪽에 어둑한 그늘을 깔아야 글자가 읽혀요 */
+.theme-snow .m-status { min-height: 28px; color: var(--ui-ink); text-shadow: 0 1px 6px rgba(8, 12, 30, 0.7); }
+.theme-snow .m-bottom::before { content: ""; position: absolute; z-index: -1; left: -16px; right: -16px; bottom: -30px; height: 240px; background: linear-gradient(180deg, rgba(8, 12, 30, 0), rgba(8, 12, 30, 0.62)); pointer-events: none; }
+
+/* 손가락 (설명용). 위치는 snow.js 가 옮겨요 */
+.snow-finger {
+  left: 0; top: 0; width: 52px; height: 52px; margin: -26px 0 0 -26px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 2px 12px rgba(10, 16, 34, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s var(--ease);
+}
+
+/* 밝은 눈 위에서도 읽히도록 안내 문구는 진한 유리 */
+.theme-snow .hint.top { background: var(--ui-glass-strong); }
+
+/* 소리 비교표 · 정해야 할 것 */
+.notes.snow-wide { width: 520px; }
+.notes.snow-mid { width: 430px; }
+.notes h4.ask { color: var(--snow-300); }
+.snow-table { width: 100%; border-collapse: collapse; margin: 0 0 22px; font: 500 14px/1.5 var(--font); }
+.snow-table th { padding: 0 10px 10px 0; text-align: left; font: 700 12px/1 var(--font); color: var(--board-dim); border-bottom: 1px solid var(--board-line); }
+.snow-table td { padding: 11px 10px 11px 0; vertical-align: top; border-bottom: 1px solid var(--board-line); color: var(--board-dim); }
+.snow-table td:first-child { color: var(--board-ink); font-weight: 700; white-space: nowrap; }
+.snow-table tr:last-child td { border-bottom: 0; }
+
+/* 세 안 한눈에 */
+.alt-compare { width: 100%; border-collapse: collapse; font: 500 14px/1.55 var(--font); }
+.alt-compare th { padding: 0 14px 12px 0; text-align: left; font: 700 13px/1.2 var(--font); color: var(--snow-300); border-bottom: 1px solid var(--board-line); }
+.alt-compare th:first-child { color: var(--board-dim); width: 86px; }
+.alt-compare td { padding: 12px 14px 12px 0; vertical-align: top; border-bottom: 1px solid var(--board-line); color: var(--board-ink); }
+.alt-compare td:first-child { color: var(--board-dim); font-weight: 700; white-space: nowrap; }
+.alt-compare tr:last-child td { border-bottom: 0; }
+.notes.compare-wide { width: 860px; }
+
+/* 발밑 · 시계탑 장면 전환 아래로 안내 문구를 내려요 */
+.hint.top.below-sub { top: 160px; }
+
+/* 데스크톱 위쪽 오른편: 소리 · 전체화면 (src/views/scene-view.ts 의 top-right 와 같은 구성) */
+.d-top-right { display: flex; gap: 10px; }
+
+/* 데스크톱도 눈이 밝아서 아래쪽 글자 뒤에 어둑한 그늘을 깔아요 */
+.d-shade { left: 0; right: 0; bottom: 0; height: 260px; background: linear-gradient(180deg, rgba(8, 12, 30, 0), rgba(8, 12, 30, 0.55)); pointer-events: none; }
+.theme-snow .d-now, .theme-snow .d-keys { text-shadow: 0 1px 6px rgba(8, 12, 30, 0.7); }
+.theme-snow .d-keys { color: var(--ui-dim); }
+
+/* 설정 시트: 코드(src/styles/app.css)의 머리 줄 · 데스크톱 창을 시안에 옮겼어요 */
+.sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
+.sheet-head h3 { margin: 0; }
+.sheet-head .icon-btn { margin-right: -10px; color: var(--ui-dim); }
+.sheet .tend-row { margin: 0 0 22px; }
+.desk .sheet.desk-sheet { left: 50%; right: auto; bottom: 112px; width: 420px; margin-left: -210px; padding-top: 22px; border-radius: 28px; }
+
+/* 홈: 카드 여섯 장. 폰은 두 칸 세 줄 */
+.cards-m.six { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cards-m.six .card { height: 156px; }
+.cards-m.six .go { display: none; }
+.cards-m.six .card-info { left: 14px; right: 12px; bottom: 14px; }
+.cards-m.six .card-info h3 { font-size: 20px; margin-bottom: 5px; }
+.cards-m.six .card-info p { font-size: 12.5px; }
+.cards-m.six .card-tag { top: 10px; left: 10px; }
+
+/* 데스크톱 홈: 세 장씩 두 줄. 머리 글을 조금 줄여서 카드 두 줄이 들어가요 */
+.home-d-head.compact { top: 92px; }
+.home-d-head.compact h1 { font-size: 38px; margin-bottom: 8px; }
+.home-d-head.compact p { font-size: 15px; }
+.cards-d.grid3 { top: 210px; left: 72px; right: 72px; display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 238px; gap: 16px; }
+.cards-d.grid3 .card { height: auto; }
+.cards-d.grid3 .card.is-hover { transform: translateY(-6px); }
+.cards-d.grid3 .card-info h3 { font-size: 26px; margin-bottom: 8px; }
