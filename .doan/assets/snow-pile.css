@@ -1,0 +1,11 @@
+/* 눈멍 · 눈더미 시안 — snow.css 위에 얹는 부품. 전부 시안에만 있어요. */
+
+canvas[data-snowpile] { touch-action: none; cursor: pointer; }
+
+/* 보드 설명용 딱지: 지금 얼마나 쌓였는지 */
+.pile-tag { top: 160px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 7px; padding: 9px 14px; border-radius: var(--r-pill); white-space: nowrap; font: 600 13px/1 var(--font); color: var(--ui-ink); background: var(--ui-glass-strong); border: 1px dashed rgba(255, 196, 92, 0.6); pointer-events: none; }
+.pile-tag i { font-style: normal; color: #ffd28a; }
+.desk .pile-tag { top: 132px; }
+
+.notes.pile-wide { width: 620px; }
+.notes.pile-mid { width: 440px; }

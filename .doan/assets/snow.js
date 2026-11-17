@@ -1452,6 +1452,9 @@
     }
   }
 
+  /* 눈더미 시안(snow-pile.js)이 시계탑 장면을 이어받아 써요 */
+  window.MongSnow = { Snow, crunch, swish, mk, rand, clamp, ease, rng, TAU, solePath, drawPrint };
+
   const scenes = [];
   function start() {
     const io = 'IntersectionObserver' in window

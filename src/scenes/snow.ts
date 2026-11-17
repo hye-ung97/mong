@@ -31,6 +31,8 @@ interface Print {
   sq: number;
   /** crumbs of snow pushed out around it */
   cr: [number, number, number][];
+  /** px the boot sank into a snow pile; 0 on the thin snow of open ground */
+  deep: number;
 }
 
 interface Puff { x: number; y: number; vx: number; vy: number; t: number; dur: number; r: number }
@@ -104,6 +106,74 @@ function drawPrint(x: CanvasRenderingContext2D, p: Print) {
     x.arc(p.x + c[0], p.y + c[1] * p.sq + 1.4, c[2], 0, TAU);
     x.fill();
     x.fillStyle = `rgba(255,255,255,${0.9 * a * k})`;
+    x.beginPath();
+    x.arc(p.x + c[0], p.y + c[1] * p.sq, c[2], 0, TAU);
+    x.fill();
+  }
+}
+
+/**
+ * A boot print sunk deep into a snow pile. No ground shows: above the sole the hole's inner wall is
+ * in blue shade, below it lies the packed snow at the bottom with the tread pressed in, and the front
+ * rim catches the light.
+ */
+function drawDeepPrint(x: CanvasRenderingContext2D, p: Print) {
+  const a = 1 - Math.pow(clamp(p.age, 0, 1), 1.6);
+  if (a <= 0) return;
+  const k = ease(clamp(p.life / 0.2, 0, 1));
+  const s = p.sc;
+  const d = p.deep * k;
+  const place = (dy: number) => {
+    x.translate(p.x, p.y + dy);
+    x.scale(1, p.sq);
+    x.rotate(p.ang + Math.PI / 2);
+    x.scale(s, s);
+  };
+  x.save();
+  place(2.6 * s);
+  solePath(x);
+  x.fillStyle = `rgba(255,255,255,${0.95 * a * k})`;
+  x.fill();
+  x.restore();
+  x.save();
+  // the hole, its inner wall in shade; everything below stays inside it
+  x.save();
+  place(0);
+  solePath(x);
+  x.fillStyle = `rgba(118,136,186,${0.95 * a * k})`;
+  x.fill();
+  x.restore();
+  x.clip();
+  // the packed bottom, as far down as the boot went
+  x.save();
+  place(d);
+  solePath(x);
+  x.fillStyle = `rgba(206,217,239,${a * k})`;
+  x.fill();
+  x.clip();
+  x.strokeStyle = `rgba(120,140,192,${0.55 * a * k})`;
+  x.lineWidth = 1.8;
+  x.beginPath();
+  for (let y = -23; y <= 24; y += 5) {
+    x.moveTo(-12, y);
+    x.lineTo(12, y - 2);
+  }
+  x.stroke();
+  x.restore();
+  // shade the wall casts on the bottom
+  const top = p.y - 14 * s + d;
+  const g = x.createLinearGradient(0, top, 0, top + 9 * s);
+  g.addColorStop(0, `rgba(70,90,150,${0.28 * a * k})`);
+  g.addColorStop(1, 'rgba(70,90,150,0)');
+  x.fillStyle = g;
+  x.fillRect(p.x - 40 * s, top - 30 * s, 80 * s, 46 * s);
+  x.restore();
+  for (const c of p.cr) {
+    x.fillStyle = `rgba(60,78,122,${0.3 * a * k})`;
+    x.beginPath();
+    x.arc(p.x + c[0], p.y + c[1] * p.sq + 1.6, c[2], 0, TAU);
+    x.fill();
+    x.fillStyle = `rgba(255,255,255,${0.95 * a * k})`;
     x.beginPath();
     x.arc(p.x + c[0], p.y + c[1] * p.sq, c[2], 0, TAU);
     x.fill();
@@ -195,6 +265,10 @@ export abstract class SnowScene extends Scene {
   protected get stillCovering() {
     return false;
   }
+  /** How deep the snow lies here, 0 (the thin snow of open ground) … 1 (the top of a full snow pile). */
+  protected depthAt(_x: number, _y: number) {
+    return 0;
+  }
 
   protected puff(x: number, y: number, n: number, spread: number, up: boolean) {
     for (let i = 0; i < n; i++) {
@@ -222,19 +296,23 @@ export abstract class SnowScene extends Scene {
     const off = 12 * sc * this.side;
     const px = x + Math.cos(ang + Math.PI / 2) * off;
     const py = y + Math.sin(ang + Math.PI / 2) * off * sq;
+    // in a snow pile the boot sinks deep and pushes out bigger lumps
+    const dep = this.depthAt(px, py);
+    const deep = dep > 0.06 ? (2.5 + 4 * dep) * sc : 0;
     const cr: [number, number, number][] = [];
     for (let i = 0; i < 9; i++) {
       const a = rand(0, TAU);
       const rad = rand(26, 40) * sc;
-      cr.push([Math.cos(a) * rad * 0.7, Math.sin(a) * rad, rand(0.8, 2.1) * sc]);
+      cr.push([Math.cos(a) * rad * 0.7, Math.sin(a) * rad, rand(0.8, 2.1) * sc * (deep ? 1.7 : 1)]);
     }
-    this.prints.push({ x: px, y: py, ang, life: 0, age: 0, sc, sq, cr });
+    this.prints.push({ x: px, y: py, ang, life: 0, age: 0, sc, sq, cr, deep });
     if (this.prints.length > MAX_PRINTS) this.prints.shift();
     this.last = { x, y, ang, t: this.t };
     if (!byHand) return;
     this.steps++;
     this.stat('steps', this.steps);
     this.puff(px, py, 9, sc, false);
+    if (deep) this.puff(px, py, 8, sc * 1.2, true);
     this.emit('step', { x: clamp(x / this.w, 0, 1) });
   }
 
@@ -283,8 +361,13 @@ export abstract class SnowScene extends Scene {
     if (this.puffs.length) this.puffs = this.puffs.filter((p) => p.t < 1);
   }
 
-  protected drawPrints(x: CanvasRenderingContext2D) {
-    for (const p of this.prints) drawPrint(x, p);
+  /** `shallow` / `deep`: only the prints on open ground, or only those sunk into a snow pile. */
+  protected drawPrints(x: CanvasRenderingContext2D, which: 'all' | 'shallow' | 'deep' = 'all') {
+    for (const p of this.prints) {
+      if (p.deep) {
+        if (which !== 'shallow') drawDeepPrint(x, p);
+      } else if (which !== 'deep') drawPrint(x, p);
+    }
   }
 
   protected drawPuffs(x: CanvasRenderingContext2D) {

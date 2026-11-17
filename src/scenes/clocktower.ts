@@ -4,9 +4,26 @@ import { TAU, clamp, layer, rand, rng } from './util';
 
 interface Flake { x: number; y: number; z: number; ph: number }
 interface Sweep { x: number; y: number; age: number; r: number }
+/** A snow pile when full: centre of its foot (x, y), half width, height, when it starts (0…1 of the whole pile-up), shape seed. */
+interface Mound { x: number; y: number; rx: number; hh: number; delay: number; s: number }
+/** A snow pile as it stands now: how far grown (0…1), half width, depth of its foot, height, opacity. */
+interface MoundNow { a: number; rx: number; ry: number; hh: number; fade: number }
 
 const MAX_SWEEPS = 520;
 const DRAG_START = 14; // px a press may move before it becomes a sweep
+
+/**
+ * 가루눈 · 눈 · 함박눈: seconds of snowfall before the first snow piles form, and until they are full.
+ * Until `start` the forecourt keeps only its thin snow. Each step up piles twice as fast.
+ */
+const PILE_TIMES = [
+  { v: 0.3, start: 120, full: 720 },
+  { v: 0.6, start: 60, full: 360 },
+  { v: 1, start: 30, full: 180 },
+] as const;
+const pileTimes = (v: number) => PILE_TIMES.reduce((a, b) => (Math.abs(b.v - v) < Math.abs(a.v - v) ? b : a));
+/** 새 눈 sinks the snow piles in this many seconds, together with the footprints. */
+const PILE_CLEAR = 1.1;
 
 /** A bare tree. With `lights`, its twigs carry illumination bulbs. */
 function treeSprite(seed: number, lights: boolean) {
@@ -85,6 +102,14 @@ function towerBlocks(x: CanvasRenderingContext2D, r: () => number, x0: number, x
  * all around. Its clock shows the time now. The lower part of the screen is the snowed-in forecourt:
  * a press leaves a footprint, a drag sweeps the snow away down to the red brick paving, and new snow
  * fills both in again.
+ *
+ * While it snows, snow piles up in a few places: along the foot of the hall, round the lamp posts and
+ * trees, and in two big heaps on the forecourt (four on a wide screen). The scene opens without them;
+ * they start after a while of snowfall and grow faster the harder it snows (PILE_TIMES), and the
+ * snow on the roofs and lamp shades thickens with them. Stepping into a pile sinks the boot deep into
+ * packed snow; sweeping through one cuts a packed groove instead of baring the brick. The middle of
+ * the forecourt stays thin. 새 눈 sinks the piles with the footprints and they pile up again from
+ * nothing. The home card has none.
  */
 export class ClockTower extends SnowScene {
   private flakes: Flake[] = [];
@@ -102,6 +127,23 @@ export class ClockTower extends SnowScene {
   private brush!: HTMLCanvasElement;
   private vig!: HTMLCanvasElement;
   private seeded = false;
+  private u = 1;
+  private cx = 0;
+  private lamps: number[] = [];
+  /** snow piles: 0 none … 1 full */
+  private pile = 0;
+  /** snowfall so far before the first pile forms, 0 … 1 */
+  private pileWait = 0;
+  /** while 새 눈 sinks the piles: how full they were when it started; 0 otherwise */
+  private clearing = 0;
+  private mounds: Mound[] = [];
+  private pileLayer!: HTMLCanvasElement;
+  /** where the piles are, at the swept mask's size */
+  private pileMask!: HTMLCanvasElement;
+  private grooveA!: HTMLCanvasElement;
+  private grooveB!: HTMLCanvasElement;
+  private packed: CanvasPattern | null = null;
+  private drawnPile = -1;
 
   constructor(variant: SceneVariant, opts: SnowOpts = {}) {
     super(variant, opts);
@@ -137,6 +179,9 @@ export class ClockTower extends SnowScene {
     const cx = card ? clamp(w * 0.75, 135 * u + 4, w - 135 * u - 4) : w / 2;
     const lamps = [cx - 168 * u, cx + 168 * u];
     this.face = { x: cx, y: gy - 198 * u, r: 21 * u };
+    this.u = u;
+    this.cx = cx;
+    this.lamps = lamps;
 
     this.bg = layer(w, h, dpr, (x) => {
       const r = rng(41);
@@ -276,6 +321,7 @@ export class ClockTower extends SnowScene {
       x.fillRect(0, 0, 64, 64);
     });
     this.vig = snowVignette(w, h, dpr, 0.6);
+    if (!card) this.layoutPiles();
     this.fillFlakes();
     if (!this.seeded) {
       this.seeded = true;
@@ -427,6 +473,290 @@ export class ClockTower extends SnowScene {
     x.restore();
   }
 
+  /* ---------- snow piles ---------- */
+  private layoutPiles() {
+    const { w, h, gy, u, cx, dpr } = this;
+    const wide = w > 600;
+    const G = h - gy;
+    /* the big heaps on the forecourt: (fx, fy) where on it, then size, when it starts, shape seed */
+    const yard = (fx: number, fy: number, rx: number, hh: number, delay: number, s: number): Mound => {
+      const y = gy + G * fy;
+      const sc = this.scaleAt(y) * (wide ? 1.35 : 1);
+      return { x: w * fx, y, rx: rx * sc, hh: hh * sc, delay, s };
+    };
+    this.mounds = [
+      yard(0.16, 0.42, 96, 60, 0.08, 1.1),
+      yard(0.8, 0.3, 84, 50, 0.2, 2.7),
+      ...(wide ? [yard(0.6, 0.52, 80, 46, 0.3, 4.2), yard(0.35, 0.26, 62, 34, 0.15, 5.5)] : []),
+      /* round the lamp posts and the trees, early */
+      ...this.lamps.map((lx, i) => ({ x: lx, y: gy + 17, rx: 36 * u, hh: 22 * u, delay: 0.03, s: 3 + i })),
+      { x: cx - 196 * u, y: gy + 13, rx: 30 * u, hh: 16 * u, delay: 0.1, s: 6.1 },
+      { x: cx + 200 * u, y: gy + 13, rx: 30 * u, hh: 16 * u, delay: 0.1, s: 7.4 },
+    ].sort((a, b) => a.y - b.y);
+    const sized = (c: HTMLCanvasElement, cw: number, ch: number) => {
+      c.width = Math.max(1, Math.round(cw));
+      c.height = Math.max(1, Math.round(ch));
+      return c;
+    };
+    this.pileLayer = sized(document.createElement('canvas'), w * dpr, h * dpr);
+    this.pileMask = sized(document.createElement('canvas'), this.mask.width, this.mask.height);
+    this.grooveA = sized(document.createElement('canvas'), this.mask.width, this.mask.height);
+    this.grooveB = sized(document.createElement('canvas'), this.mask.width, this.mask.height);
+    /* packed snow at the bottom of a groove */
+    const grain = layer(64, 64, 1, (x) => {
+      const r = rng(9);
+      x.fillStyle = '#ccd7ee';
+      x.fillRect(0, 0, 64, 64);
+      for (let i = 0; i < 90; i++) {
+        x.fillStyle = r() < 0.5 ? 'rgba(112,134,188,0.22)' : 'rgba(255,255,255,0.3)';
+        x.beginPath();
+        x.ellipse(r() * 64, r() * 64, 1 + r() * 3, 0.6 + r() * 1.4, 0, 0, TAU);
+        x.fill();
+      }
+    });
+    this.packed = this.grooveB.getContext('2d')!.createPattern(grain, 'repeat');
+    this.drawnPile = -1;
+  }
+
+  /** Piles grow from small and faint, spread out first, then rise. */
+  private moundNow(m: Mound): MoundNow {
+    const a = clamp((this.pile - m.delay) / (1 - m.delay), 0, 1);
+    const spread = 0.2 + 0.8 * Math.pow(a, 0.55);
+    return { a, rx: m.rx * spread, ry: m.rx * 0.2 * spread, hh: m.hh * Math.pow(a, 0.9), fade: clamp(a / 0.12, 0, 1) };
+  }
+
+  /** Height profile across a pile (t: -1 … 1), a little lumpy. */
+  private profile(m: Mound, t: number) {
+    return Math.pow(Math.max(0, 1 - t * t), 0.75) * (1 + 0.13 * Math.sin(t * 3.1 + m.s) + 0.07 * Math.sin(t * 7.3 + m.s * 2.3));
+  }
+
+  private moundTop(m: Mound, g: MoundNow, t: number) {
+    return m.y - g.ry * 0.35 * Math.sqrt(Math.max(0, 1 - t * t)) - g.hh * this.profile(m, t);
+  }
+
+  private moundBottom(m: Mound, g: MoundNow, t: number) {
+    return m.y + g.ry * Math.sqrt(Math.max(0, 1 - t * t));
+  }
+
+  private moundPath(x: CanvasRenderingContext2D, m: Mound, g: MoundNow, topOnly = false) {
+    const N = 30;
+    x.beginPath();
+    for (let i = 0; i <= N; i++) {
+      const t = -1 + (2 * i) / N;
+      x.lineTo(m.x + t * g.rx, this.moundTop(m, g, t));
+    }
+    if (topOnly) return;
+    for (let i = N; i >= 0; i--) {
+      const t = -1 + (2 * i) / N;
+      x.lineTo(m.x + t * g.rx, this.moundBottom(m, g, t));
+    }
+    x.closePath();
+  }
+
+  /** The bank along the foot of the hall, 0 … 1. Less of it piles up in front of the porch. */
+  private get bank() {
+    return Math.pow(clamp(this.pile / 0.9, 0, 1), 0.8);
+  }
+
+  private bankTop(px: number) {
+    const { gy, u, cx } = this;
+    const porch = 0.45 + 0.55 * Math.min(1, Math.abs(px - cx) / (60 * u));
+    const lump = (0.5 + 0.5 * Math.sin(px * 0.019 + 1.3)) * (0.65 + 0.35 * Math.sin(px * 0.063 + 0.4));
+    return gy + 10 - this.bank * u * porch * (9 + 15 * lump);
+  }
+
+  /** Its foot starts as a thin line too, so no band shows before snow has piled up. */
+  private bankBottom(px: number) {
+    return this.gy + 10 + Math.min(1, this.bank * 2.5) * (6 + 5 * Math.sin(px * 0.045));
+  }
+
+  private bankPath(x: CanvasRenderingContext2D) {
+    const { w } = this;
+    x.beginPath();
+    for (let px = -4; px <= w + 4; px += 6) x.lineTo(px, this.bankTop(px));
+    for (let px = w + 4; px >= -4; px -= 12) x.lineTo(px, this.bankBottom(px));
+    x.closePath();
+  }
+
+  /** How deep the snow lies at (x, y): 0 outside the piles, up to 1 at the top of a full one. */
+  protected depthAt(x: number, y: number) {
+    if (this.card || this.pile <= 0) return 0;
+    let best = 0;
+    if (this.bank > 0.03 && y > this.bankTop(x) + 1 && y < this.bankBottom(x)) best = 0.45 * this.bank;
+    for (const m of this.mounds) {
+      const g = this.moundNow(m);
+      if (g.a < 0.03) continue;
+      const t = (x - m.x) / g.rx;
+      if (Math.abs(t) >= 1) continue;
+      const top = this.moundTop(m, g, t);
+      const bottom = this.moundBottom(m, g, t);
+      if (y <= top + 1 || y >= bottom) continue;
+      best = Math.max(best, g.a * Math.sqrt(1 - t * t) * Math.min(1, (y - top) / 6, (bottom - y) / 5 + 0.35));
+    }
+    return clamp(best, 0, 1);
+  }
+
+  private paintMound(x: CanvasRenderingContext2D, m: Mound, g: MoundNow) {
+    /* its shadow on the snow */
+    x.save();
+    x.translate(m.x + g.rx * 0.1, m.y + g.ry * 0.55);
+    x.scale(1, 0.3);
+    let gr = x.createRadialGradient(0, 0, g.rx * 0.3, 0, 0, g.rx * 1.25);
+    gr.addColorStop(0, 'rgba(44,58,108,0.34)');
+    gr.addColorStop(1, 'rgba(44,58,108,0)');
+    x.fillStyle = gr;
+    x.beginPath();
+    x.arc(0, 0, g.rx * 1.25, 0, TAU);
+    x.fill();
+    x.restore();
+    const top = m.y - g.hh - g.ry * 0.35;
+    const bottom = m.y + g.ry;
+    this.moundPath(x, m, g);
+    gr = x.createLinearGradient(0, top, 0, bottom);
+    gr.addColorStop(0, '#f7faff');
+    gr.addColorStop(0.55, '#e4ebf8');
+    gr.addColorStop(1, '#bdcbe7');
+    x.fillStyle = gr;
+    x.fill();
+    x.save();
+    x.clip();
+    /* the side away from the clock tower's light is in shade */
+    const far = m.x < this.cx ? -1 : 1;
+    gr = x.createLinearGradient(m.x - far * g.rx * 0.2, 0, m.x + far * g.rx, 0);
+    gr.addColorStop(0, 'rgba(70,92,156,0)');
+    gr.addColorStop(1, 'rgba(70,92,156,0.3)');
+    x.fillStyle = gr;
+    x.fillRect(m.x - g.rx, top - 2, g.rx * 2, bottom - top + 4);
+    const r = rng(Math.round(m.s * 1000));
+    for (let i = 0; i < 26; i++) {
+      const t = r() * 2 - 1;
+      const yy = this.moundTop(m, g, t) + r() * (this.moundBottom(m, g, t) - this.moundTop(m, g, t));
+      x.fillStyle = r() < 0.6 ? 'rgba(255,255,255,0.5)' : 'rgba(84,104,160,0.12)';
+      x.fillRect(m.x + t * g.rx, yy, 1 + r() * 1.6, 1 + r());
+    }
+    x.restore();
+    /* a lit crest */
+    this.moundPath(x, m, g, true);
+    x.strokeStyle = 'rgba(255,255,255,0.85)';
+    x.lineWidth = 1.6;
+    x.lineJoin = 'round';
+    x.stroke();
+  }
+
+  /** Paints the piles as they stand now, and where they are (for footprints and grooves). */
+  private renderPiles() {
+    const { w, h, gy, u, dpr } = this;
+    const L = this.pileLayer.getContext('2d')!;
+    const K = this.pileMask.getContext('2d')!;
+    L.setTransform(dpr, 0, 0, dpr, 0, 0);
+    L.globalCompositeOperation = 'source-over';
+    L.clearRect(0, 0, w, h);
+    K.setTransform(this.pileMask.width / w, 0, 0, this.pileMask.height / h, 0, 0);
+    K.clearRect(0, 0, w, h);
+    K.fillStyle = '#fff';
+    this.drawnPile = this.pile;
+    if (this.pile < 0.005) return;
+    if (this.bank > 0.01) {
+      this.bankPath(L);
+      const gr = L.createLinearGradient(0, gy - 20 * u, 0, gy + 21);
+      gr.addColorStop(0, '#f1f5fd');
+      gr.addColorStop(0.6, '#dbe3f4');
+      gr.addColorStop(1, '#bfcbe6');
+      L.globalAlpha = clamp(this.bank / 0.15, 0, 1);
+      L.fillStyle = gr;
+      L.fill();
+      L.globalAlpha = 1;
+      this.bankPath(K);
+      K.fill();
+    }
+    for (const m of this.mounds) {
+      const g = this.moundNow(m);
+      if (g.a < 0.01) continue;
+      L.globalAlpha = g.fade;
+      this.paintMound(L, m, g);
+      L.globalAlpha = 1;
+      this.moundPath(K, m, g);
+      K.fill();
+    }
+    /* the piles under the lamps take on their orange light */
+    L.globalCompositeOperation = 'source-atop';
+    for (const lx of this.lamps) {
+      L.save();
+      L.translate(lx, gy + 34);
+      L.scale(1, 0.3);
+      const gr = L.createRadialGradient(0, 0, 0, 0, 0, 150 * u);
+      gr.addColorStop(0, 'rgba(255,204,138,0.5)');
+      gr.addColorStop(1, 'rgba(255,204,138,0)');
+      L.fillStyle = gr;
+      L.beginPath();
+      L.arc(0, 0, 150 * u, 0, TAU);
+      L.fill();
+      L.restore();
+    }
+    L.globalCompositeOperation = 'source-over';
+  }
+
+  /** The snow on the roofs, the tower top and the lamp shades thickens with the piles. */
+  private drawCaps(x: CanvasRenderingContext2D) {
+    const a = this.pile;
+    if (a < 0.005) return;
+    const { cx, gy, u } = this;
+    const th = 7 * a;
+    x.save();
+    x.translate(cx, gy);
+    x.scale(u, u);
+    x.fillStyle = '#eef3fc';
+    x.beginPath();
+    x.moveTo(-121, -134);
+    x.quadraticCurveTo(-121, -136 - th, -110, -136 - th);
+    x.lineTo(110, -136 - th);
+    x.quadraticCurveTo(121, -136 - th, 121, -134);
+    x.closePath();
+    x.fill();
+    x.beginPath();
+    x.moveTo(-40 - th * 0.4, -248);
+    x.lineTo(40 + th * 0.4, -248);
+    x.lineTo(0, -296 - th * 1.3);
+    x.closePath();
+    x.fill();
+    x.beginPath();
+    x.moveTo(-30 - th * 0.3, -63);
+    x.lineTo(30 + th * 0.3, -63);
+    x.lineTo(0, -88 - th * 0.8);
+    x.closePath();
+    x.fill();
+    x.restore();
+    x.fillStyle = '#eef3fc';
+    for (const lx of this.lamps) {
+      x.beginPath();
+      x.ellipse(lx, gy - (139 + 2.2 * a) * u, (8 + a) * u, (3.4 + 3.6 * a) * u, 0, 0, TAU);
+      x.fill();
+    }
+  }
+
+  /** Snow piles up while it snows: nothing at first, then faster the harder it snows. 새 눈 sinks them. */
+  private growPiles(dt: number) {
+    if (this.clearing) {
+      this.pile = Math.max(0, this.pile - (dt / PILE_CLEAR) * this.clearing);
+      if (!this.pile) {
+        this.clearing = 0;
+        this.pileWait = 0;
+      }
+      return;
+    }
+    if (this.pile >= 1) return;
+    const p = pileTimes(this.fall.v);
+    if (this.pileWait < 1) this.pileWait = Math.min(1, this.pileWait + dt / p.start);
+    else this.pile = Math.min(1, this.pile + dt / (p.full - p.start));
+  }
+
+  /** 새 눈 also sinks the snow piles; they pile up again from nothing. */
+  fresh() {
+    super.fresh();
+    if (this.pile > 0) this.clearing = Math.max(this.pile, 0.01);
+    else this.pileWait = 0;
+  }
+
   protected fillFlakes() {
     const want = Math.round((this.fall.flakes * (this.w * this.h)) / (390 * 844));
     while (this.flakes.length < want) this.flakes.push(this.newFlake(true));
@@ -505,6 +835,7 @@ export class ClockTower extends SnowScene {
     const cover = this.flush ? 1.1 : this.fall.cover * 1.6;
     if (this.flush || this.covering) for (const s of this.sweeps) s.age += dt / cover;
     if (this.sweeps.length && this.sweeps[0].age >= 1) this.sweeps = this.sweeps.filter((s) => s.age < 1);
+    if (!this.card) this.growPiles(dt);
     const sp = (0.6 + this.fall.v * 0.7) * this.motion;
     const { w, h } = this;
     for (const f of this.flakes) {
@@ -517,7 +848,12 @@ export class ClockTower extends SnowScene {
 
   draw(x: CanvasRenderingContext2D) {
     const { w, h } = this;
+    const piles = !this.card;
+    // repaint the piles only when they have grown (or sunk) a visible step
+    if (piles && this.pile !== this.drawnPile && (Math.abs(this.pile - this.drawnPile) > 0.004 || this.pile === 0 || this.pile === 1)) this.renderPiles();
+    const piled = piles && this.drawnPile >= 0.005;
     x.drawImage(this.bg, 0, 0, w, h);
+    if (piles) this.drawCaps(x);
     /* the hands show the time now */
     const now = new Date();
     const f = this.face;
@@ -536,13 +872,14 @@ export class ClockTower extends SnowScene {
     x.lineTo(f.x + Math.cos(ma) * f.r * 0.76, f.y + Math.sin(ma) * f.r * 0.76);
     x.stroke();
     /* swept patches: the brick shows through, with a soft rim of pushed snow */
-    if (this.sweeps.length) {
+    const swept = this.sweeps.length > 0;
+    const mw = this.mask.width;
+    const mh = this.mask.height;
+    const kx = mw / w;
+    const ky = mh / h;
+    if (swept) {
       const m = this.mask.getContext('2d')!;
       const t = this.tmp.getContext('2d')!;
-      const mw = this.mask.width;
-      const mh = this.mask.height;
-      const kx = mw / w;
-      const ky = mh / h;
       m.clearRect(0, 0, mw, mh);
       for (const s of this.sweeps) {
         m.globalAlpha = clamp((1 - s.age) * 1.6, 0, 1) * 0.5;
@@ -561,7 +898,34 @@ export class ClockTower extends SnowScene {
       x.globalAlpha = 1;
       x.drawImage(this.tmp, 0, 0, w, h);
     }
-    this.drawPrints(x);
+    this.drawPrints(x, 'shallow');
+    /* the piles cover the brick and the shallow prints */
+    if (piled) x.drawImage(this.pileLayer, 0, 0, w, h);
+    /* swept through a pile: a groove of packed snow, its upper wall in shade, no brick */
+    if (swept && piled) {
+      const A = this.grooveA.getContext('2d')!;
+      const B = this.grooveB.getContext('2d')!;
+      const dy = Math.max(2, Math.round(7 * ky));
+      A.globalCompositeOperation = 'source-over';
+      A.clearRect(0, 0, mw, mh);
+      A.drawImage(this.mask, 0, 0);
+      A.globalCompositeOperation = 'destination-in';
+      A.drawImage(this.pileMask, 0, 0);
+      B.globalCompositeOperation = 'source-over';
+      B.clearRect(0, 0, mw, mh);
+      B.drawImage(this.grooveA, 0, dy);
+      B.globalCompositeOperation = 'destination-in';
+      B.drawImage(this.grooveA, 0, 0);
+      B.globalCompositeOperation = 'source-in';
+      B.fillStyle = this.packed ?? '#ccd7ee';
+      B.fillRect(0, 0, mw, mh);
+      A.globalCompositeOperation = 'source-in';
+      A.fillStyle = '#8496c4';
+      A.fillRect(0, 0, mw, mh);
+      x.drawImage(this.grooveA, 0, 0, w, h);
+      x.drawImage(this.grooveB, 0, 0, w, h);
+    }
+    this.drawPrints(x, 'deep');
     this.drawPuffs(x);
     x.fillStyle = '#fff';
     for (const fl of this.flakes) {
