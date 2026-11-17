@@ -2,7 +2,7 @@ import type { WoodKind } from '../scenes/fire';
 import { seasonNow, type Season } from '../scenes/pond';
 import type { SandPalette } from '../scenes/sand';
 import type { StarPhase } from '../scenes/star';
-import type { SceneId, SnowId, WaterId } from '../scenes/registry';
+import type { GroupId, SceneId, SnowId, WaterId } from '../scenes/registry';
 
 export interface Settings {
   volume: number;
@@ -38,6 +38,8 @@ export interface Settings {
   snowCover: boolean;
   /** Last chosen timer in minutes, 0 = no timer. */
   timer: number;
+  /** Toss mini app: the day (local, 2026-11-17) each 멍 was opened with an ad. Open until that day ends. */
+  unlocked: Partial<Record<GroupId, string>>;
   /** One-time hints already shown. */
   hints: string[];
 }
@@ -70,6 +72,7 @@ const DEFAULTS: Settings = {
   snowFall: 0.6,
   snowCover: true,
   timer: 0,
+  unlocked: {},
   hints: [],
 };
 
@@ -83,7 +86,13 @@ export function settings(): Settings {
   } catch {
     stored = {};
   }
-  cache = { ...DEFAULTS, ...stored, mix: { ...(stored.mix ?? {}) }, hints: [...(stored.hints ?? [])] };
+  cache = {
+    ...DEFAULTS,
+    ...stored,
+    mix: { ...(stored.mix ?? {}) },
+    unlocked: { ...(stored.unlocked ?? {}) },
+    hints: [...(stored.hints ?? [])],
+  };
   return cache;
 }
 

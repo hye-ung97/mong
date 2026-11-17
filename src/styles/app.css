@@ -161,9 +161,10 @@ kbd {
 }
 .home-foot { padding-top: 18px; display: flex; justify-content: center; align-items: center; gap: 18px; font: 500 13px/1 var(--font); color: var(--ui-faint); }
 .home-foot span { display: flex; align-items: center; gap: 6px; }
-/* banner ad (Toss mini app only): full screen width, below the footer */
-.home-ad { flex: none; width: 100vw; margin: 20px 0 0 -16px; }
-.home-ad[hidden] { display: none; }
+/* Toss mini app: a 멍 that opens after an ad. The preview keeps moving, a little darker */
+.card.locked .scene { filter: brightness(0.82) saturate(0.85); }
+.card-tag.lock { padding: 0 11px 0 8px; gap: 5px; }
+.card-tag.lock .ico { width: 14px; height: 14px; }
 
 @media (min-width: 768px) {
   .home-view { padding: 28px 36px 32px; align-items: center; }
@@ -389,6 +390,34 @@ kbd {
 .switch:checked::after { transform: translateX(18px); }
 .btn-block { width: 100%; height: 52px; border-radius: 16px; font: 700 16px/1 var(--font); background: var(--ui-ink); color: var(--ui-ink-on-light); }
 .btn-ghost { width: 100%; height: 48px; border-radius: 16px; font: 600 15px/1 var(--font); color: var(--ui-dim); }
+
+/* Toss mini app: opening a 멍 with an ad (src/views/unlock-sheet.ts). Floats over home or a scene */
+.tabs a.locked, .rail .icon-btn.locked { color: var(--ui-faint); }
+.unlock { position: fixed; inset: 0; z-index: 20; }
+.unlock-thumb {
+  position: relative; height: 148px; margin: 0 0 18px; overflow: hidden;
+  border-radius: 20px; background: #000; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.unlock-thumb::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.55)); }
+.unlock-thumb .label { position: absolute; z-index: 1; left: 14px; right: 14px; bottom: 12px; display: flex; align-items: center; gap: 8px; font: 600 12.5px/1 var(--font); }
+.unlock-sheet h3 { font-size: 22px; }
+.unlock-sheet .sub { margin-bottom: 18px; font-size: 14px; }
+.unlock-note {
+  display: flex; align-items: center; gap: 9px; margin: 0 0 16px; padding: 12px 14px; border-radius: 14px;
+  background: color-mix(in srgb, var(--accent) 16%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  font: 600 13.5px/1.4 var(--font); color: var(--accent-soft);
+}
+.unlock-note[hidden] { display: none; }
+.unlock-facts { margin: 0 0 22px; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.unlock-facts li { display: flex; align-items: center; gap: 10px; font: 500 13.5px/1.35 var(--font); color: var(--ui-dim); }
+.unlock-facts .ico { width: 18px; height: 18px; color: var(--accent-soft); }
+.unlock-facts b { color: var(--ui-ink); font-weight: 650; }
+.unlock-go { display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s, color 0.2s; }
+.unlock-go .ico { width: 18px; height: 18px; fill: currentColor; stroke: none; }
+.unlock-go.waiting { background: var(--ui-active); color: var(--ui-dim); }
+.unlock-go .spin { width: 16px; height: 16px; flex: none; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.22); border-top-color: var(--ui-ink); animation: spin 0.9s linear infinite; }
+.btn-block + .btn-ghost { margin-top: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
 @media (min-width: 768px) {
   .sheet, .tray {

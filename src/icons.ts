@@ -36,6 +36,10 @@ const PATHS = {
   bell: '<path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21a2 2 0 0 0 4 0M12 3v2"/>',
   x: '<path d="M18 6 6 18M6 6l12 12"/>',
   chev: '<path d="m6 15 6-6 6 6"/>',
+  /* Toss mini app: a locked 멍, the ad button (drawn filled), a note in the unlock sheet */
+  lock: '<rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
+  play: '<path d="M7 4.8v14.4a1 1 0 0 0 1.5.86l11.8-7.2a1 1 0 0 0 0-1.72L8.5 3.94A1 1 0 0 0 7 4.8z"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.4"/>',
 } as const;
 
 export type IconName = keyof typeof PATHS;

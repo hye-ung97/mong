@@ -1,5 +1,6 @@
 import { audio, layersOf } from '../audio/engine';
 import { icon } from '../icons';
+import { isLocked } from '../lib/ads';
 import { canFullscreen, isFullscreen, keepAwake, toggleFullscreen } from '../lib/device';
 import { firstTime, save, setMix, settings } from '../lib/settings';
 import { formatClock, timer } from '../lib/timer';
@@ -17,6 +18,7 @@ import { Sea } from '../scenes/sea';
 import { SNOW_FALLS, SnowScene } from '../scenes/snow';
 import { STAR_PHASES, STAR_SEASONS, Star, type StarPhase } from '../scenes/star';
 import { starLayersFor } from '../audio/sounds/star';
+import { takeArrivalNote } from './unlock-sheet';
 import { EQ, wordmark, type View } from './view';
 
 const IDLE_AFTER = 4000; // ms without input before the UI fades away
@@ -229,6 +231,9 @@ export class SceneView implements View {
     this.refreshFullscreen();
     this.initRanges();
     this.armIdle();
+    // just opened with an ad (or let in because there was none)
+    const note = takeArrivalNote();
+    if (note) this.toast(note);
   }
 
   /* ---------- typed scene access ---------- */
@@ -260,9 +265,10 @@ export class SceneView implements View {
     const id = this.id;
     const group = groupOf(id);
     const c = this.copy;
+    // Toss mini app: a 멍 that opens after an ad is dimmed; tapping it brings up the unlock sheet (src/app.ts)
     const tabs = GROUPS.map((g) => {
       const on = g.id === group;
-      return `<a href="${groupRoute(g.id)}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}>${g.label}</a>`;
+      return `<a href="${groupRoute(g.id)}" class="${on ? 'on' : isLocked(g.id) ? 'locked' : ''}"${on ? ' aria-current="page"' : ''}>${g.label}</a>`;
     }).join('');
     const subNav = (label: string, list: readonly { id: SceneId; label: string }[]) =>
       `<nav class="subscenes glass" aria-label="${label}">${list.map((w) => {
@@ -381,7 +387,7 @@ export class SceneView implements View {
   private railHtml() {
     const group = groupOf(this.id);
     const tabs = GROUPS.map((g) =>
-      `<a class="icon-btn ${g.id === group ? 'cur' : ''}" href="${groupRoute(g.id)}" aria-label="${g.label}">${icon(g.icon)}</a>`).join('');
+      `<a class="icon-btn ${g.id === group ? 'cur' : isLocked(g.id) ? 'locked' : ''}" href="${groupRoute(g.id)}" aria-label="${g.label}">${icon(g.icon)}</a>`).join('');
     const main = {
       fire: { act: 'add-log', icon: 'log', label: '장작 넣기' },
       rain: { act: 'rain-cycle', icon: 'rain', label: '비 세기 바꾸기' },

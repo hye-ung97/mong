@@ -1,14 +1,14 @@
 import { audio } from '../audio/engine';
 import { icon, type IconName } from '../icons';
-import { showBanner } from '../lib/ads';
+import { isLocked } from '../lib/ads';
 import { settings } from '../lib/settings';
 import { SceneHost } from '../scenes/host';
 import { createScene, groupRoute, type GroupId, type SceneId } from '../scenes/registry';
 import { EQ, wordmark, type View } from './view';
 
-interface Card { group: GroupId; scene: SceneId; title: string; sub: string; tag: string; tagIcon: IconName }
+export interface Card { group: GroupId; scene: SceneId; title: string; sub: string; tag: string; tagIcon: IconName }
 
-const CARDS: readonly Card[] = [
+export const CARDS: readonly Card[] = [
   { group: 'fire', scene: 'fire', title: '불멍', sub: '타닥타닥, 장작 타는 소리', tag: '장작 넣기', tagIcon: 'log' },
   { group: 'rain', scene: 'rain', title: '비멍', sub: '창가에 앉아 듣는 빗소리', tag: '비 세기 조절', tagIcon: 'rain' },
   { group: 'water', scene: 'aquarium', title: '물멍', sub: '어항 · 바다 · 연못', tag: '먹이 주기 · 물결', tagIcon: 'fish' },
@@ -35,26 +35,29 @@ export class HomeView implements View {
         <p>소리를 켜고, 아무 생각 없이 바라보세요.</p>
       </header>
       <nav class="cards" aria-label="장면 고르기">
-        ${CARDS.map((c, i) => `
-          <a class="card theme-${c.group}" href="${groupRoute(c.group)}" data-scene="${c.scene}" data-key="${i + 1}">
+        ${CARDS.map((c, i) => {
+          // Toss mini app: a 멍 that opens after an ad says so where its tag usually is
+          const locked = isLocked(c.group);
+          return `
+          <a class="card theme-${c.group}${locked ? ' locked' : ''}" href="${groupRoute(c.group)}" data-scene="${c.scene}" data-key="${i + 1}">
             <canvas class="scene" aria-hidden="true"></canvas>
-            <span class="card-tag glass tag-default">${icon(c.tagIcon, 'sm')}${c.tag}</span>
+            ${locked
+              ? `<span class="card-tag glass tag-default lock">${icon('lock', 'sm')}광고 보고 열기</span>`
+              : `<span class="card-tag glass tag-default">${icon(c.tagIcon, 'sm')}${c.tag}</span>`}
             <span class="card-tag glass tag-preview">${EQ}소리 미리 듣는 중</span>
             <span class="card-info">
               <span><span class="card-title">${c.title}</span><span class="card-sub">${c.sub}</span></span>
               <span class="go glass" aria-hidden="true">${icon('arrow')}</span>
               <span class="enter" aria-hidden="true">들어가기${icon('arrow', 'sm')}</span>
             </span>
-          </a>`).join('')}
+          </a>`;
+        }).join('')}
       </nav>
       <footer class="home-foot">
         <span>${icon('headphones', 'sm')}이어폰을 끼면 더 좋아요</span>
         <span class="only-d"><kbd>1</kbd>–<kbd>${CARDS.length}</kbd> 바로 들어가기</span>
-      </footer>
-      <div class="home-ad" hidden></div>`;
+      </footer>`;
     parent.append(this.el);
-    // Toss mini app only: one banner under everything else, away from the cards
-    this.cleanups.push(showBanner(this.el.querySelector<HTMLElement>('.home-ad')!));
 
     const s = settings();
     this.el.querySelectorAll<HTMLAnchorElement>('.card').forEach((card) => {

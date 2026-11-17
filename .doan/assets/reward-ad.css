@@ -1,0 +1,126 @@
+/* 리워드 광고로 멍 열기 시안 — mong.css · fire-v2.css(개요 틀) · sand.css · star.css · snow.css 위에 얹는 부품.
+   전부 시안에만 있어요. 코드(src/styles/app.css)에는 아직 없어요. */
+
+/* ---------- 홈: 잠긴 카드 ---------- */
+/* 미리보기는 그대로 움직여요. 살짝만 어둡게 해서 ‘아직 안 열린’ 느낌만 줘요 */
+.card.locked canvas { filter: brightness(0.82) saturate(0.85); }
+.card-tag.lock { padding: 0 11px 0 8px; gap: 5px; }
+.card-tag.lock .ico { width: 14px; height: 14px; }
+.card.pressed { transform: scale(0.985); box-shadow: 0 0 0 1.5px var(--accent); }
+
+/* ---------- 열기 시트 ---------- */
+.unlock-sheet { padding-bottom: 22px; }
+.unlock-thumb {
+  position: relative;
+  height: 148px;
+  margin: 0 0 18px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #000;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.unlock-thumb canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.unlock-thumb::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.55)); }
+.unlock-thumb .thumb-label { position: absolute; z-index: 1; left: 14px; bottom: 12px; display: flex; align-items: center; gap: 6px; font: 600 12.5px/1 var(--font); color: var(--ui-ink); }
+.unlock-thumb .thumb-label .eq { margin-right: 2px; }
+.unlock-sheet h3 { font-size: 22px; }
+.unlock-sheet .sub { margin-bottom: 18px; font-size: 14px; color: var(--ui-dim); }
+.unlock-facts { margin: 0 0 22px; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.unlock-facts li { display: flex; align-items: center; gap: 10px; font: 500 13.5px/1.35 var(--font); color: var(--ui-dim); }
+.unlock-facts .ico { width: 18px; height: 18px; flex: none; color: var(--accent-soft); }
+.unlock-facts b { color: var(--ui-ink); font-weight: 650; }
+
+/* 광고 보고 열기 버튼 */
+.btn-block.ad { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-block.ad .ico { width: 18px; height: 18px; }
+.btn-block.ad .ico.fill { fill: currentColor; stroke: none; }
+.btn-block.ad.loading { background: var(--ui-active); color: var(--ui-dim); }
+.btn-block + .btn-ghost { margin-top: 6px; }
+.spin {
+  width: 16px; height: 16px; flex: none; border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.22); border-top-color: var(--ui-ink);
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 중간에 닫았을 때 시트 안 안내 */
+.unlock-note {
+  display: flex; align-items: center; gap: 9px;
+  margin: 0 0 16px; padding: 12px 14px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  font: 600 13.5px/1.4 var(--font); color: var(--accent-soft);
+}
+.unlock-note .ico { width: 18px; height: 18px; flex: none; }
+
+/* ---------- 장면 안: 잠긴 탭 ---------- */
+.tabs a.locked { color: var(--ui-faint); }
+.tabs a.pressed { background: var(--ui-fill); }
+
+/* ---------- 토스트 (열린 뒤 · 광고 없을 때) ---------- */
+.toast.unlock-toast { top: 112px; padding: 11px 16px; font-size: 13.5px; }
+.toast.unlock-toast small { font: 500 13px/1 var(--font); color: var(--ui-dim); }
+
+/* ---------- 토스가 띄우는 광고 화면 (그림 예시) ---------- */
+.ad-mock { position: absolute; inset: 0; background: #0b0b0c; }
+.ad-mock .ad-video {
+  position: absolute; left: 0; right: 0; top: 230px; height: 300px;
+  display: grid; place-items: center;
+  background: repeating-linear-gradient(135deg, #1d1d20 0 14px, #18181b 14px 28px);
+  font: 600 15px/1.5 var(--font); color: rgba(255, 255, 255, 0.4); text-align: center;
+}
+.ad-mock .ad-top { position: absolute; top: 58px; left: 16px; right: 16px; display: flex; align-items: center; justify-content: space-between; }
+.ad-mock .ad-badge { padding: 4px 8px; border-radius: 6px; background: #f2c94c; color: #111; font: 800 12px/1 var(--font); }
+.ad-mock .ad-count { padding: 8px 12px; border-radius: var(--r-pill); background: rgba(255, 255, 255, 0.12); font: 600 13px/1 var(--font); color: rgba(255, 255, 255, 0.8); }
+.ad-mock .ad-reward {
+  position: absolute; left: 16px; right: 16px; top: 560px;
+  padding: 14px 16px; border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+  font: 600 14px/1.5 var(--font); color: rgba(255, 255, 255, 0.8);
+}
+.ad-mock .ad-reward small { display: block; font: 500 12.5px/1.5 var(--font); color: rgba(255, 255, 255, 0.5); }
+.not-ours {
+  position: absolute; z-index: 4; left: 16px; right: 16px; bottom: 40px;
+  padding: 14px 16px; border-radius: 14px;
+  background: rgba(255, 196, 92, 0.1); border: 1px dashed rgba(255, 196, 92, 0.6);
+  font: 500 13px/1.55 var(--font); color: #ffd28a;
+}
+.not-ours b { display: block; margin-bottom: 2px; color: #ffe2b0; }
+
+/* ---------- 보드: 비교 · 흐름 · 기술 ---------- */
+.notes.ad-compare { width: 900px; }
+.notes.ad-flow { width: 760px; }
+.notes.ad-tech { width: 620px; }
+.notes.ad-decide { width: 520px; }
+.alt-compare th.pick { color: var(--water-300); }
+.alt-compare td.pick { background: rgba(79, 209, 192, 0.06); }
+.alt-compare td.no { color: var(--board-dim); }
+.verdict { margin: 18px 0 0; padding: 16px 18px; border-radius: 14px; background: rgba(79, 209, 192, 0.08); border: 1px solid rgba(79, 209, 192, 0.35); font: 500 15px/1.6 var(--font); }
+.verdict b { color: var(--water-300); }
+
+.flow { width: 100%; border-collapse: collapse; font: 500 14px/1.55 var(--font); }
+.flow th { padding: 0 14px 12px 0; text-align: left; font: 700 12.5px/1.2 var(--font); color: var(--board-dim); border-bottom: 1px solid var(--board-line); }
+.flow td { padding: 12px 14px 12px 0; vertical-align: top; border-bottom: 1px solid var(--board-line); color: var(--board-dim); }
+.flow td:first-child { color: var(--board-ink); font-weight: 700; }
+.flow tr:last-child td { border-bottom: 0; }
+.flow code { font-size: 12.5px; }
+.flow .ok { color: var(--water-300); font-weight: 650; }
+
+.steps { margin: 0 0 24px; padding: 0; list-style: none; counter-reset: s; display: flex; flex-direction: column; gap: 10px; }
+.steps li { counter-increment: s; position: relative; padding: 12px 14px 12px 46px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); font: 500 14px/1.55 var(--font); color: var(--board-dim); }
+.steps li::before { content: counter(s); position: absolute; left: 14px; top: 12px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: rgba(255, 255, 255, 0.1); font: 700 12px/1 var(--font); color: var(--board-ink); }
+.steps b { color: var(--board-ink); }
+.notes .ask { color: #ffd28a; }
+.opt { display: inline-block; margin: 0 4px 0 0; padding: 2px 8px; border-radius: var(--r-pill); background: rgba(255, 255, 255, 0.07); font: 600 12px/1.5 var(--font); color: var(--board-ink); }
+.opt.pick { background: rgba(79, 209, 192, 0.16); color: var(--water-300); }
+
+/* ---------- 버튼 세 가지 상태 (보드용 작은 화면) ---------- */
+.screen.btn-states { width: 390px; height: auto; padding: 26px 20px 24px; border-radius: 28px; background: var(--ui-glass-strong); }
+.btn-states .state { margin-bottom: 18px; }
+.btn-states .state:last-child { margin-bottom: 0; }
+.btn-states .cap { display: block; margin: 0 0 8px 2px; font: 600 12.5px/1 var(--font); color: var(--ui-faint); }
+
+/* 개요: 코드에 들어간 것 */
+.brief .in-code ul { margin: 6px 0 0; padding-left: 18px; }
+.brief .in-code li { margin-bottom: 3px; }
