@@ -124,3 +124,31 @@
 /* 개요: 코드에 들어간 것 */
 .brief .in-code ul { margin: 6px 0 0; padding-left: 18px; }
 .brief .in-code li { margin-bottom: 3px; }
+
+/* ---------- 무료 셋 고르기 (보드용 비교) ---------- */
+.notes.free-set { width: 1560px; }
+.free-opts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.free-opt { padding: 22px 22px 20px; border-radius: 18px; background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; }
+.free-opt.pick { background: rgba(79, 209, 192, 0.06); border-color: rgba(79, 209, 192, 0.35); }
+.free-opt .opt-no { display: block; margin-bottom: 10px; font: 700 12.5px/1 var(--font); letter-spacing: 0.06em; color: var(--board-dim); }
+.free-opt.pick .opt-no { color: var(--water-300); }
+.free-opt h5 { margin: 0 0 18px; font: 700 21px/1.3 var(--font); letter-spacing: -0.02em; color: var(--board-ink); }
+.free-opt .opt-body { display: flex; align-items: flex-start; gap: 22px; }
+.free-opt ul { flex: 1; margin: 0; padding-left: 18px; font: 500 14px/1.6 var(--font); color: var(--board-dim); }
+.free-opt li { margin-bottom: 6px; }
+.free-opt li.minus::marker { color: #ffd28a; }
+.free-opt li.minus b { color: #ffd28a; }
+/* 홈 카드 순서 그대로 줄인 그림: 두 칸 세 줄 + 맨 아래 넓은 카드 */
+.mini-home { flex: none; width: 176px; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.mini-home span { display: flex; align-items: center; justify-content: center; gap: 4px; height: 38px; border-radius: 9px; font: 650 12px/1 var(--font); }
+.mini-home .wide { grid-column: 1 / -1; }
+.mini-home .free { background: rgba(79, 209, 192, 0.2); color: var(--water-300); }
+.mini-home .ad { background: rgba(255, 255, 255, 0.05); color: var(--board-faint); }
+.mini-home .ad .ico { width: 11px; height: 11px; stroke-width: 2.2; }
+.mini-home .today { background: transparent; box-shadow: inset 0 0 0 1.5px rgba(79, 209, 192, 0.5); color: var(--water-300); }
+.mini-key { display: flex; gap: 16px; margin: 0 0 22px; font: 600 12.5px/1 var(--font); color: var(--board-dim); }
+.mini-key span { display: flex; align-items: center; gap: 6px; }
+.mini-key i { width: 14px; height: 14px; border-radius: 4px; }
+.mini-key .free { background: rgba(79, 209, 192, 0.35); }
+.mini-key .ad { background: rgba(255, 255, 255, 0.1); }
+.mini-key .today { box-shadow: inset 0 0 0 1.5px rgba(79, 209, 192, 0.6); }

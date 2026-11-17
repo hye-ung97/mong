@@ -2,8 +2,8 @@ import type { GroupId } from '../scenes/registry';
 import { save, settings } from './settings';
 
 /**
- * Rewarded ads inside the Toss mini app: 불멍 is always open, and every other 멍 opens for the rest of the day
- * once the visitor has watched one ad to the end.
+ * Rewarded ads inside the Toss mini app: 불멍 · 비멍 · 물멍 are always open, a new 멍 is open for its first week, and
+ * every other 멍 opens for the rest of the day once the visitor has watched one ad to the end.
  *
  * Only inside Toss. The website, the installed web app and Toss apps too old for full-screen ads have no ads at
  * all: nothing is locked there and the ad SDK is never loaded.
@@ -19,8 +19,15 @@ const LIVE_AD_GROUP_ID = 'ait.v2.live.54520b8e17e14da5';
 const TEST_AD_GROUP_ID = 'ait-ad-test-rewarded-id';
 const REWARDED_AD_GROUP_ID = import.meta.env.MODE === 'production' ? LIVE_AD_GROUP_ID : TEST_AD_GROUP_ID;
 
-/** The 멍 that never needs an ad. */
-export const FREE_GROUP: GroupId = 'fire';
+/** The 멍 that never need an ad: the top three cards on home. */
+export const FREE_GROUPS: readonly GroupId[] = ['fire', 'rain', 'water'];
+
+/**
+ * A new 멍 (its home card says NEW) needs no ad for its first week: seven days from the day it comes out, by the
+ * phone's date. After that it opens with an ad like the rest. Set the date to the day its bundle goes live in Toss.
+ */
+const FIRST_WEEK: Partial<Record<GroupId, string>> = { subway: '2026-11-17' };
+const FIRST_WEEK_DAYS = 7;
 
 /** How long the button waits for an ad that has not loaded yet before letting the visitor in anyway. */
 const WAIT_MS = 5000;
@@ -39,15 +46,26 @@ export function rewardsOn(): boolean {
   }
 }
 
-/** Local date, e.g. 2026-11-17: an unlock lasts until midnight on this phone. */
-function today() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+/** Local date, e.g. 2026-11-17. */
+const dateKey = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+/** Today on this phone: an unlock lasts until midnight. */
+const today = () => dateKey(new Date());
+
+/** True during a new 멍's first week. */
+function inFirstWeek(group: GroupId): boolean {
+  const from = FIRST_WEEK[group];
+  if (!from) return false;
+  const [y, m, d] = from.split('-').map(Number);
+  const day = today();
+  return day >= from && day < dateKey(new Date(y, m - 1, d + FIRST_WEEK_DAYS));
 }
 
 /** Whether this 멍 needs an ad before it opens. Always false outside Toss. */
 export function isLocked(group: GroupId): boolean {
-  return group !== FREE_GROUP && rewardsOn() && settings().unlocked[group] !== today();
+  if (FREE_GROUPS.includes(group) || inFirstWeek(group) || !rewardsOn()) return false;
+  return settings().unlocked[group] !== today();
 }
 
 /** Opens this 멍 until midnight. */

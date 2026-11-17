@@ -1,6 +1,6 @@
 import { audio } from '../audio/engine';
 import { icon } from '../icons';
-import { adReady, FREE_GROUP, preloadAd, unlock, watchAd } from '../lib/ads';
+import { adReady, FREE_GROUPS, preloadAd, unlock, watchAd } from '../lib/ads';
 import { settings } from '../lib/settings';
 import { SceneHost } from '../scenes/host';
 import { createScene, GROUPS, groupOf, groupRoute, type GroupId, type SceneId } from '../scenes/registry';
@@ -44,7 +44,9 @@ class UnlockSheet {
     const card = CARDS.find((c) => c.group === group)!;
     const s = settings();
     const scene: SceneId = group === 'water' ? s.water : group === 'snow' ? s.snow : group === 'subway' ? s.subway : card.scene;
-    const inFire = here !== null && groupOf(here) === FREE_GROUP;
+    // inside one of the free 멍 the sheet does not need to say they are free
+    const inFree = here !== null && FREE_GROUPS.includes(groupOf(here));
+    const free = FREE_GROUPS.map((g) => GROUPS.find((x) => x.id === g)!.label).join(' · ');
 
     this.el = document.createElement('div');
     this.el.className = `unlock theme-${group}`;
@@ -65,7 +67,7 @@ class UnlockSheet {
         <ul class="unlock-facts">
           <li>${icon('timer')}<span><b>오늘 밤 12시까지</b> 열려 있어요</span></li>
           <li>${icon('mute')}<span>광고가 나오는 동안 소리는 잠시 멈춰요</span></li>
-          ${inFire ? '' : `<li>${icon('flame')}<span>불멍은 광고 없이 언제든 볼 수 있어요</span></li>`}
+          ${inFree ? '' : `<li>${icon('unlock')}<span>${free}은 광고 없이 늘 열려 있어요</span></li>`}
         </ul>
         <button class="btn-block unlock-go" data-act="watch"></button>
         <button class="btn-ghost" data-act="close">다음에</button>
