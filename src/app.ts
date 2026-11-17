@@ -4,7 +4,7 @@ import { keepAwake } from './lib/device';
 import { save, settings } from './lib/settings';
 import { timer } from './lib/timer';
 import { showNewVersions } from './lib/update';
-import { GROUPS, SNOW, groupOf, isSnow, isWater, routeOf, type GroupId, type SceneId, type WaterId } from './scenes/registry';
+import { GROUPS, SNOW, SUBWAY, groupOf, isSnow, isSubway, isWater, routeOf, type GroupId, type SceneId, type WaterId } from './scenes/registry';
 import { HomeView } from './views/home-view';
 import { SceneView } from './views/scene-view';
 import { offerUnlock, unlockOpen } from './views/unlock-sheet';
@@ -15,7 +15,10 @@ type Route = { view: 'home' } | { view: 'scene'; id: SceneId };
 const WATER_IDS: readonly WaterId[] = ['aquarium', 'sea', 'pond'];
 const GROUP_IDS = GROUPS.map((g) => g.id);
 
-/** #/  ·  #/fire  ·  #/rain  ·  #/water (last used)  ·  #/water/aquarium|sea|pond  ·  #/sand  ·  #/star  ·  #/snow (last used)  ·  #/snow/clocktower|underfoot */
+/**
+ * #/  ·  #/fire  ·  #/rain  ·  #/water (last used)  ·  #/water/aquarium|sea|pond  ·  #/sand  ·  #/star  ·  #/snow (last used)
+ * ·  #/snow/clocktower|underfoot  ·  #/subway (last used)  ·  #/subway/seat|door|window
+ */
 function parse(hash: string): Route {
   const [first, second] = hash.replace(/^#\/?/, '').split('/').filter(Boolean);
   if (first === 'fire' || first === 'rain' || first === 'sand' || first === 'star') return { view: 'scene', id: first };
@@ -25,6 +28,10 @@ function parse(hash: string): Route {
   }
   if (first === 'snow') {
     const sub = SNOW.find((s) => s.id === second)?.id ?? settings().snow;
+    return { view: 'scene', id: sub };
+  }
+  if (first === 'subway') {
+    const sub = SUBWAY.find((s) => s.id === second)?.id ?? settings().subway;
     return { view: 'scene', id: sub };
   }
   return { view: 'home' };
@@ -52,13 +59,14 @@ export function startApp(root: HTMLElement) {
       if (location.hash !== canonical) history.replaceState(null, '', canonical);
       if (isWater(route.id)) save({ water: route.id });
       if (isSnow(route.id)) save({ snow: route.id });
+      if (isSubway(route.id)) save({ subway: route.id });
     }
     const key = route.view === 'home' ? 'home' : route.id;
-    if (key !== currentKey) show(route, key);
+    if (key !== currentKey) show(route, key, hereScene());
     if (offer) offerUnlock(root, offer, hereScene());
   };
 
-  const show = (route: Route, key: string) => {
+  const show = (route: Route, key: string, from: SceneId | null) => {
     currentKey = key;
 
     // let the old screen fade out underneath the new one
@@ -76,8 +84,8 @@ export function startApp(root: HTMLElement) {
       document.title = 'mong · 멍때리기 좋은 곳';
       current = new HomeView(root);
     } else {
-      current = new SceneView(root, route.id);
-      document.title = `${current.el.querySelector('.tabs .on')?.textContent ?? 'mong'} · mong`;
+      current = new SceneView(root, route.id, from && groupOf(from));
+      document.title = `${GROUPS.find((g) => g.id === groupOf(route.id))?.label ?? 'mong'} · mong`;
     }
     // Toss mini app: have an ad ready before anyone asks for one
     if (anyLocked(GROUP_IDS)) preloadAd();

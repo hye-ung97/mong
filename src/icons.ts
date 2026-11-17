@@ -34,6 +34,10 @@ const PATHS = {
   snow: '<path d="M12 2v20M3.3 7l17.4 10M20.7 7 3.3 17"/><path d="m9.5 3.5 2.5 2 2.5-2M9.5 20.5l2.5-2 2.5 2M3.6 10.6l3-1.1-.5-3.2M20.4 13.4l-3 1.1.5 3.2M3.6 13.4l3 1.1-.5 3.2M20.4 10.6l-3-1.1.5-3.2"/>',
   tram: '<rect x="5" y="5" width="14" height="12" rx="3"/><path d="M5 11h14M9 21l1.5-4M15 21l-1.5-4M8 2h8M12 2v3"/>',
   bell: '<path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21a2 2 0 0 0 4 0M12 3v2"/>',
+  /* 지하철멍: the train from the front (the group), 불꽃 올리기, voices in the carriage */
+  subway: '<rect x="5" y="3" width="14" height="15" rx="3.5"/><path d="M5 11h14"/><path d="M8.5 14.5h.01M15.5 14.5h.01"/><path d="m8 21 1.5-3M16 21l-1.5-3"/>',
+  spark: '<circle cx="12" cy="12" r="1.6"/><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4M5.3 5.3l2.8 2.8M15.9 15.9l2.8 2.8M5.3 18.7l2.8-2.8M15.9 8.1l2.8-2.8"/>',
+  people: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
   x: '<path d="M18 6 6 18M6 6l12 12"/>',
   chev: '<path d="m6 15 6-6 6 6"/>',
   /* Toss mini app: a locked 멍, the ad button (drawn filled), a note in the unlock sheet */

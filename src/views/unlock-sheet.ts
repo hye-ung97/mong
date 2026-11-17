@@ -43,7 +43,7 @@ class UnlockSheet {
     const label = GROUPS.find((g) => g.id === group)!.label;
     const card = CARDS.find((c) => c.group === group)!;
     const s = settings();
-    const scene: SceneId = group === 'water' ? s.water : group === 'snow' ? s.snow : card.scene;
+    const scene: SceneId = group === 'water' ? s.water : group === 'snow' ? s.snow : group === 'subway' ? s.subway : card.scene;
     const inFire = here !== null && groupOf(here) === FREE_GROUP;
 
     this.el = document.createElement('div');

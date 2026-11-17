@@ -76,8 +76,6 @@ kbd {
 .tabs a:hover { color: var(--ui-ink); }
 .tabs a.on { background: var(--ui-active); color: var(--ui-ink); }
 /* four scenes: on phones the tabs need tighter padding to fit between the two round buttons */
-@media (max-width: 767.98px) { .tabs a { padding: 0 10px; } }
-@media (max-width: 374.98px) { .tabs a { padding: 0 7px; font-size: 13px; } }
 .tabs a.on::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
 
 .primary {
@@ -299,7 +297,7 @@ kbd {
   box-shadow: 0 6px 24px color-mix(in srgb, var(--accent) 45%, transparent);
 }
 .rail-main[aria-pressed="true"] { background: color-mix(in srgb, var(--accent) 25%, transparent); color: var(--accent-soft); }
-/* six groups on the rail (since 눈멍): smaller buttons on short screens, and it scrolls if it still does not fit */
+/* seven groups on the rail (since 지하철멍): smaller buttons on short screens, and it scrolls if it still does not fit */
 @media (orientation: landscape) and (max-height: 500px) {
   .rail { overflow-y: auto; scrollbar-width: none; }
   .rail::-webkit-scrollbar { display: none; }
@@ -563,15 +561,32 @@ kbd {
   [data-scene="sand"] .vol .range { width: 80px; }
 }
 
-/* ---------- 별멍 ---------- */
-/* six tabs (since 눈멍): on phones the labels get a little smaller to fit between the two round buttons */
+/* ---------- tabs: words on wide screens, icons on phones (since 지하철멍, seven did not fit as words) ---------- */
+.tabs a .ico { display: none; }
 @media (max-width: 767.98px) {
-  .topbar .tabs { gap: 0; padding: 4px 3px; }
-  .tabs a { padding: 0 5px; font-size: 12.5px; letter-spacing: -0.02em; }
-  .tabs a.on { gap: 4px; }
-  .tabs a.on::before { width: 5px; height: 5px; }
+  .topbar .tabs { gap: 0; padding: 4px; }
+  .tabs a { padding: 0 7px; }
+  .tabs a .ico { display: block; width: 18px; height: 18px; }
+  .tabs a .tab-label { display: none; }
+  .tabs a.on::before { display: none; }
+  .tabs a.on { color: var(--accent-soft); background: color-mix(in srgb, var(--accent) 22%, transparent); }
 }
-@media (max-width: 374.98px) { .tabs a { padding: 0 4px; font-size: 12px; } }
+/* 360 px phones: seven icons fit between the two round buttons with 6 px to spare */
+@media (max-width: 374.98px) { .tabs a { padding: 0 6px; } }
+/* a tab switch on a phone held upright: the 멍's name for a second, under the tabs and scene switch, its icon in
+   the tab's colour. The tap hint in the same place waits until it has gone */
+.name-toast {
+  position: absolute; z-index: 4; top: calc(env(safe-area-inset-top) + 112px); left: 50%;
+  display: flex; align-items: center; gap: 7px; padding: 10px 16px 10px 14px; border-radius: var(--r-pill);
+  white-space: nowrap; font: 600 14px/1 var(--font);
+  opacity: 0; transform: translate(-50%, -8px); pointer-events: none; transition: opacity 0.35s, transform 0.35s var(--ease);
+}
+.name-toast .ico { color: var(--accent-soft); }
+.name-toast.show { opacity: 1; transform: translate(-50%, 0); }
+@media (min-width: 768px), (orientation: landscape) and (max-height: 500px) { .name-toast { display: none; } }
+.naming .hint-glass { opacity: 0; transition: none; }
+
+/* ---------- 별멍 ---------- */
 /* the narrowest phones: the tabs scroll sideways instead of pushing the round buttons off the screen */
 @media (max-width: 349.98px) {
   .topbar .tabs { min-width: 0; overflow-x: auto; scrollbar-width: none; }
@@ -614,9 +629,27 @@ kbd {
 [data-scene="clocktower"] .d-keys, [data-scene="underfoot"] .d-keys { bottom: 34px; flex-direction: column; align-items: flex-end; gap: 9px; }
 @media (min-width: 768px) and (max-width: 1259px) { .scene-view.theme-snow .d-now { display: none; } }
 
-/* home: six cards, all the same size. Phones: two columns, three rows; wide screens: three columns, two rows */
+/* ---------- 지하철멍 ---------- */
+/* the tap hint floats under the seat switch (where a tab switch shows the name first); toasts go below it */
+.theme-subway .hint-glass { top: calc(env(safe-area-inset-top) + 112px); }
+@media (max-width: 767.98px) { .scene-view.theme-subway .toast { top: calc(env(safe-area-inset-top) + 158px); } }
+.scene-view.theme-subway .m-status, .scene-view.theme-subway .d-now, .scene-view.theme-subway .d-keys { color: var(--ui-ink); text-shadow: 0 1px 6px rgba(6, 8, 20, 0.7); }
+.scene-view.theme-subway .d-keys { color: var(--ui-dim); }
+.scene-view.theme-subway canvas.scene { cursor: pointer; }
+[data-scene="seat"] .d-keys, [data-scene="door"] .d-keys, [data-scene="window"] .d-keys { bottom: 34px; flex-direction: column; align-items: flex-end; gap: 9px; }
+@media (min-width: 768px) {
+  .scene-view.theme-subway .dock .seg { width: 230px; }
+  .scene-view.theme-subway .vol .range { width: 80px; }
+}
+@media (min-width: 768px) and (max-width: 1259px) { .scene-view.theme-subway .d-now { display: none; } }
+/* the home card says NEW until 지하철멍 has been opened once */
+.new-dot { display: inline-block; margin-left: 7px; padding: 3px 6px; border-radius: var(--r-pill); vertical-align: 4px; font: 700 10px/1 var(--font); letter-spacing: 0.02em; color: var(--accent-ink); background: var(--accent); }
+
+/* home: seven cards. Phones: two columns, three rows, and 지하철멍 across the bottom; wide screens: four columns, two
+   rows, 지하철멍 two columns wide */
 @media (max-width: 767.98px) {
-  .cards { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(118px, 1fr); }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(110px, 1fr); }
+  .card.wide { grid-column: 1 / -1; }
   .card { max-height: none; }
   .card .go { display: none; }
   .card .card-info { left: 14px; right: 12px; bottom: 14px; }
@@ -627,13 +660,15 @@ kbd {
 @media (min-width: 768px) {
   .home-head h1 { margin: clamp(40px, 7dvh, 72px) 0 10px; font-size: 38px; }
   .home-head p { font-size: 15px; }
-  .cards { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; gap: 16px; max-width: 1180px; height: clamp(420px, 62dvh, 560px); }
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 1fr; gap: 16px; max-width: 1180px; height: clamp(420px, 62dvh, 560px); }
+  .card.wide { grid-column: span 2; }
   .card-title { font-size: 26px; }
 }
-/* landscape phones (some are wider than 768): three columns, two rows, as short as the screen */
+/* landscape phones (some are wider than 768): four columns, two rows, as short as the screen */
 @media (orientation: landscape) and (max-height: 500px) {
   .home-head h1 { margin-top: 10px; font-size: 26px; }
-  .cards { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; height: auto; flex: 1; min-height: 0; }
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 1fr; height: auto; flex: 1; min-height: 0; }
+  .card.wide { grid-column: span 2; }
   .card { min-height: 72px; }
   .card .go { display: none; }
   .card .card-info { left: 14px; right: 12px; bottom: 12px; }
