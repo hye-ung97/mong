@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- C · 멍한 얼굴 파비콘: 입은 빼고 눈 두 줄만 -->
+  <defs>
+    <radialGradient id="bg" cx="28%" cy="20%" r="100%"><stop offset="0" stop-color="#ffe2b8"/><stop offset=".34" stop-color="#ffc27a"/><stop offset=".68" stop-color="#ff9a5c"/><stop offset="1" stop-color="#f29bb0"/></radialGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
+  <path d="M15 33h12M37 33h12" fill="none" stroke="#2a1208" stroke-width="6" stroke-linecap="round"/>
+</svg>

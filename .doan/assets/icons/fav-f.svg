@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- F · 불씨 파비콘: 바탕 없이 불꽃만 -->
+  <defs>
+    <linearGradient id="outer" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff7a30"/><stop offset=".6" stop-color="#ff8a3d"/><stop offset="1" stop-color="#ffb067"/></linearGradient>
+    <linearGradient id="core" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc27a"/><stop offset="1" stop-color="#fff1dc"/></linearGradient>
+  </defs>
+  <g transform="translate(32 33) scale(.098) translate(-512 -505)">
+    <path fill="url(#outer)" d="M528 214C608 324 704 430 704 592C704 706 618 796 512 796C406 796 320 706 320 592C320 520 350 466 392 420C398 474 420 510 456 530C440 418 470 298 528 214Z"/>
+    <path fill="url(#core)" d="M514 468C560 540 604 584 604 654C604 716 562 758 512 758C462 758 420 716 420 654C420 592 470 548 514 468Z"/>
+  </g>
+</svg>

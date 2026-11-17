@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- D · 수평선 파비콘: 별은 빼고 해와 비친 빛 두 줄만 -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#121a2c"/><stop offset="1" stop-color="#4a2232"/></linearGradient>
+    <radialGradient id="sun" cx="50%" cy="62%" r="60%"><stop offset="0" stop-color="#ffe2b8"/><stop offset=".45" stop-color="#ffc27a"/><stop offset="1" stop-color="#ff8a3d"/></radialGradient>
+    <clipPath id="tile"><rect width="64" height="64" rx="14"/></clipPath>
+    <clipPath id="above"><rect width="64" height="38"/></clipPath>
+  </defs>
+  <g clip-path="url(#tile)">
+    <rect width="64" height="38" fill="url(#sky)"/>
+    <rect y="38" width="64" height="26" fill="#06171d"/>
+    <circle cx="32" cy="38" r="17" fill="url(#sun)" clip-path="url(#above)"/>
+    <rect x="17" y="43" width="30" height="5" rx="2.5" fill="#ff8a3d"/>
+    <rect x="24" y="52" width="16" height="4" rx="2" fill="#ff8a3d" opacity=".6"/>
+  </g>
+</svg>

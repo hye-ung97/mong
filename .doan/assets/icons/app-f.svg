@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- F · 불씨: 가장 많이 보는 불멍을 불꽃 하나로 -->
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="66%" r="78%"><stop offset="0" stop-color="#2a1208"/><stop offset=".6" stop-color="#120a08"/><stop offset="1" stop-color="#070506"/></radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ff8a3d" stop-opacity=".46"/><stop offset=".5" stop-color="#ff8a3d" stop-opacity=".12"/><stop offset="1" stop-color="#ff8a3d" stop-opacity="0"/></radialGradient>
+    <linearGradient id="outer" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff7a30"/><stop offset=".6" stop-color="#ff8a3d"/><stop offset="1" stop-color="#ffb067"/></linearGradient>
+    <linearGradient id="core" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc27a"/><stop offset="1" stop-color="#fff1dc"/></linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <circle cx="512" cy="610" r="420" fill="url(#glow)"/>
+  <path fill="url(#outer)" d="M528 214C608 324 704 430 704 592C704 706 618 796 512 796C406 796 320 706 320 592C320 520 350 466 392 420C398 474 420 510 456 530C440 418 470 298 528 214Z"/>
+  <path fill="url(#core)" d="M514 468C560 540 604 584 604 654C604 716 562 758 512 758C462 758 420 716 420 654C420 592 470 548 514 468Z"/>
+  <g fill="#ffc27a">
+    <circle cx="664" cy="292" r="11" opacity=".8"/>
+    <circle cx="372" cy="318" r="7" opacity=".6"/>
+    <circle cx="616" cy="208" r="6" opacity=".45"/>
+  </g>
+</svg>

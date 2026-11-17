@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- D · 수평선: 물 위로 지는 해, 물에 비친 빛, 위에 별 몇 개 -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1220"/><stop offset=".34" stop-color="#171630"/><stop offset=".6" stop-color="#4a2232"/></linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a2a33"/><stop offset="1" stop-color="#020c11"/></linearGradient>
+    <radialGradient id="sun" cx="50%" cy="62%" r="60%"><stop offset="0" stop-color="#ffe2b8"/><stop offset=".45" stop-color="#ffc27a"/><stop offset="1" stop-color="#ff8a3d"/></radialGradient>
+    <radialGradient id="haze" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ff8a3d" stop-opacity=".5"/><stop offset=".55" stop-color="#ff8a3d" stop-opacity=".12"/><stop offset="1" stop-color="#ff8a3d" stop-opacity="0"/></radialGradient>
+    <clipPath id="above"><rect width="1024" height="600"/></clipPath>
+  </defs>
+  <rect width="1024" height="600" fill="url(#sky)"/>
+  <rect y="600" width="1024" height="424" fill="url(#sea)"/>
+  <ellipse cx="512" cy="600" rx="470" ry="300" fill="url(#haze)"/>
+  <circle cx="512" cy="600" r="196" fill="url(#sun)" clip-path="url(#above)"/>
+  <g fill="#ff8a3d">
+    <rect x="352" y="640" width="320" height="24" rx="12" opacity=".9"/>
+    <rect x="402" y="692" width="220" height="20" rx="10" opacity=".62"/>
+    <rect x="447" y="738" width="130" height="16" rx="8" opacity=".42"/>
+    <rect x="482" y="778" width="60" height="12" rx="6" opacity=".26"/>
+  </g>
+  <g fill="#f8efb6">
+    <circle cx="300" cy="250" r="7" opacity=".9"/>
+    <circle cx="700" cy="196" r="9"/>
+    <circle cx="796" cy="330" r="5" opacity=".7"/>
+    <circle cx="410" cy="150" r="5" opacity=".6"/>
+    <circle cx="214" cy="400" r="4" opacity=".5"/>
+  </g>
+</svg>

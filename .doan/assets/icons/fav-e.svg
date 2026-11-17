@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- E · 창가 파비콘: 바탕 없이 아치 창만, 빗줄기는 빼고 달과 창살 -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a2846"/><stop offset=".55" stop-color="#2f4870"/><stop offset="1" stop-color="#8fb3d9"/></linearGradient>
+    <clipPath id="win"><path d="M14 60V26a18 18 0 0 1 36 0v34z"/></clipPath>
+  </defs>
+  <g clip-path="url(#win)">
+    <rect x="14" y="8" width="36" height="52" fill="url(#sky)"/>
+    <circle cx="40" cy="22" r="4.5" fill="#f8efb6"/>
+  </g>
+  <path d="M32 8v52M14 35h36" stroke="#0c0b0f" stroke-width="3"/>
+  <path d="M14 60V26a18 18 0 0 1 36 0v34z" fill="none" stroke="#0c0b0f" stroke-opacity=".5" stroke-width="1.5"/>
+</svg>

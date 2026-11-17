@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- B · 멍 파비콘: 어두운 둥근 네모 위 ‘멍’, 획을 굵게 -->
+  <defs>
+    <linearGradient id="ring" gradientUnits="userSpaceOnUse" x1="370" y1="540" x2="654" y2="826"><stop offset="0" stop-color="#ffc27a"/><stop offset=".3" stop-color="#ff8a3d"/><stop offset=".68" stop-color="#4fd1c0"/><stop offset="1" stop-color="#8fb3d9"/></linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#131216"/>
+  <g transform="translate(32 32) scale(.074) translate(-512 -519)">
+    <g fill="none" stroke="#f6f1ea" stroke-width="84" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="288" y="225" width="216" height="176" rx="26"/>
+      <path d="M736 211v250M610 313h126"/>
+    </g>
+    <circle cx="512" cy="683" r="130" fill="none" stroke="url(#ring)" stroke-width="84"/>
+  </g>
+</svg>

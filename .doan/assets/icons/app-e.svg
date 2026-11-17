@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- E · 창가: 어두운 방에서 아치 창 너머 비 오는 밤을 바라봐요 -->
+  <defs>
+    <radialGradient id="room" cx="50%" cy="58%" r="76%"><stop offset="0" stop-color="#1a1820"/><stop offset="1" stop-color="#07070a"/></radialGradient>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f1a30"/><stop offset=".55" stop-color="#22365a"/><stop offset="1" stop-color="#6f8fb8"/></linearGradient>
+    <radialGradient id="city" cx="50%" cy="100%" r="60%"><stop offset="0" stop-color="#ff8a3d" stop-opacity=".55"/><stop offset="1" stop-color="#ff8a3d" stop-opacity="0"/></radialGradient>
+    <radialGradient id="moonglow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#f8efb6" stop-opacity=".5"/><stop offset="1" stop-color="#f8efb6" stop-opacity="0"/></radialGradient>
+    <radialGradient id="spill" cx="50%" cy="0%" r="70%"><stop offset="0" stop-color="#8fb3d9" stop-opacity=".12"/><stop offset="1" stop-color="#8fb3d9" stop-opacity="0"/></radialGradient>
+    <clipPath id="win"><path d="M302 800V432a210 210 0 0 1 420 0v368z"/></clipPath>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#room)"/>
+  <ellipse cx="512" cy="826" rx="380" ry="170" fill="url(#spill)"/>
+  <g clip-path="url(#win)">
+    <rect x="302" y="222" width="420" height="578" fill="url(#sky)"/>
+    <rect x="302" y="560" width="420" height="240" fill="url(#city)"/>
+    <circle cx="622" cy="372" r="110" fill="url(#moonglow)"/>
+    <circle cx="622" cy="372" r="40" fill="#f8efb6"/>
+    <g stroke="#c4daf2" stroke-width="8" stroke-linecap="round" opacity=".55">
+      <path d="M352 300l-22 70M420 420l-22 70M372 560l-22 70M470 640l-22 70M580 480l-22 70M660 600l-22 70M690 720l-22 70M540 280l-22 70"/>
+    </g>
+  </g>
+  <g fill="none" stroke="#0c0b0f" stroke-width="22">
+    <path d="M512 222v578M302 548h420"/>
+  </g>
+  <path d="M302 800V432a210 210 0 0 1 420 0v368z" fill="none" stroke="#f6f1ea" stroke-opacity=".16" stroke-width="16"/>
+  <rect x="272" y="800" width="480" height="30" rx="12" fill="#2e2622"/>
+</svg>

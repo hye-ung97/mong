@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- B · 멍: 한 글자 ‘멍’, 받침 ㅇ에 로고 동그라미의 색(불 · 물 · 비)이 돌아요 -->
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="70%" r="80%"><stop offset="0" stop-color="#211814"/><stop offset=".55" stop-color="#121014"/><stop offset="1" stop-color="#08080b"/></radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ff8a3d" stop-opacity=".3"/><stop offset=".55" stop-color="#ff8a3d" stop-opacity=".08"/><stop offset="1" stop-color="#ff8a3d" stop-opacity="0"/></radialGradient>
+    <linearGradient id="ring" gradientUnits="userSpaceOnUse" x1="370" y1="540" x2="654" y2="826"><stop offset="0" stop-color="#ffc27a"/><stop offset=".3" stop-color="#ff8a3d"/><stop offset=".68" stop-color="#4fd1c0"/><stop offset="1" stop-color="#8fb3d9"/></linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <circle cx="512" cy="672" r="290" fill="url(#glow)"/>
+  <g transform="translate(512 519) scale(.93) translate(-512 -519)">
+  <g fill="none" stroke="#f6f1ea" stroke-width="66" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="288" y="225" width="216" height="176" rx="30"/>
+    <path d="M736 211v250M600 313h136"/>
+  </g>
+  <circle cx="512" cy="683" r="130" fill="none" stroke="url(#ring)" stroke-width="66"/>
+  </g>
+</svg>

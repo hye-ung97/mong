@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- A · 오브 파비콘: 바탕 없이 동그라미만, 작아도 색이 보이게 조금 더 진하게 -->
+  <defs>
+    <radialGradient id="f" cx="34%" cy="34%" r="48%"><stop offset="0" stop-color="#ffe2b8"/><stop offset=".22" stop-color="#ffc27a"/><stop offset=".55" stop-color="#ff8a3d"/><stop offset="1" stop-color="#ff8a3d" stop-opacity="0"/></radialGradient>
+    <radialGradient id="w" cx="76%" cy="46%" r="46%"><stop offset="0" stop-color="#4fd1c0"/><stop offset="1" stop-color="#4fd1c0" stop-opacity="0"/></radialGradient>
+    <radialGradient id="r" cx="46%" cy="86%" r="52%"><stop offset="0" stop-color="#8fb3d9"/><stop offset="1" stop-color="#8fb3d9" stop-opacity="0"/></radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="#1c1c22"/>
+  <circle cx="32" cy="32" r="30" fill="url(#r)"/>
+  <circle cx="32" cy="32" r="30" fill="url(#w)"/>
+  <circle cx="32" cy="32" r="30" fill="url(#f)"/>
+</svg>
