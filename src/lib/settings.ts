@@ -2,7 +2,7 @@ import type { WoodKind } from '../scenes/fire';
 import { seasonNow, type Season } from '../scenes/pond';
 import type { SandPalette } from '../scenes/sand';
 import type { StarPhase } from '../scenes/star';
-import type { GroupId, SceneId, SnowId, WaterId } from '../scenes/registry';
+import type { GroupId, SceneId, SnowId, SubwayId, WaterId } from '../scenes/registry';
 
 export interface Settings {
   volume: number;
@@ -36,6 +36,9 @@ export interface Settings {
   snow: SnowId;
   snowFall: number;
   snowCover: boolean;
+  /** 지하철멍: the seat last taken (starts at 맞은편 창) and how many fireworks go up (0.3 · 0.6 · 1). */
+  subway: SubwayId;
+  subwayShow: number;
   /** Last chosen timer in minutes, 0 = no timer. */
   timer: number;
   /** Toss mini app: the day (local, 2026-11-17) each 멍 was opened with an ad. Open until that day ends. */
@@ -71,6 +74,8 @@ const DEFAULTS: Settings = {
   snow: 'clocktower',
   snowFall: 0.6,
   snowCover: true,
+  subway: 'seat',
+  subwayShow: 0.6,
   timer: 0,
   unlocked: {},
   hints: [],

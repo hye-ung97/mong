@@ -7,6 +7,7 @@ import { RAIN_LAYERS, RainSound } from './sounds/rain';
 import { SAND_LAYERS, SandSound } from './sounds/sand';
 import { SNOW_LAYERS, SnowSound } from './sounds/snow';
 import { STAR_LAYERS, StarSound } from './sounds/star';
+import { SUBWAY_LAYERS, SubwaySound } from './sounds/subway';
 import { AQUARIUM_LAYERS, AquariumSound, POND_LAYERS, PondSound, SEA_LAYERS, SeaSound } from './sounds/water';
 import { loadBuffer, releaseBuffer } from './assets';
 import { makeNoise, type NoiseKind } from './synth';
@@ -23,6 +24,9 @@ const SOUNDS: Record<SceneId, { layers: readonly LayerDef[]; make: SoundClass }>
   star: { layers: STAR_LAYERS, make: StarSound },
   clocktower: { layers: SNOW_LAYERS, make: SnowSound },
   underfoot: { layers: SNOW_LAYERS, make: SnowSound },
+  seat: { layers: SUBWAY_LAYERS, make: SubwaySound },
+  door: { layers: SUBWAY_LAYERS, make: SubwaySound },
+  window: { layers: SUBWAY_LAYERS, make: SubwaySound },
 };
 
 export const layersOf = (id: SceneId) => SOUNDS[id].layers;

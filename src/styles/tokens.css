@@ -32,6 +32,9 @@
   --snow-500: #f29bb0;
   --snow-300: #fbd0da;
   --snow-900: #2b0e17;
+  --subway-500: #8fd65a;
+  --subway-300: #c9efa6;
+  --subway-900: #13240a;
 
   /* shape, type, motion */
   --r-pill: 999px;
@@ -51,3 +54,4 @@
 .theme-star { --accent: var(--star-500); --accent-soft: var(--star-300); --accent-ink: var(--star-900); }
 .theme-snow { --accent: var(--snow-500); --accent-soft: var(--snow-300); --accent-ink: var(--snow-900); }
 .theme-water { --accent: var(--water-500); --accent-soft: var(--water-300); --accent-ink: var(--water-900); }
+.theme-subway { --accent: var(--subway-500); --accent-soft: var(--subway-300); --accent-ink: var(--subway-900); }
