@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build && ait build",
+    "build": "tsc --noEmit && vite build",
+    "build:ait": "npm run build && ait build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "deploy": "ait deploy"
