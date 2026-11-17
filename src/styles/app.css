@@ -161,6 +161,9 @@ kbd {
 }
 .home-foot { padding-top: 18px; display: flex; justify-content: center; align-items: center; gap: 18px; font: 500 13px/1 var(--font); color: var(--ui-faint); }
 .home-foot span { display: flex; align-items: center; gap: 6px; }
+/* banner ad (Toss mini app only): full screen width, below the footer */
+.home-ad { flex: none; width: 100vw; margin: 20px 0 0 -16px; }
+.home-ad[hidden] { display: none; }
 
 @media (min-width: 768px) {
   .home-view { padding: 28px 36px 32px; align-items: center; }

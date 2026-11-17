@@ -1,5 +1,6 @@
 import { audio } from '../audio/engine';
 import { icon, type IconName } from '../icons';
+import { showBanner } from '../lib/ads';
 import { settings } from '../lib/settings';
 import { SceneHost } from '../scenes/host';
 import { createScene, groupRoute, type GroupId, type SceneId } from '../scenes/registry';
@@ -49,8 +50,11 @@ export class HomeView implements View {
       <footer class="home-foot">
         <span>${icon('headphones', 'sm')}이어폰을 끼면 더 좋아요</span>
         <span class="only-d"><kbd>1</kbd>–<kbd>${CARDS.length}</kbd> 바로 들어가기</span>
-      </footer>`;
+      </footer>
+      <div class="home-ad" hidden></div>`;
     parent.append(this.el);
+    // Toss mini app only: one banner under everything else, away from the cards
+    this.cleanups.push(showBanner(this.el.querySelector<HTMLElement>('.home-ad')!));
 
     const s = settings();
     this.el.querySelectorAll<HTMLAnchorElement>('.card').forEach((card) => {

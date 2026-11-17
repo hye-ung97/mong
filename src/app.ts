@@ -63,6 +63,11 @@ export function startApp(root: HTMLElement) {
     }
   };
 
+  // The Toss mini app opens a feature link as a path (intoss://mong-time/fire → /fire); turn it into our hash route.
+  if (!location.hash && parse(location.pathname).view === 'scene') {
+    history.replaceState(null, '', `/#${location.pathname}`);
+  }
+
   window.addEventListener('hashchange', render);
   // any first touch or key press is enough to allow sound
   window.addEventListener('pointerdown', () => audio.unlock(), { capture: true });
