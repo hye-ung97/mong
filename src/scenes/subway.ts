@@ -5,7 +5,8 @@ import { TAU, clamp, pick, rand, rng } from './util';
  * 지하철멍: a late-night train crossing a bridge over the Han, fireworks over Yeouido outside the glass.
  * Three seats share the outside and differ only in the carriage around the glass:
  *   seat    맞은편 창: on the long bench, looking at the window across the aisle; handles sway in front of it
- *   door    문 앞: standing at the doors, looking out through their two panes; an LED board runs above them
+ *   door    문 앞: standing at the doors, looking out through their two panes; an LED board runs above them.
+ *           Where the screen is wide enough, the benches and windows either side of the doors show too
  *   window  창가: turned round on the seat, right up against the glass, the lit carriage reflected in it
  * The bridge never ends (7 panels of steel truss, 5 open ones, again and again) and the far skyline is one
  * strip whose ends meet, so the ride loops without a seam. At 축제 a 30 s finale comes now and then.
@@ -192,7 +193,11 @@ const hgrad = (x: CanvasRenderingContext2D, x0: number, x1: number, stops: [numb
 
 /* ---------- where the glass is ---------- */
 interface Rect { x: number; y: number; w: number; h: number }
-interface Pane extends Rect { r: number }
+interface Pane extends Rect {
+  r: number;
+  /** 문 앞: a window over the bench beside the doors, not a door pane */
+  side?: boolean;
+}
 
 interface Layout {
   /** the holes in the carriage that the outside shows through */
@@ -208,6 +213,8 @@ interface Layout {
   k: number;
   /** 문 앞: the door frame and the LED board above it */
   door?: { x0: number; x1: number; y0: number; y1: number };
+  /** 문 앞 on wide screens: the benches either side, ending in a pole at bayL and bayR; their foot meets the floor at fl */
+  bench?: { fl: number; bayL: number; bayR: number; seatW: number };
   led?: Rect;
   /** 창가: the top of the sill under the glass */
   sill?: number;
@@ -247,14 +254,39 @@ function layoutOf(seat: SubwaySeat, card: boolean, w: number, h: number, e: Edge
     const gb = Math.min(bottom - 40 * k, gy + (y1 - y0) * 0.62);
     const gh = Math.max(80, gb - gy);
     const gw = mid - inner - (x0 + outer);
-    const panes = [
+    const panes: Pane[] = [
       { x: x0 + outer, y: gy, w: gw, h: gh, r: 18 },
       { x: mid + inner, y: gy, w: gw, h: gh, r: 18 },
     ];
-    return {
+    const L: Layout = {
       panes, V: { x: panes[0].x, y: gy, w: panes[1].x + gw - panes[0].x, h: gh }, hz: 0.5, bar: 0, handles: [], k,
       door: { x0, x1, y0, y1 }, led: { x: mid - (dw - 80) / 2, y: ledTop, w: dw - 80, h: ledH },
     };
+    // wide screens: a bench either side of the doors with a window over it, as across the aisle in 맞은편 창.
+    // The bench ends in a pole on the seat grid, about a seat clear of the door; the windows' tops line up with the
+    // door panes', and the bench's foot meets the floor where the doors do.
+    const seatW = Math.round(dw * 0.347);
+    const reach = seatW * Math.ceil((mid - x0 + 50 * k) / seatW);
+    const bayL = mid - reach;
+    const bayR = mid + reach;
+    const m = clamp(w * 0.0375, 24, 64);
+    const ww = bayL - 24 * k - m;
+    if (ww < 120 * k) return L;
+    const wb = Math.round(gy + (y1 - gy) * 0.51);
+    panes.unshift({ x: m, y: gy, w: ww, h: wb - gy, r: 26, side: true });
+    panes.push({ x: w - m - ww, y: gy, w: ww, h: wb - gy, r: 26, side: true });
+    L.V = { x: m, y: gy, w: w - 2 * m, h: gh };
+    L.bar = gy - 26 * k;
+    L.bench = { fl: y1, bayL, bayR, seatW };
+    // handles over the benches only, the space before the doors kept clear
+    const step = seatW * 0.92;
+    const n = Math.max(1, Math.floor((ww - 40 * k) / step) + 1);
+    const cx = m + ww / 2;
+    for (let i = 0; i < n; i++) {
+      const o = (i - (n - 1) / 2) * step;
+      L.handles.push({ x: cx + o, len: rand(58, 66) * k }, { x: w - cx - o, len: rand(58, 66) * k });
+    }
+    return L;
   }
 
   if (seat === 'window') {
@@ -312,8 +344,10 @@ function paintBench(x: CanvasRenderingContext2D, w: number, h: number, L: Layout
   x.fillRect(0, sy + 22 * k, w, 4);
   // the wall round the windows, and their rubber frames
   const wallTop = sy + 22 * k + 4;
-  x.fillStyle = vgrad(x, wallTop, bot + 50 * k, [[0, '#2b2f38'], [1, '#23262e']]);
-  x.fillRect(0, wallTop, w, bot + 50 * k - wallTop);
+  // 문 앞's benches stretch so their foot meets the floor under the doors
+  const g = L.bench ? (L.bench.fl - bot) / 240 : k;
+  x.fillStyle = vgrad(x, wallTop, bot + 50 * g, [[0, '#2b2f38'], [1, '#23262e']]);
+  x.fillRect(0, wallTop, w, bot + 50 * g - wallTop);
   for (const r of panes) {
     x.beginPath();
     rr(x, r.x - 7, r.y - 7, r.w + 14, r.h + 14, r.r + 7);
@@ -324,18 +358,18 @@ function paintBench(x: CanvasRenderingContext2D, w: number, h: number, L: Layout
     x.stroke();
   }
   x.fillStyle = 'rgba(190,198,212,0.28)';
-  x.fillRect(0, bot + 20 * k, w, 2);
+  x.fillRect(0, bot + 20 * g, w, 2);
   // the bench: backrest, seat, front, heater grille
-  const sb = bot + 50 * k;
-  const sf = sb + 92 * k;
-  const ss = sf + 30 * k;
-  const sd = ss + 34 * k;
-  const fl = sd + 34 * k;
+  const sb = bot + 50 * g;
+  const sf = sb + 92 * g;
+  const ss = sf + 30 * g;
+  const sd = ss + 34 * g;
+  const fl = L.bench ? L.bench.fl : sd + 34 * g;
   x.fillStyle = vgrad(x, sb, sf, [[0, '#2a3160'], [0.65, '#232a55'], [1, '#1c2247']]);
   x.beginPath();
   rr(x, -20, sb, w + 40, sf - sb + 10, 18 * k);
   x.fill();
-  const seatW = Math.round(Math.min(panes[0].w, 340) / 2.7);
+  const seatW = L.bench ? L.bench.seatW : Math.round(Math.min(panes[0].w, 340) / 2.7);
   x.lineWidth = 2;
   x.strokeStyle = 'rgba(8,10,26,0.55)';
   x.beginPath();
@@ -387,8 +421,9 @@ function paintDoor(x: CanvasRenderingContext2D, w: number, h: number, L: Layout)
   const ly = 22;
   x.fillStyle = vgrad(x, ly - 16, ly + 24, [[0, 'rgba(240,244,250,0)'], [0.5, 'rgba(250,252,255,0.8)'], [1, 'rgba(240,244,250,0)']]);
   x.fillRect(0, ly - 16, w, 40);
-  // wide screens: the wall either side, in panels
-  if (d.x0 > 60) {
+  // wide screens: the benches and windows either side; not quite wide enough: the wall, in panels
+  if (L.bench) paintDoorSides(x, w, h, L);
+  else if (d.x0 > 60) {
     x.fillStyle = 'rgba(255,255,255,0.035)';
     for (let px = d.x0 - 150; px > 0; px -= 180) x.fillRect(px, 0, 1, h);
     for (let px = d.x1 + 150; px < w; px += 180) x.fillRect(px, 0, 1, h);
@@ -406,6 +441,7 @@ function paintDoor(x: CanvasRenderingContext2D, w: number, h: number, L: Layout)
   x.fillStyle = '#0d0e11';
   x.fillRect(mid - 3, y0, 6, y1 - y0);
   for (const r of L.panes) {
+    if (r.side) continue;
     x.beginPath();
     rr(x, r.x - 6, r.y - 6, r.w + 12, r.h + 12, r.r + 6);
     x.fillStyle = '#121418';
@@ -417,6 +453,46 @@ function paintDoor(x: CanvasRenderingContext2D, w: number, h: number, L: Layout)
   for (let i = x0 - 6; i < x1 + 10; i += 7) x.fillRect(i, y1 + 2 * k, 3, 4 * k);
   x.fillStyle = vgrad(x, y1 + 8 * k, Math.max(y1 + 9 * k, h), [[0, '#2a2c31'], [1, '#34363c']]);
   x.fillRect(0, y1 + 8 * k, w, h - y1 - 8 * k);
+}
+
+/**
+ * 문 앞 on wide screens, either side of the doors: the wall, windows and bench of 맞은편 창. The ceiling runs on
+ * over the doors; below the luggage rack only the benches are painted. Then the handle rail over the benches,
+ * the glass screen at each bench's end, seen edge on, and the pole beside it.
+ */
+function paintDoorSides(x: CanvasRenderingContext2D, w: number, h: number, L: Layout) {
+  const B = L.bench!;
+  const k = L.k;
+  const side = L.panes.filter((r) => r.side);
+  const top = side[0].y;
+  const bot = top + side[0].h;
+  const rack = top - 52 * k;
+  x.save();
+  x.beginPath();
+  x.rect(0, 0, w, rack);
+  x.rect(0, rack, B.bayL, h - rack);
+  x.rect(B.bayR, rack, w - B.bayR, h - rack);
+  x.clip();
+  paintBench(x, w, h, { ...L, panes: side, bar: 0 });
+  x.restore();
+  x.fillStyle = vgrad(x, L.bar - 4, L.bar + 4, [[0, '#9aa1ad'], [0.4, '#e4e8ee'], [1, '#5c626d']]);
+  x.fillRect(0, L.bar - 4, B.bayL, 8);
+  x.fillRect(B.bayR, L.bar - 4, w - B.bayR, 8);
+  for (const px of [B.bayL, B.bayR]) {
+    const pw = 14 * k;
+    x.beginPath();
+    rr(x, px < w / 2 ? px - pw : px, bot - 40 * k, pw, B.fl - bot + 20 * k, 7 * k);
+    x.fillStyle = 'rgba(150,170,190,0.16)';
+    x.fill();
+    x.strokeStyle = 'rgba(210,218,230,0.35)';
+    x.lineWidth = 1.5;
+    x.stroke();
+  }
+  for (const px of [B.bayL, B.bayR]) {
+    const r = 5 * k;
+    x.fillStyle = hgrad(x, px - r, px + r, [[0, '#5c626d'], [0.45, '#e8ecf2'], [1, '#6a707b']]);
+    x.fillRect(px - r, L.bar - 4, r * 2, B.fl - L.bar + 4);
+  }
 }
 
 /** 창가: the glass nearly fills the screen; below it the sill and the top of my own backrest. */
@@ -524,8 +600,9 @@ function paintReflection(x: CanvasRenderingContext2D, w: number, L: Layout, seat
     x.fill();
   }
   if (seat === 'door') {
-    // the seats and windows behind me
+    // the seats and windows behind me, in the door panes
     for (const r of L.panes) {
+      if (r.side) continue;
       x.fillStyle = 'rgba(60,72,150,0.45)';
       x.fillRect(r.x, r.y + r.h * 0.7, r.w, r.h * 0.16);
       x.fillStyle = 'rgba(0,0,0,0.5)';

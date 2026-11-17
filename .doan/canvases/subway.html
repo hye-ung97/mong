@@ -279,7 +279,7 @@
           <tr><td>불꽃 크기</td><td>보통. 창이 화면 가운데 40%쯤</td><td>보통. 유리 두 장으로 나뉘어요</td><td>가장 커요. 화면 거의 전부</td></tr>
           <tr><td>오래 보기</td><td>편해요. 앉아서 멍하니</td><td>조금 덜 편해요. 안내판이 움직여요</td><td>편해요</td></tr>
           <tr><td>폰 세로 화면</td><td>창 위아래로 실내가 들어가요</td><td>세로로 긴 문이 잘 맞아요</td><td>잘 맞아요</td></tr>
-          <tr><td>데스크톱</td><td>창 두 개가 나란히 놓여서 잘 맞아요 (05)</td><td>넓은 화면에 문 하나라 양옆이 비어요</td><td>넓은 유리 한 장, 잘 맞아요</td></tr>
+          <tr><td>데스크톱</td><td>창 두 개가 나란히 놓여서 잘 맞아요 (05)</td><td>문 양옆에 의자와 창이 있어요. 폰 세로는 문만 보여요 (05)</td><td>넓은 유리 한 장, 잘 맞아요 (05)</td></tr>
           <tr><td>다른 멍과 겹침</td><td>없어요</td><td>없어요</td><td>비멍의 창가와 닮았어요</td></tr>
           <tr><td>섞어 쓰기</td><td colspan="3"><span class="dim">A안을 바탕으로 B안의 행선 안내판을 창 위에 달거나, C안처럼 유리에 실내가 조금 더 비치게 할 수 있어요.</span></td></tr>
         </tbody>
@@ -296,9 +296,9 @@
   </div>
 </section>
 
-<!-- ================= 05 A안 · 데스크톱 ================= -->
-<section class="row">
-  <div class="row-head"><span class="row-no">05</span><h2>A안 · 데스크톱</h2><p>넓은 화면에서는 창 두 개가 나란히 보여요</p></div>
+<!-- ================= 05 세 자리 · 데스크톱 ================= -->
+<section class="row desk-three">
+  <div class="row-head"><span class="row-no">05</span><h2>세 자리 · 데스크톱</h2><p>1280 × 800. 맞은편 창 · 문 앞 · 창가를 차례로 놓았어요. 문 앞은 바꾸기 전과 후를 나란히 두었어요. 모두 지금 앱과 같아요</p></div>
   <div class="row-body">
 
     <div class="screen desk theme-subway" data-doan-frame="sub-a-desktop" data-doan-implements="src/scenes/subway.ts" data-doan-title="A · 데스크톱">
@@ -332,6 +332,7 @@
     </div>
 
     <aside class="notes">
+      <p class="seat-tag">A안 · 맞은편 창</p>
       <h4>폰과 다른 점</h4>
       <ul>
         <li><b>창 두 개</b>가 나란히 있고 가운데 창기둥이 있어요. 의자는 화면 끝까지 이어지고, 손잡이가 열 개쯤 흔들려요.</li>
@@ -342,6 +343,168 @@
       <h4>단축키 (제안)</h4>
       <ul>
         <li><kbd>↑</kbd> <kbd>↓</kbd> 불꽃 세기, <kbd>Space</kbd> 불꽃 올리기, 홈에서 <kbd>7</kbd>이 지하철멍이에요.</li>
+      </ul>
+    </aside>
+  </div>
+
+  <div class="row-body">
+
+    <div class="screen desk theme-subway" data-doan-frame="sub-b-desktop" data-doan-implements="src/scenes/subway.ts" data-doan-title="B · 문 앞 · 데스크톱 · 이전">
+      <canvas class="scene" data-subway data-view="door" data-wide data-show="0.6" data-seed="5"></canvas>
+      <div class="ui d-top">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <nav class="tabs seven glass"><a>불멍</a><a>비멍</a><a>물멍</a><a>모래멍</a><a>별멍</a><a>눈멍</a><a class="on">지하철멍</a></nav>
+        <div class="d-top-right">
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+          <button class="icon-btn glass" aria-label="전체화면"><svg class="ico"><use href="#i-max"/></svg></button>
+        </div>
+      </div>
+      <nav class="ui subscenes glass desk-sub" data-doan-id="bd-subscenes" aria-label="지하철멍 자리"><a>맞은편 창</a><a class="on">문 앞</a><a>창가</a></nav>
+      <div class="ui led desk-led" data-doan-id="bd-led"><span class="led-track"><span>지금 한강을 건너고 있어요 · 창밖으로 여의도 불꽃축제가 보여요</span><span>지금 한강을 건너고 있어요 · 창밖으로 여의도 불꽃축제가 보여요</span></span></div>
+      <div class="ui d-now">
+        <strong><span class="eq"><i></i><i></i><i></i><i></i></span>문 앞 · 지하철멍</strong>
+        <span><span data-stat="show">축제</span> · 불꽃 <span data-stat="shots">0발</span></span>
+      </div>
+      <div class="ui d-dock glass" data-doan-id="bd-dock">
+        <button class="chip-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg>설정</button>
+        <span class="sep"></span>
+        <div class="seg">
+          <button data-sub-act="show" data-value="0.3">드문드문</button>
+          <button class="on" data-sub-act="show" data-value="0.6">축제</button>
+          <button data-sub-act="show" data-value="1">피날레</button>
+        </div>
+        <button class="chip-btn" data-sub-act="fire"><svg class="ico"><use href="#i-spark"/></svg>불꽃 올리기</button>
+        <span class="sep"></span>
+        <div class="vol"><svg class="ico"><use href="#i-volume"/></svg><div class="slider"><i style="width:60%"></i><b style="left:60%"></b></div></div>
+      </div>
+      <div class="ui d-keys stack"><span><kbd>↑</kbd><kbd>↓</kbd> 불꽃 세기 · <kbd>Space</kbd> 불꽃 올리기</span><span>창을 클릭하면 그 자리에 불꽃이 올라가요</span></div>
+    </div>
+
+    <aside class="notes">
+      <p class="seat-tag">B안 · 문 앞 · 이전 모습</p>
+      <h4>양옆 의자와 창을 넣기 전 앱 모습이에요</h4>
+      <ul>
+        <li>앱(src/scenes/subway.ts)과 같은 식으로 그렸어요. 문 너비는 <b>문 높이의 0.62배</b>라서, 화면이 넓어져도 문은 커지지 않고 가운데에 하나만 놓여요.</li>
+        <li>1280 × 800에서 문은 <b>369px</b>(화면의 29%), 유리 한 장은 <b>138 × 369px</b>예요. 폰(120 × 372px)과 거의 같은 크기예요.</li>
+        <li>문 양옆은 옅은 세로 줄이 있는 <b>판넬 벽</b>이에요. 손잡이, 좌석, 기둥은 없어요.</li>
+        <li>행선 안내판은 장면 칩 바로 아래, 문 너비에 맞춰 문 위에 있어요 (289px). 앱에서는 장면 안에 그려요.</li>
+        <li>문 아래쪽과 노란 발판은 독 뒤에 가려요.</li>
+      </ul>
+      <h4>눈에 띄는 점</h4>
+      <ul>
+        <li>바깥이 보이는 곳이 화면의 <b>10%쯤</b>뿐이라, 양옆으로 900px 가까이가 빈 벽이에요.</li>
+        <li>불꽃 하나하나는 폰과 같은 크기라, 넓은 화면에서는 작고 멀게 느껴져요.</li>
+        <li>그래서 아래처럼 양옆에 의자와 창을 넣었어요. 앱에도 반영했어요.</li>
+      </ul>
+    </aside>
+  </div>
+
+  <div class="row-body">
+
+    <div class="screen desk theme-subway" data-doan-frame="sub-b-desktop-seats" data-doan-implements="src/scenes/subway.ts" data-doan-title="B · 문 앞 · 데스크톱 · 양옆 좌석과 창 (지금 앱)">
+      <canvas class="scene" data-subway data-view="door" data-wide="seats" data-show="0.6" data-seed="5"></canvas>
+      <div class="ui d-top">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <nav class="tabs seven glass"><a>불멍</a><a>비멍</a><a>물멍</a><a>모래멍</a><a>별멍</a><a>눈멍</a><a class="on">지하철멍</a></nav>
+        <div class="d-top-right">
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+          <button class="icon-btn glass" aria-label="전체화면"><svg class="ico"><use href="#i-max"/></svg></button>
+        </div>
+      </div>
+      <nav class="ui subscenes glass desk-sub" data-doan-id="bs-subscenes" aria-label="지하철멍 자리"><a>맞은편 창</a><a class="on">문 앞</a><a>창가</a></nav>
+      <div class="ui led desk-led" data-doan-id="bs-led"><span class="led-track"><span>지금 한강을 건너고 있어요 · 창밖으로 여의도 불꽃축제가 보여요</span><span>지금 한강을 건너고 있어요 · 창밖으로 여의도 불꽃축제가 보여요</span></span></div>
+      <div class="ui d-now">
+        <strong><span class="eq"><i></i><i></i><i></i><i></i></span>문 앞 · 지하철멍</strong>
+        <span><span data-stat="show">축제</span> · 불꽃 <span data-stat="shots">0발</span></span>
+      </div>
+      <div class="ui d-dock glass" data-doan-id="bs-dock">
+        <button class="chip-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg>설정</button>
+        <span class="sep"></span>
+        <div class="seg">
+          <button data-sub-act="show" data-value="0.3">드문드문</button>
+          <button class="on" data-sub-act="show" data-value="0.6">축제</button>
+          <button data-sub-act="show" data-value="1">피날레</button>
+        </div>
+        <button class="chip-btn" data-sub-act="fire"><svg class="ico"><use href="#i-spark"/></svg>불꽃 올리기</button>
+        <span class="sep"></span>
+        <div class="vol"><svg class="ico"><use href="#i-volume"/></svg><div class="slider"><i style="width:60%"></i><b style="left:60%"></b></div></div>
+      </div>
+      <div class="ui d-keys stack"><span><kbd>↑</kbd><kbd>↓</kbd> 불꽃 세기 · <kbd>Space</kbd> 불꽃 올리기</span><span>창을 클릭하면 그 자리에 불꽃이 올라가요</span></div>
+    </div>
+
+    <aside class="notes">
+      <p class="seat-tag">B안 · 문 앞 · 양옆 좌석과 창</p>
+      <div class="in-code" data-doan-id="bs-in-code">
+        <b>앱에 반영했어요 (src/scenes/subway.ts)</b>
+        <ul>
+          <li>양옆에 창이 들어갈 자리가 있으면(창 너비 120px 이상) 의자와 창이 생겨요. 데스크톱, 태블릿 가로, 폰 가로에서 보여요</li>
+          <li>폰 세로 문 앞(02)은 그대로예요. 화면이 좁아서 문만 보여요</li>
+          <li>의자 한 자리는 문 너비의 0.35배라, 화면이 커지면 문과 같이 커져요. 손잡이는 창 너비에 맞춰 두세 개예요</li>
+        </ul>
+      </div>
+      <h4>바꾼 것</h4>
+      <ul>
+        <li>문은 위 ‘이전’과 같은 자리, 같은 크기예요 (369px). <b>빈 벽이던 양옆</b>에 의자와 창을 넣었어요.</li>
+        <li>양옆은 <b>맞은편 창(A안)과 같은 벽</b>이에요. 선반, 창, 파란 긴 의자, 의자 밑 난방기가 있어요. 천장 조명과 선반은 문 위에서 끊기고, 천장만 이어져요.</li>
+        <li>창은 양쪽에 하나씩 (312 × 283px). 윗변이 문 유리 윗변과 같아요. 바깥은 문 유리와 이어진 한 장면이라, 불꽃이 창과 문 유리를 넘나들며 보여요.</li>
+        <li>의자는 한쪽에 세 자리씩 보여요 (한 자리 128px). 의자 밑이 문 아래와 같은 바닥선에 닿아요.</li>
+        <li>의자 끝, 문 쪽에 <b>세로 기둥</b>과 얇은 <b>칸막이</b>가 있어요. 손잡이 봉과 손잡이(창마다 세 개)는 의자 위로만 있고, 문 앞은 비워 뒀어요.</li>
+        <li>행선 안내판은 그대로 문 위에 있어요.</li>
+      </ul>
+      <h4>보이는 점</h4>
+      <ul>
+        <li>바깥이 보이는 곳이 화면의 10%에서 <b>24%쯤</b>으로 늘었어요.</li>
+        <li>문 앞에 서서 보는 자리라기보다, <b>통로에 서서 문과 양옆 자리를 함께</b> 보는 느낌에 가까워요.</li>
+        <li>독이 양쪽 의자 안쪽 끝을 조금 가려요.</li>
+      </ul>
+    </aside>
+  </div>
+
+  <div class="row-body">
+
+    <div class="screen desk theme-subway" data-doan-frame="sub-c-desktop" data-doan-implements="src/scenes/subway.ts" data-doan-title="C · 창 가까이 · 데스크톱">
+      <canvas class="scene" data-subway data-view="glass" data-wide data-show="0.6" data-seed="3"></canvas>
+      <div class="ui d-top">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <nav class="tabs seven glass"><a>불멍</a><a>비멍</a><a>물멍</a><a>모래멍</a><a>별멍</a><a>눈멍</a><a class="on">지하철멍</a></nav>
+        <div class="d-top-right">
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+          <button class="icon-btn glass" aria-label="전체화면"><svg class="ico"><use href="#i-max"/></svg></button>
+        </div>
+      </div>
+      <nav class="ui subscenes glass desk-sub" data-doan-id="cd-subscenes" aria-label="지하철멍 자리"><a>맞은편 창</a><a>문 앞</a><a class="on">창가</a></nav>
+      <div class="ui d-now">
+        <strong><span class="eq"><i></i><i></i><i></i><i></i></span>창가 · 지하철멍</strong>
+        <span><span data-stat="show">축제</span> · 불꽃 <span data-stat="shots">0발</span></span>
+      </div>
+      <div class="ui d-dock glass" data-doan-id="cd-dock">
+        <button class="chip-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg>설정</button>
+        <span class="sep"></span>
+        <div class="seg">
+          <button data-sub-act="show" data-value="0.3">드문드문</button>
+          <button class="on" data-sub-act="show" data-value="0.6">축제</button>
+          <button data-sub-act="show" data-value="1">피날레</button>
+        </div>
+        <button class="chip-btn" data-sub-act="fire"><svg class="ico"><use href="#i-spark"/></svg>불꽃 올리기</button>
+        <span class="sep"></span>
+        <div class="vol"><svg class="ico"><use href="#i-volume"/></svg><div class="slider"><i style="width:60%"></i><b style="left:60%"></b></div></div>
+      </div>
+      <div class="ui d-keys stack"><span><kbd>↑</kbd><kbd>↓</kbd> 불꽃 세기 · <kbd>Space</kbd> 불꽃 올리기</span><span>창을 클릭하면 그 자리에 불꽃이 올라가요</span></div>
+    </div>
+
+    <aside class="notes">
+      <p class="seat-tag">C안 · 창 가까이</p>
+      <h4>지금 앱 모습 그대로예요</h4>
+      <ul>
+        <li>앱(src/scenes/subway.ts)과 같은 식으로 그렸어요. <b>유리 한 장이 화면 너비를 다 채워요</b> (1256 × 616px).</li>
+        <li>아래로 창턱과 내가 앉은 의자 등받이가 보이고, 그 위에 독이 떠요.</li>
+        <li>유리에 비친 실내(천장 조명 두 줄, 손잡이, 맞은편 창, 내 모습)는 <b>유리 높이에 맞춰</b> 커져요. 너비는 화면에 맞춰 늘어나요.</li>
+        <li>내 모습은 왼쪽 30%, 조명 줄이 모이는 점은 오른쪽 62%에 있어요.</li>
+      </ul>
+      <h4>눈에 띄는 점</h4>
+      <ul>
+        <li>세 자리 중 불꽃과 강물이 <b>가장 넓게</b> 보여요. 가까운 철골도 화면 끝에서 끝까지 지나가요.</li>
+        <li>넓어진 만큼 유리에 비친 조명 줄이 길게 늘어나요.</li>
       </ul>
     </aside>
   </div>

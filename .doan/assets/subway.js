@@ -4,6 +4,9 @@
      data-view="door"    B안 · 문 앞: 서서 문 유리 두 장 너머로 봐요
      data-view="glass"   C안 · 창 가까이: 창에 비친 실내 너머로 봐요
      data-view="wide"    A안 데스크톱: 창 두 개
+    data-wide           B안 · C안 데스크톱 (data-view="door" · "glass" 와 같이 써요). 앱(src/scenes/subway.ts)과 같은 식으로
+                        탭 · 장면 칩 아래(122px)부터 독 위(704px)까지에 맞춰 문 · 창을 놓아요. 문 앞은 양옆 의자 · 창을 넣기 전 모습이에요
+    data-wide="seats"   B안 데스크톱: 문 양옆에 긴 의자와 창이 있어요 (지금 앱과 같아요)
      data-view="card"    홈 카드 (창 위쪽 테두리와 손잡이만)
      data-view="bare"    창틀 없이 바깥만 (흐름 · 불꽃 세기 설명용)
      data-show="0.6"     불꽃 세기 0.3 드문드문 · 0.6 축제 · 1 피날레
@@ -118,7 +121,9 @@
 
   /* ---------------- 자리마다 창과 실내 ---------------- */
   /* 창 구멍(wins)과 바깥이 보이는 범위(V), 수평선 높이(hz), 손잡이 자리를 정해요 */
-  function layoutOf(view, w, h) {
+  function layoutOf(view, w, h, wide) {
+    if (wide && view === 'door') return doorWide(w, h, wide === 'seats');
+    if (wide && view === 'glass') return glassWide(w, h);
     if (view === 'seat') {
       return { wins: [{ x: 26, y: 178, w: 338, h: 330, r: 28 }], hz: 0.62,
         bar: 152, handles: [52, 124, 196, 268, 340].map((x) => ({ x, len: rand(58, 66) })) };
@@ -140,6 +145,53 @@
         handles: (w > h * 1.8 ? [0.62, 0.74, 0.86] : [0.7, 0.88]).map((f) => ({ x: w * f, len: 18 * k })) };
     }
     return { wins: [{ x: 0, y: 0, w, h, r: 0 }], hz: 0.62, bar: 0, handles: [] };
+  }
+
+  /* 데스크톱 · 문 앞: 앱의 layoutOf('door') 와 같은 식. 문 너비는 문 높이의 0.62배라 넓은 화면에서는 가운데에만 놓여요 */
+  const DESK_TOP = 122; /* 장면 칩 아래 (88 + 34) */
+  const DESK_DOCK = 96; /* 독 위 (아래 32 + 독 64) */
+  function doorWide(w, h, seats) {
+    const k = clamp(h / 844, 0.55, 1.2);
+    const top = DESK_TOP, bottom = h - DESK_DOCK;
+    const ledTop = top + 12 * k, ledH = 34;
+    const y0 = ledTop + ledH + 14 * k, y1 = h - 26 * k;
+    const dw = Math.min(w - 68, Math.max(322, (y1 - y0) * 0.62));
+    const x0 = (w - dw) / 2, x1 = x0 + dw, mid = w / 2;
+    const outer = dw * 0.068, inner = dw * 0.059;
+    const gy = y0 + 44 * k;
+    const gb = Math.min(bottom - 40 * k, gy + (y1 - y0) * 0.62);
+    const gh = Math.max(80, gb - gy);
+    const gw = mid - inner - (x0 + outer);
+    const L = {
+      wins: [{ x: x0 + outer, y: gy, w: gw, h: gh, r: 18 }, { x: mid + inner, y: gy, w: gw, h: gh, r: 18 }],
+      hz: 0.5, bar: 0, handles: [], k,
+      door: { x0, x1, y0, y1 }, led: { x: mid - (dw - 80) / 2, y: ledTop, w: dw - 80, h: ledH },
+    };
+    if (!seats) return L;
+    /* 문 양옆에 긴 의자와 창 (앱과 같은 식). 의자 끝 기둥은 한 자리(문 너비의 0.35배) 눈금에 맞춰 문에서 한 자리쯤 떨어져요.
+       창 윗변은 문 유리 윗변과 같고, 아랫변은 등받이 위예요. 의자 밑은 문 아래와 같은 바닥선에 닿아요 */
+    const seatW = Math.round(dw * 0.347);
+    const reach = seatW * Math.ceil((mid - x0 + 50 * k) / seatW);
+    const bayL = mid - reach, bayR = mid + reach;
+    const wt = gy, wb = Math.round(gy + (y1 - gy) * 0.51);
+    const m = clamp(w * 0.0375, 24, 64), ww = bayL - 24 * k - m;
+    if (ww < 120 * k) return L;
+    L.wins.unshift({ x: m, y: wt, w: ww, h: wb - wt, r: 26, side: true });
+    L.wins.push({ x: w - m - ww, y: wt, w: ww, h: wb - wt, r: 26, side: true });
+    L.hz = 0.5;
+    L.bar = wt - 26;
+    L.bench = { fl: y1, bayL, bayR, seatW };
+    /* 손잡이: 의자 위로만, 창 너비에 맞춰 */
+    const step = seatW * 0.92, cL = m + ww / 2;
+    const n = Math.max(1, Math.floor((ww - 40 * k) / step) + 1);
+    for (let i = 0; i < n; i++) { const o = (i - (n - 1) / 2) * step; L.handles.push({ x: cL + o, len: rand(58, 66) * k }, { x: w - cL - o, len: rand(58, 66) * k }); }
+    return L;
+  }
+  /* 데스크톱 · 창가: 앱의 layoutOf('window') 와 같은 식. 유리가 화면 너비를 다 채워요 */
+  function glassWide(w, h) {
+    const k = clamp(h / 844, 0.55, 1.2);
+    const sill = Math.min(h - DESK_DOCK - 28 * k, h - 194 * k);
+    return { wins: [{ x: 12, y: -60, w: w - 24, h: sill + 60, r: 34 }], vis: { x: 12, y: 0, w: w - 24, h: sill }, hz: 0.6, bar: 0, handles: [], k };
   }
 
   const rr = (x, X, Y, W, H, R) => {
@@ -178,11 +230,13 @@
     /* 창 아래 띠 */
     x.fillStyle = 'rgba(190,198,212,0.28)'; x.fillRect(0, bot + 20, w, 2);
     /* 등받이 */
-    const sb = bot + 50, sf = sb + 92, ss = sf + 30, sd = ss + 34, fl = sd + 34;
+    /* L.bench: 문 양옆 의자 (B안 데스크톱 제안). 의자 밑이 문 아래 바닥선(fl)에 닿게 늘려요 */
+    const f = L.bench ? (L.bench.fl - bot) / 240 : 1;
+    const sb = bot + 50 * f, sf = sb + 92 * f, ss = sf + 30 * f, sd = ss + 34 * f, fl = L.bench ? L.bench.fl : sd + 34;
     x.fillStyle = vgrad(x, sb, sf, [[0, '#2a3160'], [0.65, '#232a55'], [1, '#1c2247']]);
     x.beginPath(); rr(x, -20, sb, w + 40, sf - sb + 10, 18); x.fill();
     /* 자리 나눔 (한 자리 125px 쯤) */
-    const seatW = Math.round(win[0].w / 2.7);
+    const seatW = L.bench ? L.bench.seatW : Math.round(win[0].w / 2.7);
     x.strokeStyle = 'rgba(8,10,26,0.55)'; x.lineWidth = 2;
     for (let i = (w / 2) % seatW; i < w; i += seatW) { x.beginPath(); x.moveTo(i, sb + 10); x.lineTo(i, sf + 2); x.stroke(); }
     x.strokeStyle = 'rgba(120,132,200,0.14)'; x.lineWidth = 1;
@@ -215,8 +269,17 @@
     const ly = 22;
     x.fillStyle = vgrad(x, ly - 16, ly + 24, [[0, 'rgba(240,244,250,0)'], [0.5, 'rgba(250,252,255,0.8)'], [1, 'rgba(240,244,250,0)']]);
     x.fillRect(0, ly - 16, w, 40);
-    /* 문 틀 */
-    const dx0 = 34, dx1 = w - 34, dy0 = 208, dy1 = h - 26;
+    /* 문 틀 (데스크톱은 L.door) */
+    const D = L.door || { x0: 34, x1: w - 34, y0: 208, y1: h - 26 };
+    const dx0 = D.x0, dx1 = D.x1, dy0 = D.y0, dy1 = D.y1;
+    /* 제안: 문 양옆에 긴 의자와 창 */
+    if (L.bench) paintDoorSides(x, w, h, L);
+    /* 넓은 화면: 문 양옆은 판넬 벽이에요 (앱과 같아요) */
+    else if (dx0 > 60) {
+      x.fillStyle = 'rgba(255,255,255,0.035)';
+      for (let px = dx0 - 150; px > 0; px -= 180) x.fillRect(px, 0, 1, h);
+      for (let px = dx1 + 150; px < w; px += 180) x.fillRect(px, 0, 1, h);
+    }
     x.fillStyle = '#15171c'; x.fillRect(dx0 - 10, dy0 - 10, dx1 - dx0 + 20, dy1 - dy0 + 10);
     /* 문짝 */
     const mid = w / 2;
@@ -228,6 +291,7 @@
     x.fillStyle = '#0d0e11'; x.fillRect(mid - 3, dy0, 6, dy1 - dy0);
     /* 유리 둘레 고무 */
     for (const r of L.wins) {
+      if (r.side) continue;
       x.save(); x.beginPath(); rr(x, r.x - 6, r.y - 6, r.w + 12, r.h + 12, r.r + 6); x.fillStyle = '#121418'; x.fill(); x.restore();
     }
     /* 발판 */
@@ -238,20 +302,53 @@
     x.fillRect(0, dy1 + 8, w, h - dy1 - 8);
   }
 
+  /* B안 데스크톱 · 문 양옆 (앱의 paintDoorSides 와 같아요): 맞은편 창(A안)과 같은 벽 · 창 · 긴 의자. 천장은 이어지고, 선반 아래로는 의자 쪽만 그려요 */
+  function paintDoorSides(x, w, h, L) {
+    const B = L.bench;
+    const side = L.wins.filter((r) => r.side);
+    const top = side[0].y, rack = top - 52;
+    x.save();
+    x.beginPath();
+    x.rect(0, 0, w, rack);
+    x.rect(0, rack, B.bayL, h - rack);
+    x.rect(B.bayR, rack, w - B.bayR, h - rack);
+    x.clip();
+    paintBench(x, w, h, { wins: side, bar: 0, bench: B });
+    x.restore();
+    /* 손잡이 봉: 의자 위로만 */
+    x.fillStyle = vgrad(x, L.bar - 4, L.bar + 4, [[0, '#9aa1ad'], [0.4, '#e4e8ee'], [1, '#5c626d']]);
+    x.fillRect(0, L.bar - 4, B.bayL, 8);
+    x.fillRect(B.bayR, L.bar - 4, w - B.bayR, 8);
+    /* 의자 끝 칸막이 (옆에서 본 유리판이 얇은 띠로 보여요) */
+    const bot = top + side[0].h;
+    for (const px of [B.bayL, B.bayR]) {
+      const dir = px < w / 2 ? -1 : 1;
+      x.save(); x.beginPath(); rr(x, px + (dir < 0 ? -14 : 0), bot - 40, 14, B.fl - bot - 20, 7);
+      x.fillStyle = 'rgba(150,170,190,0.16)'; x.fill();
+      x.strokeStyle = 'rgba(210,218,230,0.35)'; x.lineWidth = 1.5; x.stroke(); x.restore();
+    }
+    /* 의자 끝 기둥: 손잡이 봉에서 바닥까지 */
+    for (const px of [B.bayL, B.bayR]) {
+      x.fillStyle = hgrad(x, px - 5, px + 5, [[0, '#5c626d'], [0.45, '#e8ecf2'], [1, '#6a707b']]);
+      x.fillRect(px - 5, L.bar - 4, 10, B.fl - L.bar + 4);
+    }
+  }
+
   /* C안 · 창 가까이: 창이 화면을 거의 채우고, 아래로 창턱과 내가 앉은 등받이 */
   function paintGlass(x, w, h, L) {
     const r = L.wins[0];
     const bot = r.y + r.h;
+    const k = L.k || 1;
     x.fillStyle = '#16181d'; x.fillRect(0, 0, w, h);
     x.fillStyle = hgrad(x, 0, 12, [[0, '#2b2f38'], [1, '#1a1c22']]); x.fillRect(0, 0, 12, h);
     x.fillStyle = hgrad(x, w - 12, w, [[0, '#1a1c22'], [1, '#2b2f38']]); x.fillRect(w - 12, 0, 12, h);
-    x.fillStyle = vgrad(x, bot, bot + 26, [[0, '#9aa1ad'], [0.25, '#e2e6ec'], [1, '#5c626d']]);
-    x.fillRect(0, bot, w, 22);
-    x.fillStyle = vgrad(x, bot + 22, bot + 60, [[0, '#2b2f38'], [1, '#22252c']]);
-    x.fillRect(0, bot + 22, w, 38);
-    x.fillStyle = vgrad(x, bot + 60, h, [[0, '#343c74'], [0.4, '#2a3160'], [1, '#1c2247']]);
-    x.beginPath(); rr(x, -10, bot + 60, w + 20, h, 22); x.fill();
-    x.fillStyle = 'rgba(160,172,240,0.22)'; x.fillRect(0, bot + 66, w, 1.5);
+    x.fillStyle = vgrad(x, bot, bot + 26 * k, [[0, '#9aa1ad'], [0.25, '#e2e6ec'], [1, '#5c626d']]);
+    x.fillRect(0, bot, w, 22 * k);
+    x.fillStyle = vgrad(x, bot + 22 * k, bot + 60 * k, [[0, '#2b2f38'], [1, '#22252c']]);
+    x.fillRect(0, bot + 22 * k, w, 38 * k);
+    x.fillStyle = vgrad(x, bot + 60 * k, h, [[0, '#343c74'], [0.4, '#2a3160'], [1, '#1c2247']]);
+    x.beginPath(); rr(x, -10, bot + 60 * k, w + 20, h, 22); x.fill();
+    x.fillStyle = 'rgba(160,172,240,0.22)'; x.fillRect(0, bot + 66 * k, w, 1.5);
   }
 
   /* 유리에 비친 실내. 조명 줄, 손잡이, 맞은편 창틀이 옅게 겹쳐요 */
@@ -260,9 +357,10 @@
     if (view === 'glass') {
       /* 내 뒤 실내가 원근으로 비쳐요: 천장 조명 두 줄이 한 점으로 모여요 */
       const vx = w * 0.62, vy = V.y + V.h * 0.36;
+      const sc = clamp(V.h / 650, 0.6, 1.6); /* 폰(650)에서 1 */
       x.strokeStyle = 'rgba(235,242,255,0.85)'; x.lineCap = 'round';
       for (const [sx, sy, lw] of [[-40, -30, 16], [w + 60, -10, 14]]) {
-        x.lineWidth = lw; x.beginPath(); x.moveTo(sx, sy); x.lineTo(mix(sx, vx, 0.92), mix(sy, vy, 0.92)); x.stroke();
+        x.lineWidth = lw * sc; x.beginPath(); x.moveTo(sx, sy); x.lineTo(mix(sx, vx, 0.92), mix(sy, vy, 0.92)); x.stroke();
       }
       /* 맞은편 창들: 어두운 네모가 줄지어 작아져요 */
       x.fillStyle = 'rgba(0,0,0,0.6)';
@@ -277,7 +375,7 @@
       x.strokeStyle = 'rgba(225,230,240,0.7)';
       for (let i = 0; i < 7; i++) {
         const f = Math.pow(i / 7, 0.8);
-        const hx = mix(w * 0.95, vx, f), hy = mix(V.y + V.h * 0.08, vy - 10, f), s = mix(1, 0.15, f);
+        const hx = mix(w * 0.95, vx, f), hy = mix(V.y + V.h * 0.08, vy - 10, f), s = mix(1, 0.15, f) * sc;
         x.lineWidth = 4 * s; x.beginPath(); x.moveTo(hx, hy); x.lineTo(hx, hy + 52 * s); x.stroke();
         x.beginPath(); x.ellipse(hx, hy + 52 * s + 11 * s, 9 * s, 11 * s, 0, 0, TAU); x.stroke();
       }
@@ -287,8 +385,8 @@
       /* 내 실루엣 (창에 비친 나) */
       x.fillStyle = 'rgba(10,12,20,0.55)';
       const cx = w * 0.3, cy = V.y + V.h * 0.66;
-      x.beginPath(); x.ellipse(cx, cy, 38, 46, 0, 0, TAU); x.fill();
-      x.beginPath(); x.moveTo(cx - 92, V.y + V.h + 10); x.quadraticCurveTo(cx - 80, cy + 58, cx, cy + 50); x.quadraticCurveTo(cx + 80, cy + 58, cx + 92, V.y + V.h + 10); x.closePath(); x.fill();
+      x.beginPath(); x.ellipse(cx, cy, 38 * sc, 46 * sc, 0, 0, TAU); x.fill();
+      x.beginPath(); x.moveTo(cx - 92 * sc, V.y + V.h + 10); x.quadraticCurveTo(cx - 80 * sc, cy + 58 * sc, cx, cy + 50 * sc); x.quadraticCurveTo(cx + 80 * sc, cy + 58 * sc, cx + 92 * sc, V.y + V.h + 10); x.closePath(); x.fill();
       return;
     }
     /* 앉은 자리 · 문: 조명 줄이 유리 위쪽에 옅게 */
@@ -303,6 +401,7 @@
     if (view === 'door') {
       /* 내 뒤 좌석과 맞은편 창이 비쳐요 */
       for (const r of L.wins) {
+        if (r.side) continue;
         x.fillStyle = 'rgba(60,72,150,0.45)'; x.fillRect(r.x, r.y + r.h * 0.7, r.w, r.h * 0.16);
         x.fillStyle = 'rgba(0,0,0,0.5)'; x.fillRect(r.x + 10, r.y + r.h * 0.3, r.w - 20, r.h * 0.34);
       }
@@ -412,6 +511,7 @@
       this.ctx = canvas.getContext('2d');
       this.visible = true;
       this.view = d.view || 'seat';
+      this.wide = d.wide === undefined ? false : (d.wide || true);
       this.show = showOf(Number(d.show) || 0.6);
       this.bridge = d.bridge || 'mix';
       this.auto = d.auto !== undefined;
@@ -421,7 +521,7 @@
       this.shots = 0;
 
       const { w, h } = this;
-      const L = layoutOf(this.view, w, h);
+      const L = layoutOf(this.view, w, h, this.wide);
       const vis = L.vis || L.wins.reduce((a, r) => ({ x: Math.min(a.x, r.x), y: Math.min(a.y, r.y), x2: Math.max(a.x2, r.x + r.w), y2: Math.max(a.y2, r.y + r.h) }), { x: 1e9, y: 1e9, x2: -1e9, y2: -1e9 });
       L.V = L.vis ? L.vis : { x: vis.x, y: vis.y, w: vis.x2 - vis.x, h: vis.y2 - vis.y };
       this.L = L;
