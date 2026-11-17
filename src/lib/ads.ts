@@ -9,8 +9,15 @@ import { save, settings } from './settings';
  * all: nothing is locked there and the ad SDK is never loaded.
  */
 
-/** Toss's test ad group for rewarded ads. Before release, swap in the rewarded ad group id from the console. */
-const REWARDED_AD_GROUP_ID = 'ait-ad-test-rewarded-id';
+/**
+ * The rewarded ad group. Toss forbids testing with the live id (it can get the app sanctioned), so only the
+ * release bundle (`npm run build:ait`) uses it; the dev server and the test bundle for the console QR
+ * (`npm run build:ait:test`, Vite mode `adtest`) use Toss's test ad group. Decided by the Vite mode, not
+ * `import.meta.env.DEV`: a NODE_ENV other than "production" in the shell turns DEV on even in `vite build`.
+ */
+const LIVE_AD_GROUP_ID = 'ait.v2.live.54520b8e17e14da5';
+const TEST_AD_GROUP_ID = 'ait-ad-test-rewarded-id';
+const REWARDED_AD_GROUP_ID = import.meta.env.MODE === 'production' ? LIVE_AD_GROUP_ID : TEST_AD_GROUP_ID;
 
 /** The 멍 that never needs an ad. */
 export const FREE_GROUP: GroupId = 'fire';

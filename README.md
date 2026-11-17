@@ -8,7 +8,8 @@
 npm install
 npm run dev       # 개발 서버
 npm run build     # 타입 검사 + dist/ 빌드
-npm run build:ait # 위 빌드 + 토스 미니앱 번들(mong-time.ait)
+npm run build:ait # 위 빌드 + 토스 미니앱 출시용 번들(mong-time.ait, 실제 광고)
+npm run build:ait:test # 토스 미니앱 테스트용 번들 (테스트 광고, 콘솔 QR 확인용)
 npm run preview   # 빌드 결과 미리보기
 ```
 
@@ -24,7 +25,15 @@ Node 20.11 이상에서 동작해요. 토스 미니앱 번들(`build:ait`)은 No
 
 웹사이트와 홈 화면 앱에는 광고가 없어요. 토스 앱이 페이지에 넣어 주는 기능 정보(`window.__appsInTossConstants`)로 토스 앱 안인지 알아내고, 없으면 아무것도 잠그지 않고 광고 SDK도 불러오지 않아요. 같은 빌드(`dist/`)가 웹과 토스 번들 양쪽에 쓰여요.
 
-지금은 토스의 **테스트 광고 그룹**(`ait-ad-test-rewarded-id`)을 써요. 출시 전에 콘솔에서 리워드 광고 그룹을 만들고 `REWARDED_AD_GROUP_ID`를 그 ID로 바꿔요. 샌드박스 앱에서는 광고가 안 나오니 콘솔의 QR로 실제 토스 앱에서 확인해요.
+광고 그룹 ID는 번들마다 달라요. 토스는 테스트할 때 반드시 테스트 ID를 쓰라고 해요(운영 ID로 테스트하면 제재를 받을 수 있어요).
+
+| 무엇 | 광고 그룹 |
+|---|---|
+| `npm run build:ait` (출시용) | 콘솔의 리워드 광고 그룹 `ait.v2.live.54520b8e17e14da5` |
+| `npm run build:ait:test` (콘솔 QR 테스트용) | 토스 테스트 광고 그룹 `ait-ad-test-rewarded-id` |
+| `npm run dev` | 토스 테스트 광고 그룹 |
+
+ID는 `src/lib/ads.ts`에 있어요. 샌드박스 앱에서는 광고가 안 나오니 테스트용 번들을 콘솔에 올려 QR로 실제 토스 앱에서 확인하고, 출시할 때는 출시용 번들을 올려요.
 
 ## 주소
 

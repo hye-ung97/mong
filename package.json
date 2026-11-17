@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "build:ait": "npm run build && ait build",
+    "build:ait:test": "tsc --noEmit && vite build --mode adtest && ait build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "deploy": "ait deploy"
