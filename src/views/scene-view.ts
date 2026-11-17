@@ -26,6 +26,8 @@ const IDLE_AFTER = 4000; // ms without input before the UI fades away
 const SLEEP_AFTER = 60_000; // ms after the timer ends before the scene dims and stops
 const LONG_PRESS = 450;
 const AUDIO_STATE_EVERY = 250;
+const FIRE_PRESS_MIN = 140; // ms 불꽃 올리기 shows pressed, even for the briefest tap
+const FIRE_FLIGHT = 380; // ms the light takes from the button to the river
 
 interface Level { v: number; label: string }
 const RAIN_LEVELS: readonly Level[] = [{ v: 0.25, label: '보슬비' }, { v: 0.6, label: '비' }, { v: 1, label: '장대비' }];
@@ -205,6 +207,9 @@ export class SceneView implements View {
   private sleepTimer = 0;
   private pillTimer = 0;
   private nameTimer = 0;
+  /** 지하철멍: the firework button held down (since when), and the timer that lets it spring back */
+  private firePress: { btn: HTMLElement; at: number } | null = null;
+  private fireUpTimer = 0;
 
   /** `from`: the 멍 on screen just before (null from home or on arrival). */
   constructor(parent: HTMLElement, readonly id: SceneId, from: GroupId | null = null) {
@@ -1000,6 +1005,86 @@ export class SceneView implements View {
     };
     place();
     this.listen(window, 'resize', place);
+    // 불꽃 올리기 looks pressed from the moment it is touched (the shell itself only goes up on the click)
+    this.listen(this.el, 'pointerdown', (e: PointerEvent) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-act="firework"]');
+      if (btn) this.pressFire(btn);
+    });
+    for (const type of ['pointerup', 'pointercancel']) this.listen(window, type, () => this.releaseFire());
+  }
+
+  private pressFire(btn: HTMLElement) {
+    window.clearTimeout(this.fireUpTimer);
+    btn.classList.add('pressed');
+    this.firePress = { btn, at: performance.now() };
+  }
+
+  /** Lets the firework button spring back, but not before it has shown pressed for FIRE_PRESS_MIN. */
+  private releaseFire() {
+    const p = this.firePress;
+    if (!p) return;
+    this.firePress = null;
+    this.fireUpTimer = window.setTimeout(() => p.btn.classList.remove('pressed'), Math.max(0, FIRE_PRESS_MIN - (performance.now() - p.at)));
+  }
+
+  /**
+   * 지하철멍 · 불꽃 올리기: a light leaves the button, rises, curves over to the river and lands where the shell then
+   * goes up, so the shell that bursts is plainly the one you sent. With reduced motion the light only shows where
+   * it lands. `fromKey`: Space or a keyboard click, so the button shows pressed here (a touch already did).
+   */
+  private fireFromButton(fromKey: boolean) {
+    const sw = this.subway!;
+    const aim = sw.aim();
+    const btn = [...this.el.querySelectorAll<HTMLElement>('[data-act="firework"]')].find((b) => b.getClientRects().length);
+    if (!btn) {
+      sw.fireAt(aim.x, aim.ty);
+      return;
+    }
+    if (fromKey) {
+      this.pressFire(btn);
+      this.releaseFire();
+    }
+    const view = this.el.getBoundingClientRect();
+    const cv = this.host.canvas.getBoundingClientRect();
+    const b = btn.getBoundingClientRect();
+    const from = { x: b.left + b.width / 2 - view.left, y: b.top + b.height / 2 - view.top };
+    const to = { x: cv.left - view.left + aim.x * (cv.width / sw.w), y: cv.top - view.top + aim.y * (cv.height / sw.h) };
+    const at = (x: number, y: number, k = 1) => `translate(${x}px, ${y}px) scale(${k})`;
+    const light = (cls: string) => {
+      const el = document.createElement('i');
+      el.className = cls;
+      this.el.append(el);
+      return el;
+    };
+    const land = () => { if (this.el.isConnected) sw.fireAt(aim.x, aim.ty); };
+
+    if (this.scene.motion < 1) {
+      const el = light('fw-light');
+      el.style.transform = at(to.x, to.y);
+      el.animate([{ opacity: 0 }, { opacity: 1, offset: 0.5 }, { opacity: 0 }], { duration: 300 }).onfinish = () => el.remove();
+      window.setTimeout(land, 150);
+      return;
+    }
+    // straight up at first, then over to the river (a quadratic curve), slowing as it arrives
+    const n = 16;
+    const path = Array.from({ length: n + 1 }, (_, i) => {
+      const e = 1 - (1 - i / n) ** 3;
+      const u = 1 - e;
+      return at(u * u * from.x + 2 * u * e * from.x + e * e * to.x, u * u * from.y + 2 * u * e * to.y + e * e * to.y);
+    });
+    const head = light('fw-light');
+    head.animate(path.map((transform) => ({ transform })), { duration: FIRE_FLIGHT, fill: 'forwards' }).onfinish = () => {
+      land();
+      head.animate([{ transform: at(to.x, to.y), opacity: 1 }, { transform: at(to.x, to.y, 2.2), opacity: 0 }], { duration: 220, easing: 'ease-out', fill: 'forwards' })
+        .onfinish = () => head.remove();
+    };
+    // its trail: the same flight a moment behind, fainter and smaller
+    for (let i = 1; i <= 5; i++) {
+      const dot = light('fw-light trail');
+      const a = 0.55 - i * 0.09;
+      const frames = path.map((transform, j) => ({ transform: `${transform} scale(${1 - i * 0.12})`, opacity: j === 0 || j === n ? 0 : a }));
+      dot.animate(frames, { duration: FIRE_FLIGHT, delay: i * 28, fill: 'backwards' }).onfinish = () => dot.remove();
+    }
   }
 
   private setSnowFall(v: number) {
@@ -1023,7 +1108,8 @@ export class SceneView implements View {
     this.toast('물고기들이 먹이를 먹으러 와요');
   }
 
-  private primary() {
+  /** The scene's main action. `fromKey`: Space, or the button clicked from the keyboard. */
+  private primary(fromKey = false) {
     if (this.fire) {
       this.addLog(settings().wood);
       // the dock shows the woods itself; only the landscape rail still picks one with a long press
@@ -1037,7 +1123,7 @@ export class SceneView implements View {
       this.star.meteor();
       this.el.classList.add('hint-done');
     } else if (this.subway) {
-      this.subway.fire();
+      this.fireFromButton(fromKey);
       this.el.classList.add('hint-done');
     } else if (this.pond) {
       this.pond.feed();
@@ -1229,7 +1315,7 @@ export class SceneView implements View {
         this.setShow(Number(t.dataset.value));
         break;
       case 'firework':
-        this.primary();
+        this.primary(e.detail === 0); // detail 0: Enter or Space on the focused button
         break;
       case 'rain-cycle':
       case 'wave-cycle':
@@ -1320,7 +1406,7 @@ export class SceneView implements View {
       case 'Space':
         if (target.tagName === 'BUTTON' || target.tagName === 'A') return;
         e.preventDefault();
-        this.primary();
+        this.primary(true);
         break;
       case 'ArrowLeft':
       case 'ArrowRight': {

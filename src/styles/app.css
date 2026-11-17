@@ -636,6 +636,21 @@ kbd {
 .scene-view.theme-subway .m-status, .scene-view.theme-subway .d-now, .scene-view.theme-subway .d-keys { color: var(--ui-ink); text-shadow: 0 1px 6px rgba(6, 8, 20, 0.7); }
 .scene-view.theme-subway .d-keys { color: var(--ui-dim); }
 .scene-view.theme-subway canvas.scene { cursor: pointer; }
+/* 불꽃 올리기: pressed from the touch, for at least 140 ms (scene-view.ts pressFire), then it springs back */
+.dock-btn[data-act="firework"], .rail-main[data-act="firework"] { transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), background 0.18s, color 0.18s, filter 0.18s; }
+.dock-btn[data-act="firework"].pressed { transform: scale(0.88); background: linear-gradient(180deg, var(--accent-soft), var(--accent)); color: var(--accent-ink); transition-duration: 0.09s; }
+.rail-main[data-act="firework"].pressed { transform: scale(0.88); filter: brightness(1.15); transition-duration: 0.09s; }
+@media (min-width: 768px) { .dock-btn[data-act="firework"].pressed { transform: scale(0.95); } } /* the pill with its label */
+@media (prefers-reduced-motion: reduce) { .dock-btn[data-act="firework"].pressed, .rail-main[data-act="firework"].pressed { transform: none; } }
+/* …and a light leaves it for the river, where the shell goes up (scene-view.ts fireFromButton) */
+.fw-light {
+  position: absolute; z-index: 3; left: 0; top: 0;
+  width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 22%, rgb(255 214 140) 42%, rgb(255 200 112 / 0) 72%);
+  box-shadow: 0 0 14px 4px rgb(255 200 112 / 0.55);
+  pointer-events: none;
+}
+.fw-light.trail { width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; box-shadow: none; }
 [data-scene="seat"] .d-keys, [data-scene="door"] .d-keys, [data-scene="window"] .d-keys { bottom: 34px; flex-direction: column; align-items: flex-end; gap: 9px; }
 @media (min-width: 768px) {
   .scene-view.theme-subway .dock .seg { width: 230px; }

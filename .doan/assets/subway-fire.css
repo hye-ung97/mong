@@ -1,0 +1,174 @@
+/* 지하철멍 · 불꽃 버튼 반응 시안 — mong.css · fire-v2.css · subway.css 위에 얹어요.
+   전부 시안에만 있어요. 코드(src/styles)에는 아직 없어요.
+   움직임 값은 토큰에 없어서 고른 값이에요 (tokens.css 에는 --ease 하나뿐). */
+
+.fb-board .brief { grid-template-columns: 1.05fr 1.45fr 1.1fr; }
+.fb-board .brief h4 { margin: 22px 0 10px; font: 700 13px/1 var(--font); letter-spacing: 0.06em; color: var(--subway-300); }
+.fb-board .brief .asks { margin: 0; padding-left: 18px; font: 500 14px/1.6 var(--font); color: var(--board-ink); }
+.fb-board .brief .asks li { margin-bottom: 4px; }
+.fb-board .brief .asks li::marker { color: var(--subway-500); }
+.fb-board .notes { width: 420px; }
+.fb-board .notes .not-in-code { margin-bottom: 22px; }
+.fb-board .notes .plus { color: var(--subway-300); }
+.fb-board .notes .minus { color: var(--board-dim); }
+
+/* ---------- 세 안 모두: 누르면 살짝 작아지고 초록으로 채워져요 ----------
+   (지금 앱 .dock-btn 에는 눌림 상태가 없어요. 배경색 전환만 있어요) */
+.fb .dock [data-fb-fire] {
+  position: relative;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), background 0.18s, color 0.18s;
+}
+.fb .dock [data-fb-fire].down {
+  transform: scale(0.88);
+  background: linear-gradient(180deg, var(--accent-soft), var(--accent));
+  color: var(--accent-ink);
+  transition-duration: 0.09s;
+}
+
+/* ---------- A · 버튼이 대답해요 ---------- */
+.fb-a [data-fb-fire] { --fb-c: 255 200 112; }
+.fb-a [data-fb-fire].pop .ico { animation: fbSpin 0.42s cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes fbSpin {
+  0% { transform: scale(0.8) rotate(0deg); }
+  40% { transform: scale(1.25) rotate(22.5deg); }
+  100% { transform: scale(1) rotate(45deg); } /* 아이콘이 여덟 갈래라 45° 돌면 처음과 같은 모양이에요 */
+}
+.fb-ripple {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid var(--accent-soft);
+  pointer-events: none;
+  animation: fbRipple 0.48s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes fbRipple { from { transform: scale(1); opacity: 0.9; } to { transform: scale(1.9); opacity: 0; } }
+/* 불꽃이 올라가는 동안 버튼 둘레에 차오르는 고리 */
+.fb-ring {
+  position: absolute; left: -4px; top: -4px; width: 60px; height: 60px;
+  transform: rotate(-90deg); overflow: visible;
+  opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+.fb-ring.on { opacity: 1; transition-duration: 0.12s; }
+.fb-ring circle { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 176; stroke-dashoffset: 176; }
+/* 터지는 순간: 그 불꽃 색으로 잠깐 빛나요 */
+.fb-a [data-fb-fire].glow { animation: fbGlow 0.9s ease-out; }
+@keyframes fbGlow {
+  0% { box-shadow: 0 0 0 0 rgb(var(--fb-c) / 0); }
+  18% { box-shadow: 0 0 24px 6px rgb(var(--fb-c) / 0.75), inset 0 0 0 1.5px rgb(var(--fb-c) / 0.9); }
+  100% { box-shadow: 0 0 32px 10px rgb(var(--fb-c) / 0), inset 0 0 0 1.5px rgb(var(--fb-c) / 0); }
+}
+
+/* ---------- B · 버튼에서 불꽃이 떠나요 ---------- */
+.fb-spark {
+  position: absolute; z-index: 3; left: 0; top: 0;
+  width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 255 255) 0 22%, rgb(255 214 140) 42%, rgb(255 200 112 / 0) 72%);
+  box-shadow: 0 0 14px 4px rgb(255 200 112 / 0.55);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.fb-spark.ghost { width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; box-shadow: none; }
+
+/* ---------- C · 내 불꽃만 다르게 ---------- */
+.fb-mine { display: inline-block; margin-left: 2px; color: var(--accent-soft); font-weight: 700; }
+.fb-mine.pop { animation: fbPop 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes fbPop {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.45); text-shadow: 0 0 12px var(--accent); }
+  100% { transform: scale(1); }
+}
+@keyframes fbFlash { 0%, 100% { color: var(--accent-soft); } 30% { color: var(--ui-ink); } }
+
+/* ---------- 움직임 줄이기 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .fb .dock [data-fb-fire].down { transform: none; }
+  .fb-a [data-fb-fire].pop .ico { animation: none; }
+  .fb-ripple { display: none; }
+  .fb-mine.pop { animation: fbFlash 0.5s ease-out; }
+}
+
+/* ---------- 움직임 순서 (멈춘 그림) ---------- */
+.beats {
+  flex: none; display: flex; gap: 18px;
+  padding: 24px; border-radius: 20px;
+  background: var(--board-panel); border: 1px solid var(--board-line);
+}
+.beat { width: 200px; }
+.beat .cap { margin-top: 14px; font: 500 13.5px/1.5 var(--font); color: var(--board-dim); }
+.beat .cap b { display: block; margin-bottom: 5px; font: 700 14px/1.3 var(--font); color: var(--board-ink); }
+.beat .cap b span { color: var(--subway-300); }
+
+/* 작은 창 (.fb-mini, subway.css 의 .mini 와 다른 거예요): 위는 하늘, 58% 아래는 강, 아래쪽에 독 */
+.fb-mini {
+  position: relative; height: 250px; overflow: hidden; border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgb(11 16 48) 0%, rgb(29 26 66) 57.6%, rgb(12 14 28) 58%, rgb(5 6 13) 100%);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.07);
+  color: var(--ui-ink);
+}
+.fb-mini::before { /* 강 위 수평선 */
+  content: ""; position: absolute; left: 0; right: 0; top: 145px; height: 1px; background: rgb(255 255 255 / 0.12);
+}
+.mn-dock {
+  position: absolute; left: 10px; right: 8px; bottom: 8px; height: 56px; border-radius: var(--r-pill);
+  background: var(--ui-glass); box-shadow: inset 0 0 0 1px var(--ui-line);
+}
+.mn-dock::before, .mn-dock::after { content: ""; position: absolute; top: 9px; height: 38px; border-radius: var(--r-pill); background: var(--ui-fill); }
+.mn-dock::before { left: 6px; width: 38px; }
+.mn-dock::after { left: 50px; right: 58px; }
+.mn-btn {
+  position: absolute; right: 14px; bottom: 14px; width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center;
+  color: var(--ui-ink); background: rgb(255 255 255 / 0.1); box-shadow: inset 0 0 0 1px var(--ui-line);
+}
+.mn-btn .ico { width: 18px; height: 18px; }
+.mn-btn.down { transform: scale(0.88); background: linear-gradient(180deg, var(--accent-soft), var(--accent)); color: var(--accent-ink); }
+.mn-btn.glow { box-shadow: 0 0 22px 6px rgb(var(--c) / 0.7), inset 0 0 0 1.5px rgb(var(--c) / 0.9); }
+.mn-btn .spun { transform: scale(1.22) rotate(22.5deg); }
+.mn-ripple { position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--accent-soft); transform: scale(1.32); opacity: 0.5; }
+.mn-ring {
+  position: absolute; inset: -6px; border-radius: 50%;
+  background: conic-gradient(var(--accent) calc(var(--p) * 1%), rgb(255 255 255 / 0.12) 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
+}
+/* 올라가는 불꽃: 머리와 꼬리 */
+.mn-shell {
+  --tail: 30px;
+  position: absolute; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%;
+  background: rgb(255 236 200); box-shadow: 0 0 8px 2px rgb(255 200 112 / 0.7);
+}
+.mn-shell::after {
+  content: ""; position: absolute; left: 2px; top: 6px; width: 2px; height: var(--tail);
+  background: linear-gradient(rgb(255 200 112 / 0.6), rgb(255 200 112 / 0));
+}
+.mn-shell.thin { --tail: 22px; width: 4px; height: 4px; margin: -2px 0 0 -2px; box-shadow: 0 0 5px 1px rgb(255 200 112 / 0.45); }
+.mn-shell.thin::after { left: 1px; top: 4px; opacity: 0.55; }
+.mn-shell.big { --tail: 56px; width: 10px; height: 10px; margin: -5px 0 0 -5px; box-shadow: 0 0 14px 4px rgb(255 200 112 / 0.85); }
+.mn-shell.big::after { left: 3px; top: 9px; width: 4px; }
+/* 터진 불꽃 */
+.mn-burst { position: absolute; width: var(--r, 84px); height: var(--r, 84px); transform: translate(-50%, -50%); --c: 255 200 112; }
+.mn-burst::before {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: repeating-conic-gradient(rgb(var(--c) / 0.95) 0 3deg, transparent 3deg 20deg);
+  -webkit-mask: radial-gradient(circle closest-side, transparent 0 40%, #000 50% 88%, transparent 100%);
+  mask: radial-gradient(circle closest-side, transparent 0 40%, #000 50% 88%, transparent 100%);
+}
+.mn-burst::after { content: ""; position: absolute; inset: -20%; border-radius: 50%; background: radial-gradient(circle closest-side, rgb(var(--c) / 0.3), rgb(var(--c) / 0) 70%); }
+.mn-burst.dim { opacity: 0.6; }
+/* B: 날아가는 불빛 */
+.mn-spark {
+  position: absolute; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 255 255) 0 22%, rgb(255 214 140) 42%, rgb(255 200 112 / 0) 72%);
+  box-shadow: 0 0 12px 3px rgb(255 200 112 / 0.6);
+}
+.mn-spark.ghost { width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; box-shadow: none; opacity: 0.45; }
+.mn-spark.land { box-shadow: 0 0 22px 9px rgb(255 214 140 / 0.7); }
+.mn-path { position: absolute; inset: 0; width: 100%; height: 100%; }
+.mn-path path { fill: none; stroke: var(--subway-300); stroke-width: 1.5; stroke-dasharray: 3 5; opacity: 0.55; }
+/* C: 쉬는 불꽃 · 객차 빛 · 상태 줄 */
+.mn-ghost { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; border: 1.5px dashed rgb(255 255 255 / 0.3); }
+.mn-ghost::after { content: "쉬어요"; position: absolute; top: 40px; left: 50%; transform: translateX(-50%); white-space: nowrap; font: 600 10.5px/1 var(--font); color: var(--ui-faint); }
+.mn-light { position: absolute; inset: 0; background: radial-gradient(120% 70% at 50% 100%, rgb(var(--c) / 0.2), rgb(var(--c) / 0.04) 70%); } /* 객차 안을 물들이는 빛 */
+.mn-stat { position: absolute; left: 12px; right: 12px; bottom: 74px; display: flex; justify-content: flex-end; align-items: baseline; gap: 4px; font: 600 12px/1 var(--font); color: var(--ui-ink); }
+.mn-stat b { display: inline-block; color: var(--accent-soft); transform: scale(1.45); text-shadow: 0 0 10px var(--accent); }
+.mn-tag { position: absolute; left: 10px; top: 10px; padding: 5px 8px; border-radius: var(--r-pill); font: 600 10.5px/1 var(--font); color: var(--ui-dim); background: var(--ui-glass-strong); }

@@ -62,6 +62,8 @@ const PALS: readonly (readonly Colour[])[] = [
   ['cyan', 'blue'], ['red'], ['green', 'gold'], ['gold', 'silver'],
 ];
 const FLASH_WHITE: C3 = [255, 246, 228];
+/** the head of a shell you sent up */
+const HEAD: C3 = [255, 236, 200];
 
 function pickWeighted<K extends string>(weights: Readonly<Record<K, number>>, fallback: K): K {
   let sum = 0;
@@ -931,10 +933,31 @@ export class Subway extends Scene {
     this.launch(this.fwX + x, ty, true);
   }
 
-  /** 불꽃 올리기: one shell somewhere over the river. */
-  fire() {
+  /**
+   * 불꽃 올리기, step one: where on the river the shell will go up (near the middle of the glass, never behind the
+   * frame between two panes) and the height it bursts at, in CSS px. The view flies a light from the button to
+   * (x, y), then calls fireAt.
+   */
+  aim() {
     const V = this.V;
-    this.launch(this.fwX + V.x + rand(0.2, 0.8) * V.w, this.hy - rand(0.45, 0.75) * (this.hy - Math.max(V.y, 0)), true);
+    const hy = this.hy;
+    const m = 14 * this.S;
+    const open = this.L.panes.filter((r) => !r.side && hy > r.y && hy < r.y + r.h && r.w > 2 * m);
+    const clear = (x: number) => !open.length || open.some((r) => x >= r.x + m && x <= r.x + r.w - m);
+    let x = V.x + rand(0.35, 0.65) * V.w;
+    for (let i = 0; i < 8 && !clear(x); i++) x = V.x + rand(0.35, 0.65) * V.w;
+    if (!clear(x)) {
+      // the middle is all frame: the middle of the pane nearest the centre
+      const c = V.x + V.w / 2;
+      const r = open.reduce((a, b) => (Math.abs(b.x + b.w / 2 - c) < Math.abs(a.x + a.w / 2 - c) ? b : a));
+      x = r.x + r.w / 2;
+    }
+    return { x, y: hy, ty: hy - rand(0.5, 0.72) * (hy - Math.max(V.y, 0)) };
+  }
+
+  /** 불꽃 올리기, step two: a shell goes up from x on the river and bursts at height ty (CSS px, from aim). */
+  fireAt(x: number, ty: number) {
+    this.launch(this.fwX + x, ty, true);
   }
 
   private launch(wx: number, ty: number, near: boolean, type?: ShellType) {
@@ -1379,6 +1402,11 @@ export class Subway extends Scene {
     for (const s of this.shells) {
       x.globalAlpha = 0.9;
       x.drawImage(spark(COL.gold), s.wx - fw - 4 * S, s.y - 4 * S, 8 * S, 8 * S);
+      if (s.near) {
+        // one you sent up (the button, a tap): a brighter head, so you can follow it
+        x.globalAlpha = 0.8;
+        x.drawImage(spark(HEAD), s.wx - fw - 6 * S, s.y - 6 * S, 12 * S, 12 * S);
+      }
     }
     for (const b of this.bursts) {
       const k = Math.exp(-b.age * 1.6) * b.power;

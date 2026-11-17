@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="doan:canvas" content="subway-fire">
+<meta name="doan:width" content="2800">
+<title>지하철멍 불꽃 버튼 반응</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/mong.css">
+<link rel="stylesheet" href="../assets/fire-v2.css">
+<link rel="stylesheet" href="../assets/subway.css">
+<link rel="stylesheet" href="../assets/subway-fire.css">
+</head>
+<body class="board theme-subway fb-board">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- source: .doan/canvases/subway.html (src/icons.ts 와 같은 아이콘) -->
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+    <symbol id="i-rain" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.24"/><path d="M16 14v6M8 14v6M12 16v6"/></symbol>
+    <symbol id="i-fish" viewBox="0 0 24 24"><path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z"/><path d="M18 12v.5"/><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"/><path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5 .23 6.5C6.58 18.03 7 16 7 13.33"/></symbol>
+    <symbol id="i-sand" viewBox="0 0 24 24"><path d="M6 2h12M6 22h12"/><path d="M7 2v4a5 5 0 0 0 2 4l3 2 3-2a5 5 0 0 0 2-4V2"/><path d="M7 22v-4a5 5 0 0 1 2-4l3-2 3 2a5 5 0 0 1 2 4v4"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3c.8 5.4 3.6 8.2 9 9-5.4.8-8.2 3.6-9 9-.8-5.4-3.6-8.2-9-9 5.4-.8 8.2-3.6 9-9z"/></symbol>
+    <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 2v20M3.3 7l17.4 10M20.7 7 3.3 17"/><path d="m9.5 3.5 2.5 2 2.5-2M9.5 20.5l2.5-2 2.5 2M3.6 10.6l3-1.1-.5-3.2M20.4 13.4l-3 1.1.5 3.2M3.6 13.4l3 1.1-.5 3.2M20.4 10.6l-3-1.1.5-3.2"/></symbol>
+    <symbol id="i-subway" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="15" rx="3.5"/><path d="M5 11h14"/><path d="M8.5 14.5h.01M15.5 14.5h.01"/><path d="m8 21 1.5-3M16 21l-1.5-3"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.6"/><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4M5.3 5.3l2.8 2.8M15.9 15.9l2.8 2.8M5.3 18.7l2.8-2.8M15.9 8.1l2.8-2.8"/></symbol>
+    <symbol id="i-status" viewBox="0 0 70 12">
+      <g fill="currentColor" stroke="none">
+        <rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4.5" y="6" width="3" height="6" rx="1"/><rect x="9" y="3.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="1" width="3" height="11" rx="1"/>
+        <path d="M30 3.2a10 10 0 0 1 13 0l-1.4 1.5a8 8 0 0 0-10.2 0zM32.4 5.9a6.4 6.4 0 0 1 8.2 0l-1.5 1.5a4.2 4.2 0 0 0-5.2 0zM36.5 11.5l-2.1-2.2a3 3 0 0 1 4.2 0z"/>
+        <rect x="49" y="1" width="18" height="10" rx="3" fill="none" stroke="currentColor" stroke-opacity=".45"/>
+        <rect x="51" y="3" width="14" height="6" rx="1.6"/>
+        <rect x="68" y="4.2" width="1.6" height="3.6" rx=".8" opacity=".45"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ================= 개요 ================= -->
+<section class="brief" data-doan-frame="fb-brief" data-doan-title="불꽃 버튼 반응 · 개요">
+  <div>
+    <div class="ov-brand"><span class="orb lg"></span>mong · 지하철멍</div>
+    <h1>불꽃을 올린 게<br>느껴지게</h1>
+    <p class="lead">B를 넣기 전에는 불꽃 올리기를 눌러도 버튼이 그대로였고, 불꽃은 1~2초 뒤 창 어딘가에서 터졌어요. 축제에서는 1초쯤마다 저절로 올라가는 불꽃이 있어서 어느 게 내 건지도 알기 어려웠어요. 누른 순간부터 터지는 순간까지 ‘내가 올렸다’가 이어지게 하는 방법 세 가지를 그렸고, 그중 B를 앱에 넣었어요.</p>
+    <div class="ov-meta"><span>디자인 시안 · 세 가지</span><span>2026.11.17</span><span>화면마다 불꽃 버튼을 눌러 볼 수 있어요</span></div>
+  </div>
+  <div>
+    <h3>왜 잘 안 느껴졌나 · B 넣기 전 코드</h3>
+    <ul class="changes">
+      <li><em>버튼</em><b>눌러도 버튼이 그대로예요</b><span>독의 불꽃 버튼(.dock-btn)에는 눌림 상태가 없어요. 배경색이 바뀌는 전환만 있어요. 폰에서는 글자 없이 아이콘만 있어요.</span></li>
+      <li><em>시간</em><b>1~2초 뒤에 터져요</b><span>강에서 올라가는 데 0.7~1.9초 걸려요. 올라가는 꼬리는 가는 금빛 점이라 잘 안 보여요.</span></li>
+      <li><em>자리</em><b>어디서 터질지 몰라요</b><span>창 너비 20~80% 사이 아무 데서나 올라가요. 버튼과 이어지는 게 없어요.</span></li>
+      <li><em>구분</em><b>저절로 오는 불꽃과 같아요</b><span>축제에서는 0.75~1.7초마다 저절로 올라가요. 내 불꽃은 펑 소리만 15% 커요. ‘불꽃 N발’도 모두 함께 세요.</span></li>
+    </ul>
+  </div>
+  <div>
+    <h3>세 가지 방법</h3>
+    <div class="in-code" data-doan-id="fb-in-code">
+      <b>B를 코드에 반영했어요 (2026.11.17)</b>
+      <ul>
+        <li>버튼 눌림(살짝 작아지고 초록으로 채워짐)과 버튼에서 강까지 날아가는 불빛이 앱에 들어갔어요</li>
+        <li>데스크톱 Space 키와 가로 화면 레일 버튼도 똑같이 반응해요</li>
+      </ul>
+    </div>
+    <div class="not-in-code" data-doan-id="fb-not-in-code">
+      <b>A와 C는 시안으로만 남아요</b>
+      <ul>
+        <li>세 안 모두 버튼이 눌리는 모습은 똑같고, 그 위에 더하는 게 달라요</li>
+        <li>A 버튼이 대답해요: 버튼에서 끝내요</li>
+        <li>C 내 불꽃만 다르게: 터지는 불꽃을 바꿔요</li>
+        <li>보드의 펑 소리는 시안용 합성음이에요. 진동은 보드에서 느낄 수 없어요</li>
+      </ul>
+    </div>
+    <h4>정해야 할 것</h4>
+    <ul class="asks" data-doan-id="fb-asks">
+      <li>누를 때 진동을 넣을지. 토스 SDK에 Device.triggerHaptic이 있어요 (토스 앱 안에서만 돼요)</li>
+      <li>연달아 누르면? 지금은 누른 만큼 다 올라가요</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 01 지금 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">01</span><h2>이전 · B 넣기 전</h2><p>누르고 1~2초 동안 반응이 없어 보였어요 · 화면 오른쪽 아래 불꽃 버튼을 눌러 보세요</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-subway" data-doan-frame="fb-now" data-doan-title="이전 · 맞은편 창" data-doan-prototype="390x844">
+      <canvas class="scene" data-subway data-view="seat" data-show="0.6" data-seed="7"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a class="on" aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass" aria-label="지하철멍 자리"><a class="on">맞은편 창</a><a>문 앞</a><a>창가</a></nav>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>한강 위 · <span data-stat="show">축제</span></span><span>불꽃 <span data-stat="shots">0발</span></span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+          <div class="seg">
+            <button data-sub-act="show" data-value="0.3">드문드문</button>
+            <button class="on" data-sub-act="show" data-value="0.6">축제</button>
+            <button data-sub-act="show" data-value="1">피날레</button>
+          </div>
+          <button class="icon-btn" data-sub-act="fire" aria-label="불꽃 올리기" data-doan-id="now-fire-btn"><svg class="ico"><use href="#i-spark"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="beats" data-doan-frame="fb-now-beats" data-doan-title="이전 · 누르면 일어나던 일">
+      <div class="beat">
+        <div class="fb-mini"><span class="mn-burst dim" style="left:56px; top:52px; --r:70px; --c:104 236 146"></span><div class="mn-dock"></div><div class="mn-btn"><svg class="ico"><use href="#i-spark"/></svg></div></div>
+        <p class="cap"><b><span>0ms</span> · 누르는 순간</b>버튼도 화면도 그대로예요. 손 안내만 사라져요</p>
+      </div>
+      <div class="beat">
+        <div class="fb-mini"><span class="mn-shell thin" style="left:44px; top:112px"></span><span class="mn-shell thin" style="left:132px; top:70px"></span><span class="mn-shell thin" style="left:168px; top:120px"></span><div class="mn-dock"></div><div class="mn-btn"><svg class="ico"><use href="#i-spark"/></svg></div><span class="mn-tag">어느 게 내 거?</span></div>
+        <p class="cap"><b><span>0.7~1.9초</span> · 올라가는 동안</b>창 너비 20~80% 아무 데서나 가는 금빛 점이 올라가요. 저절로 오는 불꽃과 똑같아요</p>
+      </div>
+      <div class="beat">
+        <div class="fb-mini"><span class="mn-burst" style="left:50px; top:70px; --r:76px; --c:255 86 78"></span><span class="mn-burst" style="left:136px; top:46px; --r:84px; --c:104 156 255"></span><span class="mn-burst dim" style="left:160px; top:104px; --r:60px; --c:255 200 112"></span><div class="mn-dock"></div><div class="mn-btn"><svg class="ico"><use href="#i-spark"/></svg></div></div>
+        <p class="cap"><b><span>터지는 순간</span></b>객차가 물들고 펑 소리가 나요. 다른 불꽃과 섞여서 어느 게 내 건지 몰라요</p>
+      </div>
+    </div>
+
+    <div class="notes">
+      <h4>B 넣기 전 코드</h4>
+      <ul>
+        <li>독 버튼과 가로 화면 레일 버튼 모두 눌림 상태가 없었어요</li>
+        <li>누르면 <code>primary()</code> → <code>subway.fire()</code>. 화면에서는 손 안내만 사라졌어요</li>
+        <li><code>fire()</code>: 창 너비 20~80%, 하늘 45~75% 높이 아무 데나</li>
+        <li>터질 때 <code>emit('burst', { near: 1 })</code>. 펑 소리가 1.15배예요 (지금도 같아요)</li>
+      </ul>
+      <h4>보드에서</h4>
+      <ul><li>이 화면은 B 넣기 전 앱처럼 반응해요. 아래 A · B · C와 눌러서 비교해 보세요</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 A · 버튼이 대답해요 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">02</span><h2>A · 버튼이 대답해요</h2><p>버튼에서 끝내요 · 누른 순간부터 터질 때까지 버튼이 함께해요</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-subway fb fb-a" data-fb="a" data-doan-frame="fb-a" data-doan-title="A · 버튼이 대답해요" data-doan-prototype="390x844">
+      <canvas class="scene" data-subway data-view="seat" data-show="0.6" data-seed="7"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a class="on" aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass" aria-label="지하철멍 자리"><a class="on">맞은편 창</a><a>문 앞</a><a>창가</a></nav>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>한강 위 · <span data-stat="show">축제</span></span><span>불꽃 <span data-stat="shots">0발</span></span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+          <div class="seg">
+            <button data-sub-act="show" data-value="0.3">드문드문</button>
+            <button class="on" data-sub-act="show" data-value="0.6">축제</button>
+            <button data-sub-act="show" data-value="1">피날레</button>
+          </div>
+          <button class="icon-btn" data-fb-fire data-sub-act="wake" aria-label="불꽃 올리기" data-doan-id="a-fire-btn"><svg class="ico"><use href="#i-spark"/></svg><svg class="fb-ring" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="28"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="beats" data-doan-frame="fb-a-beats" data-doan-title="A · 움직임 순서">
+      <div class="beat">
+        <div class="fb-mini"><div class="mn-dock"></div><div class="mn-btn down"><svg class="ico"><use href="#i-spark"/></svg></div></div>
+        <p class="cap"><b><span>0ms</span> · 누르는 순간</b>살짝 작아지고 초록으로 채워져요. 세 안 모두 같아요</p>
+      </div>
+      <div class="beat">
+        <div class="fb-mini"><div class="mn-dock"></div><div class="mn-btn"><i class="mn-ripple"></i><svg class="ico spun"><use href="#i-spark"/></svg></div></div>
+        <p class="cap"><b><span>~0.2초</span> · 손을 떼면</b>아이콘이 퍼지며 돌고, 초록 고리가 한 번 퍼져요</p>
+      </div>
+      <div class="beat">
+        <div class="fb-mini"><span class="mn-shell" style="left:92px; top:100px"></span><div class="mn-dock"></div><div class="mn-btn"><i class="mn-ring" style="--p:60"></i><svg class="ico"><use href="#i-spark"/></svg></div></div>
+        <p class="cap"><b><span>0.7~1.9초</span> · 올라가는 동안</b>버튼 둘레 고리가 차올라요. 다 차면 터져요</p>
+      </div>
+      <div class="beat">
+        <div class="fb-mini"><span class="mn-burst" style="left:92px; top:66px; --c:255 128 186"></span><div class="mn-dock"></div><div class="mn-btn glow" style="--c:255 128 186"><svg class="ico"><use href="#i-spark"/></svg></div></div>
+        <p class="cap"><b><span>터지는 순간</span></b>버튼이 그 불꽃 색으로 잠깐 빛나요</p>
+      </div>
+    </div>
+
+    <div class="notes">
+      <div class="not-in-code"><b>시안이에요. 코드에는 아직 없어요</b>버튼에 눌림 · 퍼지는 고리 · 차오르는 고리 · 빛남을 더해요. 장면은 그대로예요</div>
+      <h4>무엇을 더하나</h4>
+      <ul>
+        <li>누르면 불꽃 아이콘이 퍼지며 45° 돌고, 버튼에서 초록 고리가 한 번 퍼져요</li>
+        <li>불꽃이 올라가는 동안 버튼 둘레에 가는 고리가 차올라요. 다 차면 터져요</li>
+        <li>터지는 순간 버튼이 그 불꽃 색으로 잠깐 빛나요</li>
+      </ul>
+      <h4>움직임 값</h4>
+      <ul>
+        <li>눌림: 0.88배까지 90ms, 놓으면 220ms <code>cubic-bezier(0.16, 1, 0.3, 1)</code>. 짧게 눌러도 140ms는 보여요</li>
+        <li>아이콘: 420ms, 1.25배까지 커졌다가 45° 돌며 돌아와요</li>
+        <li>퍼지는 고리: 480ms, 1 → 1.9배, 투명도 0.9 → 0</li>
+        <li>차오르는 고리: 그 불꽃이 올라가는 시간(0.7~1.9초) 동안 고르게</li>
+        <li>빛남: 900ms, 그 불꽃 색</li>
+      </ul>
+      <h4>움직임 줄이기</h4>
+      <ul><li>작아짐 · 돎 · 퍼지는 고리는 빼요. 초록으로 채워지기 · 차오르는 고리 · 빛남은 남겨요</li></ul>
+      <h4>만들 때</h4>
+      <ul>
+        <li>버튼 CSS, 그리고 장면이 내가 올린 불꽃의 ‘올라가는 시간’과 ‘터졌다’를 알려 주는 신호 (지금 <code>burst</code> 이벤트에 <code>near</code>가 있어요)</li>
+        <li>진동을 넣는다면 누를 때 <code>tickWeak</code></li>
+      </ul>
+      <h4>좋은 점 · 아쉬운 점</h4>
+      <ul>
+        <li class="plus">손끝에서 바로 느껴지고, 장면은 손대지 않아요</li>
+        <li class="minus">하늘에서 어느 불꽃이 내 건지는 여전히 헷갈릴 수 있어요</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 B · 버튼에서 불꽃이 떠나요 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">03</span><h2>B · 버튼에서 불꽃이 떠나요</h2><p>코드에 반영했어요 · 버튼에서 떠난 불빛이 그대로 불꽃이 돼요</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-subway fb fb-b" data-fb="b" data-doan-frame="fb-b" data-doan-implements="src/views/scene-view.ts" data-doan-title="B · 버튼에서 불꽃이 떠나요" data-doan-prototype="390x844">
+      <canvas class="scene" data-subway data-view="seat" data-show="0.6" data-seed="7"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a class="on" aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass" aria-label="지하철멍 자리"><a class="on">맞은편 창</a><a>문 앞</a><a>창가</a></nav>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>한강 위 · <span data-stat="show">축제</span></span><span>불꽃 <span data-stat="shots">0발</span></span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+          <div class="seg">
+            <button data-sub-act="show" data-value="0.3">드문드문</button>
+            <button class="on" data-sub-act="show" data-value="0.6">축제</button>
+            <button data-sub-act="show" data-value="1">피날레</button>
+          </div>
+          <button class="icon-btn" data-fb-fire data-sub-act="wake" aria-label="불꽃 올리기" data-doan-id="b-fire-btn"><svg class="ico"><use href="#i-spark"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="beats" data-doan-frame="fb-b-beats" data-doan-title="B · 움직임 순서">
+      <div class="beat">
+        <div class="fb-mini"><div class="mn-dock"></div><div class="mn-btn down"><svg class="ico"><use href="#i-spark"/></svg></div><span class="mn-spark" style="left:164px; top:190px"></span></div>
+        <p class="cap"><b><span>0ms</span> · 누르는 순간</b>버튼에서 불빛 하나가 떠나요</p>
+      </div>
+      <div class="beat">
+        <div class="fb-mini"><svg class="mn-path" viewBox="0 0 200 250" aria-hidden="true"><path d="M164 214 Q164 145 96 145"/></svg><div class="mn-dock"></div><div class="mn-btn"><svg class="ico"><use href="#i-spark"/></svg></div><span class="mn-spark ghost" style="left:161px; top:189px"></span><span class="mn-spark ghost" style="left:156px; top:174px"></span><span class="mn-spark" style="left:147px; top:162px"></span></div>
+        <p class="cap"><b><span>~0.2초</span> · 날아가요</b>위로 솟았다가 창 아래 강 쪽으로 휘어요</p>
+      </div>
+      <div class="beat">
+        <div class="fb-mini"><svg class="mn-path" viewBox="0 0 200 250" aria-hidden="true"><path d="M164 214 Q164 145 96 145"/></svg><span class="mn-shell" style="left:96px; top:136px; --tail:8px"></span><span class="mn-spark land" style="left:96px; top:145px"></span><div class="mn-dock"></div><div class="mn-btn"><svg class="ico"><use href="#i-spark"/></svg></div></div>
+        <p class="cap"><b><span>0.38초</span> · 강에 닿아요</b>닿은 자리에서 불꽃이 바로 올라가요</p>
+      </div>
+      <div class="beat">
+        <div class="fb-mini"><span class="mn-burst" style="left:96px; top:62px; --c:118 226 255"></span><div class="mn-dock"></div><div class="mn-btn"><svg class="ico"><use href="#i-spark"/></svg></div></div>
+        <p class="cap"><b><span>1.1~2.3초</span> · 터져요</b>버튼 → 강 → 하늘이 한 줄로 이어져서, 내 불꽃인 걸 알아요</p>
+      </div>
+    </div>
+
+    <div class="notes">
+      <div class="in-code"><b>코드에 반영했어요. 보드와 다른 점만 적어요</b>
+        <ul>
+          <li>장면: <code>src/scenes/subway.ts</code> <code>aim()</code> · <code>fireAt()</code>. 불빛과 버튼: <code>src/views/scene-view.ts</code> <code>fireFromButton()</code> · <code>pressFire()</code>, 모양은 <code>src/styles/app.css</code> <code>.fw-light</code></li>
+          <li>문 앞처럼 유리가 둘로 나뉜 자리에서는 가운데 문틀 뒤에 떨어지지 않게 유리 안쪽으로만 골라요</li>
+          <li>데스크톱 Space 키, 가로 화면 레일 버튼에서도 불빛이 그 버튼에서 떠나요. 데스크톱의 글자 있는 버튼은 0.95배로만 작아져요</li>
+          <li>밝은 머리는 창을 눌러 올린 불꽃에도 붙어요</li>
+        </ul>
+      </div>
+      <h4>무엇을 더하나</h4>
+      <ul>
+        <li>누르면 버튼에서 불빛 하나가 떠나, 위로 솟았다가 창 아래 강 쪽으로 휘어 날아가요</li>
+        <li>강에 닿은 자리에서 불꽃이 바로 올라가요. 내 불꽃은 머리가 조금 더 밝아요</li>
+        <li>자리는 창 가운데쯤(35~65%)이에요</li>
+      </ul>
+      <h4>움직임 값</h4>
+      <ul>
+        <li>버튼 눌림은 세 안 공통이에요</li>
+        <li>날아가기: 380ms, 끝으로 갈수록 느려져요 (<code>cubic-bezier(0.16, 1, 0.3, 1)</code>에 가깝게). 뒤로 잔상 다섯 개</li>
+        <li>강에 닿으면 불빛이 220ms 동안 2.2배로 퍼지며 사라져요</li>
+        <li>올라가는 시간은 지금과 같아요 (0.7~1.9초)</li>
+      </ul>
+      <h4>움직임 줄이기</h4>
+      <ul><li>날아가지 않아요. 강 위 그 자리에 불빛이 300ms 동안 나타났다 사라지고, 불꽃이 올라가요</li></ul>
+      <h4>만들 때</h4>
+      <ul>
+        <li><code>subway.ts</code>에 ‘이 화면 좌표에서 올려 줘’와 강(수평선) 위치를 알려 주는 함수</li>
+        <li>불빛은 화면 위 요소 하나라 가벼워요. 자리마다(맞은편 창 · 문 앞 · 창가) 강 높이가 달라서 그 값을 받아 써요</li>
+      </ul>
+      <h4>좋은 점 · 아쉬운 점</h4>
+      <ul>
+        <li class="plus">누른 것과 터진 것이 한 줄로 이어져서, 어느 불꽃이 내 건지 분명해요</li>
+        <li class="minus">불빛이 객차 안(의자 · 창틀) 위로 지나가서 그림 속 현실감은 조금 깨져요. 터지기까지 0.4초 더 걸려요</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 04 C · 내 불꽃만 다르게 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">04</span><h2>C · 내 불꽃만 다르게</h2><p>터지는 불꽃을 바꿔요 · 하늘에서 내 불꽃이 주인공이에요</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-subway fb fb-c" data-fb="c" data-doan-frame="fb-c" data-doan-title="C · 내 불꽃만 다르게" data-doan-prototype="390x844">
+      <canvas class="scene" data-subway data-view="seat" data-show="0.6" data-seed="7"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a class="on" aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass" aria-label="지하철멍 자리"><a class="on">맞은편 창</a><a>문 앞</a><a>창가</a></nav>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>한강 위 · <span data-stat="show">축제</span></span><span>불꽃 <span data-stat="shots">0발</span> · 내 불꽃<b class="fb-mine" data-fb-mine data-doan-id="c-mine-count">0</b></span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+          <div class="seg">
+            <button data-sub-act="show" data-value="0.3">드문드문</button>
+            <button class="on" data-sub-act="show" data-value="0.6">축제</button>
+            <button data-sub-act="show" data-value="1">피날레</button>
+          </div>
+          <button class="icon-btn" data-fb-fire data-sub-act="wake" aria-label="불꽃 올리기" data-doan-id="c-fire-btn"><svg class="ico"><use href="#i-spark"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="beats" data-doan-frame="fb-c-beats" data-doan-title="C · 움직임 순서">
+      <div class="beat">
+        <div class="fb-mini"><span class="mn-shell big" style="left:100px; top:130px; --tail:12px"></span><div class="mn-dock"></div><div class="mn-btn down"><svg class="ico"><use href="#i-spark"/></svg></div></div>
+        <p class="cap"><b><span>0ms</span> · 누르는 순간</b>창 가운데서 굵고 밝은 꼬리로 바로 올라가요</p>
+      </div>
+      <div class="beat">
+        <div class="fb-mini"><span class="mn-ghost" style="left:42px; top:72px"></span><span class="mn-ghost" style="left:162px; top:92px"></span><span class="mn-shell big" style="left:100px; top:84px"></span><div class="mn-dock"></div><div class="mn-btn"><svg class="ico"><use href="#i-spark"/></svg></div></div>
+        <p class="cap"><b><span>0.5~1.4초</span> · 올라가는 동안</b>저절로 오는 불꽃은 잠깐 쉬어요. 하늘에 내 불꽃만 있어요</p>
+      </div>
+      <div class="beat">
+        <div class="fb-mini"><span class="mn-light" style="--c:255 200 112"></span><span class="mn-burst" style="left:100px; top:62px; --r:124px; --c:255 200 112"></span><div class="mn-dock"></div><div class="mn-btn"><svg class="ico"><use href="#i-spark"/></svg></div></div>
+        <p class="cap"><b><span>터지는 순간</span></b>1.3배 크게 터지고, 객차를 더 밝게 물들여요</p>
+      </div>
+      <div class="beat">
+        <div class="fb-mini"><span class="mn-burst dim" style="left:100px; top:66px; --r:130px; --c:255 200 112"></span><div class="mn-stat">불꽃 32발 · 내 불꽃 <b>3</b></div><div class="mn-dock"></div><div class="mn-btn"><svg class="ico"><use href="#i-spark"/></svg></div></div>
+        <p class="cap"><b><span>터지면서</span></b>상태 줄의 ‘내 불꽃’ 숫자가 톡 커져요</p>
+      </div>
+    </div>
+
+    <div class="notes">
+      <div class="not-in-code"><b>시안이에요. 코드에는 아직 없어요</b>버튼은 공통 눌림만 두고, 터지는 불꽃을 바꿔요. 상태 줄의 ‘내 불꽃’도 새 문구예요</div>
+      <h4>무엇을 더하나</h4>
+      <ul>
+        <li>내 불꽃은 창 가운데쯤(40~60%)에서 지금보다 25% 빨리 올라가요. 꼬리가 굵고 밝아서 처음부터 보여요</li>
+        <li>내 불꽃이 올라가는 동안, 그리고 터진 뒤 0.9초까지 저절로 오는 불꽃이 쉬어요</li>
+        <li>1.3배 크게 터지고 객차를 더 밝게 물들여요</li>
+        <li>상태 줄에 ‘내 불꽃’을 따로 세고, 터질 때 숫자가 톡 커져요</li>
+      </ul>
+      <h4>움직임 값</h4>
+      <ul>
+        <li>올라가기: 지금의 0.75배 (0.5~1.4초)</li>
+        <li>숫자: 500ms, 1.45배까지 커졌다 돌아와요</li>
+      </ul>
+      <h4>움직임 줄이기</h4>
+      <ul><li>숫자는 커지지 않고 색만 잠깐 바뀌어요. 크기 · 자리 · 쉬기는 움직임이 아니라서 그대로예요</li></ul>
+      <h4>만들 때</h4>
+      <ul>
+        <li><code>subway.ts</code> <code>launch()</code>에 내 불꽃 옵션(자리 · 빠르기 · 크기 · 꼬리), 다음 불꽃 타이머(<code>next</code>) 미루기, 상태 줄에 숫자 하나</li>
+        <li>앱에는 하트 · 별 · 토성 모양 불꽃이 있어서, 내 불꽃을 늘 모양 불꽃으로 할 수도 있어요 (보드 장면에는 모양 불꽃이 없어요)</li>
+      </ul>
+      <h4>좋은 점 · 아쉬운 점</h4>
+      <ul>
+        <li class="plus">하늘에서 내 불꽃이 확실히 주인공이에요. 누르자마자 굵은 꼬리가 보여요</li>
+        <li class="minus">누르는 순간 버튼 반응은 공통 눌림뿐이라 A보다 약해요. 피날레 중에 누르면 잠깐 조용해져요</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script src="../assets/subway.js"></script>
+<script src="../assets/subway-fire.js"></script>
+</body>
+</html>
