@@ -9,3 +9,21 @@ canvas[data-snowpile] { touch-action: none; cursor: pointer; }
 
 .notes.pile-wide { width: 620px; }
 .notes.pile-mid { width: 440px; }
+
+/* 05 소리 후보: 바로 들어 보는 목록 (보드 전용) */
+.sound-list { width: 1500px; padding: 28px; border-radius: 20px; background: var(--board-panel); border: 1px solid var(--board-line); font: 500 14px/1.55 var(--font); color: var(--board-ink); }
+.sound-list h4 { margin: 0 0 6px; font: 700 13px/1 var(--font); letter-spacing: 0.06em; color: var(--board-dim); }
+.sound-list > p { margin: 0 0 18px; color: var(--board-dim); }
+.sound-row { display: grid; grid-template-columns: 34px 300px 330px 1fr; gap: 20px; align-items: center; padding: 16px 0; border-top: 1px solid var(--board-line); }
+.sound-row .no { font: 700 15px/1 var(--font); color: var(--snow-300); }
+.sound-row .name b { display: block; margin-bottom: 4px; font: 700 15px/1.35 var(--font); color: #fff; }
+.sound-row .name a { color: var(--board-dim); font-size: 12.5px; text-decoration: underline; }
+.sound-row .name small { display: block; margin-top: 3px; font-size: 12.5px; color: var(--board-dim); }
+.sound-row audio { width: 330px; height: 36px; }
+.sound-row .why { color: var(--board-dim); }
+.sound-row .why b { color: #fff; font-weight: 650; }
+.sound-row.pick .no::after { content: "추천"; display: block; margin-top: 6px; font: 700 10px/1 var(--font); color: #ffd28a; }
+.sound-row.now .no { color: var(--board-dim); }
+.sound-row.chosen { margin: 0 -14px; padding: 16px 14px; border-radius: 14px; border-top-color: transparent; background: rgba(242, 155, 176, 0.1); }
+.sound-row.chosen .no::after { content: "고름"; color: var(--snow-300); }
+.sound-row.chosen + .sound-row { border-top-color: transparent; }

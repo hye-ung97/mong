@@ -313,7 +313,7 @@ export abstract class SnowScene extends Scene {
     this.stat('steps', this.steps);
     this.puff(px, py, 9, sc, false);
     if (deep) this.puff(px, py, 8, sc * 1.2, true);
-    this.emit('step', { x: clamp(x / this.w, 0, 1) });
+    this.emit('step', { x: clamp(x / this.w, 0, 1), deep: deep ? 1 : 0 });
   }
 
   /** Someone walked here a while ago: a trail already half filled with snow. */

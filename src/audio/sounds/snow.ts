@@ -5,6 +5,8 @@ import { blip, burst, filter, gain, loopNoise, rnd } from '../synth';
  * 눈멍 (시계탑 · 발밑) share one soundscape and one mix.
  * Recordings (all CC0, Freesound — see public/sounds/CREDITS.md), mono, chosen on a listening page:
  *   steps.m4a   billox30 "Close-micd Snow Steps" (#175002), 20 single footfalls laid end to end
+ *   deep.m4a    msimmonsvoice "Footsteps in snow, various speeds" (#719624), 16 single footfalls in snow
+ *               30 cm deep, laid end to end: the boot sinking into a snow pile
  *   sweep.m4a   Vrymaa "Broom - Sweep, outdoor" (#734668), four strokes
  *   tram.m4a    AmazingRolo "tram bell" (#448366), the bell and the streetcar pulling away
  *   bell.m4a    MVMTech "Church Bell" (#569356), one stroke
@@ -20,6 +22,12 @@ const STEPS: readonly (readonly [number, number])[] = [
   [11.6, 0.89], [12.74, 0.92], [13.91, 0.75], [14.91, 1.08], [16.24, 0.89], [17.38, 0.91], [18.54, 0.76], [19.55, 0.87], [20.67, 0.86], [21.78, 0.99],
 ];
 const STEP_GAIN = 0.55;
+/** The footfalls inside deep.m4a, heard when the boot sinks into a snow pile. */
+const DEEP_STEPS: readonly (readonly [number, number])[] = [
+  [0, 0.84], [1.09, 1.19], [2.53, 0.89], [3.67, 0.89], [4.81, 0.84], [5.9, 0.77], [6.92, 0.85], [8.02, 0.78],
+  [9.05, 0.81], [10.11, 1.04], [11.4, 0.99], [12.64, 0.94], [13.83, 0.79], [14.87, 0.77], [15.89, 0.82], [16.96, 0.74],
+];
+const DEEP_GAIN = 0.6;
 /** sweep.m4a: where each stroke starts, and the stretch that repeats while the broom keeps going. */
 const SWEEP_STROKES = [0.06, 1.08, 1.92, 2.88] as const;
 const SWEEP_LOOP = [0.9, 3.7] as const;
@@ -53,8 +61,9 @@ export class SnowSound extends SceneSound {
   private fall = 0.6;
   private nextBell = -1;
   private disposed = false;
-  private rec: { steps?: AudioBuffer; sweep?: AudioBuffer; tram?: AudioBuffer; bell?: AudioBuffer } = {};
+  private rec: { steps?: AudioBuffer; deep?: AudioBuffer; sweep?: AudioBuffer; tram?: AudioBuffer; bell?: AudioBuffer } = {};
   private lastStep = -1;
+  private lastDeep = -1;
   private broom: { src: AudioBufferSourceNode; g: GainNode; p: StereoPannerNode } | null = null;
 
   /** 눈 오는 밤: air that snow has made quiet, a low wind under it, and the faint hiss of flakes landing. */
@@ -74,7 +83,7 @@ export class SnowSound extends SceneSound {
     this.hiss = gain(c, this.hissFor(this.fall));
     this.keep(loopNoise(c, this.env.noise.pink, this.hiss));
     this.hiss.connect(filter(c, 'bandpass', 5200, 0.4)).connect(night);
-    for (const id of ['steps', 'sweep', 'tram', 'bell'] as const) {
+    for (const id of ['steps', 'deep', 'sweep', 'tram', 'bell'] as const) {
       this.load(`${BASE}${id}.m4a`)
         .then((b) => {
           if (!this.disposed) this.rec[id] = b;
@@ -118,7 +127,9 @@ export class SnowSound extends SceneSound {
     const x = typeof data?.x === 'number' ? data.x : 0.5;
     const pan = (x - 0.5) * 1.3;
     if (name === 'step') {
-      if (this.rec.steps) this.footfall(this.rec.steps, pan);
+      // in a snow pile: the deep-snow footfalls. Until they have loaded, the usual ones
+      if (data?.deep && this.rec.deep) this.lastDeep = this.footfall(this.rec.deep, DEEP_STEPS, DEEP_GAIN, this.lastDeep, pan);
+      else if (this.rec.steps) this.lastStep = this.footfall(this.rec.steps, STEPS, STEP_GAIN, this.lastStep, pan);
       else this.crunch(pan);
     } else if (name === 'sweep') {
       if (this.rec.sweep) this.sweep(this.rec.sweep, pan);
@@ -129,15 +140,14 @@ export class SnowSound extends SceneSound {
     }
   }
 
-  /** 뽀드득: one recorded footfall, never the same one twice in a row, a touch different in pitch each time. */
-  private footfall(buf: AudioBuffer, pan: number) {
+  /** 뽀드득: one recorded footfall, never the same one twice in a row, a touch different in pitch each time. Returns which one. */
+  private footfall(buf: AudioBuffer, steps: readonly (readonly [number, number])[], vol: number, last: number, pan: number) {
     const c = this.ctx;
     const t = c.currentTime + 0.01;
-    let i = Math.floor(Math.random() * STEPS.length);
-    if (i === this.lastStep) i = (i + 1) % STEPS.length;
-    this.lastStep = i;
-    const [at, len] = STEPS[i];
-    const level = STEP_GAIN * rnd(0.85, 1);
+    let i = Math.floor(Math.random() * steps.length);
+    if (i === last) i = (i + 1) % steps.length;
+    const [at, len] = steps[i];
+    const level = vol * rnd(0.85, 1);
     const src = c.createBufferSource();
     src.buffer = buf;
     src.playbackRate.value = rnd(0.96, 1.04);
@@ -149,6 +159,7 @@ export class SnowSound extends SceneSound {
     src.connect(g).connect(p).connect(this.layer('steps'));
     src.start(t, at, len + 0.05);
     src.onended = () => p.disconnect();
+    return i;
   }
 
   /**
