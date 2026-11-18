@@ -654,9 +654,9 @@ kbd {
 }
 .scene-view.theme-snow .m-status, .scene-view.theme-snow .d-now, .scene-view.theme-snow .d-keys { text-shadow: 0 1px 6px rgba(8, 12, 30, 0.7); }
 .scene-view.theme-snow .d-keys { color: var(--ui-dim); }
-/* a press leaves a footprint, a drag sweeps (시계탑) or walks (발밑): the browser must not scroll instead */
+/* a press leaves a footprint and a drag walks (나무 · 발밑): the browser must not scroll instead */
 .scene-view.theme-snow canvas.scene { touch-action: none; }
-[data-scene="clocktower"] .d-keys, [data-scene="underfoot"] .d-keys { bottom: 34px; flex-direction: column; align-items: flex-end; gap: 9px; }
+[data-scene="tree"] .d-keys, [data-scene="underfoot"] .d-keys { bottom: 34px; flex-direction: column; align-items: flex-end; gap: 9px; }
 @media (min-width: 768px) and (max-width: 1259px) { .scene-view.theme-snow .d-now { display: none; } }
 
 /* ---------- 지하철멍 ---------- */

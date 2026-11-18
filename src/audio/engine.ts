@@ -22,7 +22,7 @@ const SOUNDS: Record<SceneId, { layers: readonly LayerDef[]; make: SoundClass }>
   pond: { layers: POND_LAYERS, make: PondSound },
   sand: { layers: SAND_LAYERS, make: SandSound },
   star: { layers: STAR_LAYERS, make: StarSound },
-  clocktower: { layers: SNOW_LAYERS, make: SnowSound },
+  tree: { layers: SNOW_LAYERS, make: SnowSound },
   underfoot: { layers: SNOW_LAYERS, make: SnowSound },
   seat: { layers: SUBWAY_LAYERS, make: SubwaySound },
   door: { layers: SUBWAY_LAYERS, make: SubwaySound },

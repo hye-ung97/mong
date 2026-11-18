@@ -20,7 +20,7 @@ export const CARDS: readonly Card[] = [
   { group: 'water', scene: 'aquarium', title: '물멍', sub: '어항 · 바다 · 연못', tag: '먹이 주기 · 물결', tagIcon: 'fish' },
   { group: 'sand', scene: 'sand', title: '모래멍', sub: '사르르, 모래시계 내려가는 소리', tag: '모래시계 뒤집기', tagIcon: 'flip' },
   { group: 'star', scene: 'star', title: '별멍', sub: '풀밭에 누워 듣는 밤소리', tag: '별자리 · 별똥별', tagIcon: 'star' },
-  { group: 'snow', scene: 'clocktower', title: '눈멍', sub: '뽀드득, 새 눈 밟는 소리', tag: '발자국 · 눈 쓸기', tagIcon: 'snow' },
+  { group: 'snow', scene: 'tree', title: '눈멍', sub: '뽀드득, 새 눈 밟는 소리', tag: '발자국 · 나무 털기', tagIcon: 'snow' },
   { group: 'subway', scene: 'seat', title: '지하철멍', sub: '덜컹덜컹, 한강 위 불꽃놀이', tag: '불꽃 올리기', tagIcon: 'spark', wide: true, newUntil: 'subway-visited' },
 ];
 

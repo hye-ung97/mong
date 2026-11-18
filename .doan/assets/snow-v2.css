@@ -1,0 +1,40 @@
+/* 눈멍 v2 시안 — mong.css · fire-v2.css · star.css · snow.css 위에 얹는 부품. 전부 시안에만 있어요. */
+
+/* 손으로 밟고, 흔들고, 받는 장면 */
+canvas[data-snow2] { touch-action: none; cursor: pointer; }
+
+/* 장면 전환이 세 칸일 때 (B · C · D안을 세 번째 장면으로 넣어 본 모습) */
+.subscenes.three a { padding: 0 11px; }
+
+/* 개요: A안(추천)은 한 줄을 다 써요 */
+.changes li.pick { grid-column: 1 / -1; background: rgba(242, 155, 176, 0.1); border: 1px solid rgba(242, 155, 176, 0.32); }
+.changes li.pick em::after { content: " · 추천"; }
+
+/* B · C · D안 설명 */
+.notes.v2-concepts { width: 600px; }
+.notes h4.alt { color: var(--snow-300); }
+.concept { margin: 0 0 26px; padding: 0 0 22px; border-bottom: 1px solid var(--board-line); }
+.concept:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
+.concept h5 { margin: 0 0 10px; font: 700 17px/1.3 var(--font); color: var(--board-ink); }
+.concept h5 small { margin-left: 8px; font: 600 12px/1 var(--font); color: var(--snow-300); }
+.concept dl { display: grid; grid-template-columns: 64px 1fr; gap: 6px 12px; margin: 0; font: 500 14px/1.55 var(--font); }
+.concept dt { color: var(--board-dim); font-weight: 700; }
+.concept dd { margin: 0; color: var(--board-ink); }
+
+/* 네 안 비교표 */
+.notes.compare-v2 { width: 980px; }
+.alt-compare.four th:not(:first-child) { width: 22.5%; }
+.alt-compare.four th.pick { color: var(--snow-500); }
+.alt-compare.four th.pick::after { content: " · 추천"; font-weight: 600; color: var(--snow-300); }
+
+/* 비교용 이전 화면은 조금 어둡게 */
+.screen.before { filter: saturate(0.8); }
+.before-tag { top: 160px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+
+/* subway.css(탭 일곱 개 · 홈 카드 일곱 장)를 함께 불러요. 메모 제목 색은 눈멍 색으로 되돌려요 */
+.notes h4.ask { color: var(--snow-300); }
+
+/* 토스 앱 홈: 광고 보고 여는 카드 (src/styles/app.css 와 같아요) */
+.card.locked canvas { filter: brightness(0.82) saturate(0.85); }
+.card-tag.lock { padding: 0 11px 0 8px; gap: 5px; }
+.card-tag.lock .ico { width: 14px; height: 14px; }

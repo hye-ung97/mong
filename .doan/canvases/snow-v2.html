@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="doan:canvas" content="snow-v2">
+<meta name="doan:width" content="2800">
+<title>눈멍 v2 시안</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/mong.css">
+<link rel="stylesheet" href="../assets/fire-v2.css">
+<link rel="stylesheet" href="../assets/sand.css">
+<link rel="stylesheet" href="../assets/star.css">
+<link rel="stylesheet" href="../assets/snow.css">
+<link rel="stylesheet" href="../assets/subway.css">
+<link rel="stylesheet" href="../assets/snow-v2.css">
+</head>
+<body class="board theme-snow">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- 코드에 이미 있는 아이콘 (src/icons.ts) -->
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-4 0v0M14 10V4a2 2 0 0 0-4 0v2M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></symbol>
+    <symbol id="i-log" viewBox="0 0 24 24"><path d="M5.5 8.5h11a3.5 3.5 0 0 1 0 7h-11a3.5 3.5 0 0 1 0-7z"/><ellipse cx="16.5" cy="12" rx="1.4" ry="2"/><path d="M4.5 12h6"/></symbol>
+    <symbol id="i-rain" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.24"/><path d="M16 14v6M8 14v6M12 16v6"/></symbol>
+    <symbol id="i-fish" viewBox="0 0 24 24"><path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z"/><path d="M18 12v.5"/><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"/><path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5 .23 6.5C6.58 18.03 7 16 7 13.33"/></symbol>
+    <symbol id="i-sand" viewBox="0 0 24 24"><path d="M6 2h12M6 22h12"/><path d="M7 2v4a5 5 0 0 0 2 4l3 2 3-2a5 5 0 0 0 2-4V2"/><path d="M7 22v-4a5 5 0 0 1 2-4l3-2 3 2a5 5 0 0 1 2 4v4"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3c.8 5.4 3.6 8.2 9 9-5.4.8-8.2 3.6-9 9-.8-5.4-3.6-8.2-9-9 5.4-.8 8.2-3.6 9-9z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-headphones" viewBox="0 0 24 24"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></symbol>
+    <symbol id="i-max" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></symbol>
+    <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 2v20M3.3 7l17.4 10M20.7 7 3.3 17"/><path d="m9.5 3.5 2.5 2 2.5-2M9.5 20.5l2.5-2 2.5 2M3.6 10.6l3-1.1-.5-3.2M20.4 13.4l-3 1.1.5 3.2M3.6 13.4l3 1.1-.5 3.2M20.4 10.6l-3-1.1.5-3.2"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+    <symbol id="i-subway" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="15" rx="3.5"/><path d="M5 11h14"/><path d="M8.5 14.5h.01M15.5 14.5h.01"/><path d="m8 21 1.5-3M16 21l-1.5-3"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.6"/><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4M5.3 5.3l2.8 2.8M15.9 15.9l2.8 2.8M5.3 18.7l2.8-2.8M15.9 8.1l2.8-2.8"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-foot" viewBox="0 0 24 24"><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"/><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"/><path d="M16 17h4M4 13h4"/></symbol>
+    <symbol id="i-wind" viewBox="0 0 24 24"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2M9.6 4.6A2 2 0 1 1 11 8H2M12.6 19.4A2 2 0 1 0 14 16H2"/></symbol>
+    <symbol id="i-tram" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="12" rx="3"/><path d="M5 11h14M9 21l1.5-4M15 21l-1.5-4M8 2h8M12 2v3"/></symbol>
+    <!-- 새 아이콘 (제안): 스노우글로브 흔들기 · 석등 · 모은 결정 -->
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="10" r="7"/><path d="M7.5 17h9l1.2 4H6.3z"/><path d="M8.5 12.5c1.2-1 2.3-1.4 3.5-1.4s2.3.4 3.5 1.4M12 6.5v2"/></symbol>
+    <symbol id="i-lantern" viewBox="0 0 24 24"><path d="M5 7.5c2.5-1.6 4.8-2.4 7-2.4s4.5.8 7 2.4"/><path d="M12 2.5v2.6"/><rect x="7.5" y="8" width="9" height="6.5" rx="1"/><path d="M10.5 11.2h3M9 14.5v2.5h6v-2.5M10.5 17v3.5M13.5 17v3.5M7 21h10"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/><path d="M11.5 7v6M8.9 8.5l5.2 3M14.1 8.5l-5.2 3"/></symbol>
+    <symbol id="i-status" viewBox="0 0 70 12">
+      <g fill="currentColor" stroke="none">
+        <rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4.5" y="6" width="3" height="6" rx="1"/><rect x="9" y="3.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="1" width="3" height="11" rx="1"/>
+        <path d="M30 3.2a10 10 0 0 1 13 0l-1.4 1.5a8 8 0 0 0-10.2 0zM32.4 5.9a6.4 6.4 0 0 1 8.2 0l-1.5 1.5a4.2 4.2 0 0 0-5.2 0zM36.5 11.5l-2.1-2.2a3 3 0 0 1 4.2 0z"/>
+        <rect x="49" y="1" width="18" height="10" rx="3" fill="none" stroke="currentColor" stroke-opacity=".45"/>
+        <rect x="51" y="3" width="14" height="6" rx="1.6"/>
+        <rect x="68" y="4.2" width="1.6" height="3.6" rx=".8" opacity=".45"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ================= 시안 개요 ================= -->
+<section class="brief" data-doan-frame="brief" data-doan-title="눈멍 v2 · 개요">
+  <div>
+    <div class="ov-brand"><span class="orb lg"></span>mong · 눈멍 v2</div>
+    <h1>시계탑 대신, 눈 덮인 언덕의 나무 한 그루</h1>
+    <p class="lead">교회처럼 보이던 시계탑 장면을 <b>홋카이도 비에이의 눈 덮인 언덕과 나무 한 그루</b>로 바꿔요. 넓은 눈벌판에 나무 하나만 서 있어서 그냥 바라보기 좋아요. 누르면 발자국이 찍히고, 나무를 건드리면 가지에 쌓인 눈이 푸스스 떨어져요. 눈멍을 어떤 장면으로 채울지 고를 수 있게 다른 시안 세 가지도 함께 그렸어요.</p>
+    <div class="ov-meta"><span>디자인 시안 · 나무 + 다른 시안 셋 · 폰과 데스크톱</span><span>2026.11.18</span><span>화면을 눌러 직접 밟고, 털고, 흔들고, 받아 볼 수 있어요</span></div>
+  </div>
+  <div>
+    <h3>네 가지 시안</h3>
+    <ul class="changes">
+      <li class="pick"><em>A안 · 나무</em><b>눈 덮인 언덕 위 나무 한 그루 — 시계탑 자리에 들어가요</b><span>해 질 녘 분홍 하늘이 눈멍 색(연분홍)과 그대로 이어져요. 누르면 발자국, 끌면 그 길로 걸어가고, 나무를 누르면 가지의 눈이 떨어져요. 가끔 들판 끝으로 불 켜진 기차가 지나가고, 바람 한 줄기가 언덕 위 눈가루를 날려요. 발밑 장면은 그대로 둬요.</span></li>
+      <li><em>B안 · 스노우글로브</em><b>흔들고, 가라앉는 걸 바라봐요</b><span>모래멍의 모래시계처럼 손에 쥐는 물건이에요. 끌어서 흔들면 눈이 날렸다가 20초쯤 걸려 천천히 내려앉아요. 글로브 속에도 나무 한 그루가 있어요.</span></li>
+      <li><em>C안 · 노천탕</em><b>눈 내리는 노천탕, 피어오르는 김</b><span>삿포로 조잔케이 같은 온천 마을의 밤. 눈송이가 물에 닿아 사라지고, 물을 누르면 물결이 퍼지고 김이 비켜나요.</span></li>
+      <li><em>D안 · 눈 결정</em><b>장갑 위에 내려앉은 눈 결정</b><span>눈송이를 받으면 결정이 크게 보였다가 천천히 녹아요. 삿포로에서 처음 인공 눈 결정을 만든 나카야 우키치로의 ‘눈은 하늘에서 보낸 편지’에서 가져왔어요.</span></li>
+    </ul>
+  </div>
+  <div>
+    <div class="not-in-code" data-doan-id="brief-not-in-code">
+      <b>전부 시안이에요. 코드에는 아직 없어요</b>
+      <ul>
+        <li>나무 장면, 하늘 세 가지(해 질 녘 · 달밤 · 푸른 새벽), 나무 털기, 먼 기차, 바람 한 줄기는 새로 그렸어요 (.doan/assets/snow-v2.js)</li>
+        <li>설정 시트의 ‘하늘’ 고르기와 나무 장면 소리 섞기 네 층은 새로 넣은 거예요</li>
+        <li>B · C · D안 장면, 새 아이콘 셋(글로브 흔들기 · 석등 · 모은 결정), 장면 이름 ‘나무 · 글로브 · 노천탕 · 눈 결정’, 상태 줄 글자도 새로 쓴 거예요</li>
+        <li>보드 소리는 시안용 합성음이에요. 기차 · 바람처럼 저절로 나는 소리는 마지막으로 누른 화면에서만 나요</li>
+        <li>비에이는 삿포로가 아니라 홋카이도 한가운데예요(삿포로에서 기차로 두 시간 남짓). 그래서 눈멍 주제를 ‘삿포로의 겨울밤’에서 <b>‘홋카이도의 겨울’</b>로 넓히기로 정했어요</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 01 나무 · 폰 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">01</span><h2>A안 · 나무 · 폰</h2><p>제안 · 시계탑 자리에 들어가는 처음 장면</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-snow" data-doan-frame="tree-mobile" data-doan-implements="src/scenes/tree.ts" data-doan-title="나무 · 기본">
+      <canvas class="scene" data-snow2 data-view="tree" data-sky="dusk" data-fall="0.6" data-trail="7"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs icons glass" data-doan-id="tree-tabs" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a class="on" aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass" data-doan-id="tree-subscenes"><a class="on">나무</a><a>발밑</a></nav>
+      <div class="ui m-bottom">
+        <div class="m-status" data-doan-id="tree-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>언덕 위 나무 · <span data-stat="fall">눈</span></span><span>발자국 <span data-stat="steps">0걸음</span></span></div>
+        <div class="dock glass" data-doan-id="tree-dock">
+          <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+          <div class="seg">
+            <button data-snow2-act="fall" data-value="0.3">가루눈</button>
+            <button class="on" data-snow2-act="fall" data-value="0.6">눈</button>
+            <button data-snow2-act="fall" data-value="1">함박눈</button>
+          </div>
+          <button class="icon-btn" data-snow2-act="fresh" aria-label="새 눈으로 덮기"><svg class="ico"><use href="#i-snow"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-snow" data-doan-frame="tree-shake" data-doan-implements="src/scenes/tree.ts" data-doan-title="나무 · 나무를 건드린 순간">
+      <canvas class="scene" data-snow2 data-view="tree" data-sky="dusk" data-fall="0.6" data-auto="shake" data-trail="4"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a class="on" aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass"><a class="on">나무</a><a>발밑</a></nav>
+      <div class="ui snow-finger" data-snow2-finger></div>
+      <div class="ui hint top below-sub glass" data-doan-id="tree-shake-hint"><svg class="ico sm"><use href="#i-hand"/></svg>나무를 누르면 가지의 눈이 떨어져요</div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>언덕 위 나무 · <span data-stat="fall">눈</span></span><span>발자국 <span data-stat="steps">0걸음</span></span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+          <div class="seg">
+            <button data-snow2-act="fall" data-value="0.3">가루눈</button>
+            <button class="on" data-snow2-act="fall" data-value="0.6">눈</button>
+            <button data-snow2-act="fall" data-value="1">함박눈</button>
+          </div>
+          <button class="icon-btn" data-snow2-act="fresh" aria-label="새 눈으로 덮기"><svg class="ico"><use href="#i-snow"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-snow" data-doan-frame="tree-walk" data-doan-implements="src/scenes/tree.ts" data-doan-title="나무 · 나무까지 걸어가기">
+      <canvas class="scene" data-snow2 data-view="tree" data-sky="dusk" data-fall="0.6" data-auto="walk" data-cover="16"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a class="on" aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass"><a class="on">나무</a><a>발밑</a></nav>
+      <div class="ui snow-finger" data-snow2-finger></div>
+      <div class="ui hint top below-sub glass" data-doan-id="tree-walk-hint"><svg class="ico sm"><use href="#i-hand"/></svg>누르면 발자국, 끌면 그 길로 걸어가요</div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>언덕 위 나무 · <span data-stat="fall">눈</span></span><span>발자국 <span data-stat="steps">0걸음</span></span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+          <div class="seg">
+            <button data-snow2-act="fall" data-value="0.3">가루눈</button>
+            <button class="on" data-snow2-act="fall" data-value="0.6">눈</button>
+            <button data-snow2-act="fall" data-value="1">함박눈</button>
+          </div>
+          <button class="icon-btn" data-snow2-act="fresh" aria-label="새 눈으로 덮기"><svg class="ico"><use href="#i-snow"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes">
+      <h4>자리</h4>
+      <ul>
+        <li>언덕 아래에서 <b>나무 한 그루</b>를 올려다봐요. 뒤로 낮은 언덕이 몇 겹 겹치고, 언덕 사이에 방풍림이 줄지어 서 있어요. 멀리 눈 덮인 산줄기가 희미해요.</li>
+        <li>나무는 가운데보다 조금 오른쪽, 위쪽 탭 · 장면 전환에 가리지 않는 높이예요. 왼쪽 아래가 비어 있어서 걸어갈 자리가 넓어요.</li>
+        <li>들판 끝 농가 창에 불이 하나 켜져 있어요. 사람은 보이지 않아요.</li>
+      </ul>
+      <h4>손으로</h4>
+      <ul>
+        <li><b>누르면 발자국</b>, <b>끌면</b> 손가락을 따라 걸어가요. 언덕 쪽으로 갈수록 발자국이 작아져서 나무까지 걸어가는 느낌이 나요.</li>
+        <li><b>나무를 누르면</b> 가지가 흔들리며 쌓인 눈이 푸스스 떨어져요. 털린 가지는 내리는 눈에 다시 하얘져요. 함박눈이면 빨리 돌아와요.</li>
+        <li>시계탑의 ‘눈 쓸기’는 <b>빼기로 정했어요</b>. 발밑에도 옮기지 않아요. 끌기가 걸어가기 하나라서 발밑과 손맛이 같아져요.</li>
+      </ul>
+      <h4>손 안 대면</h4>
+      <ul>
+        <li>가끔 들판 끝으로 <b>불 켜진 기차</b>가 덜컹거리며 지나가요. 평균 1분에 한 번, 보드에서는 더 자주예요.</li>
+        <li>가끔 <b>바람 한 줄기</b>가 불어 언덕 위 눈가루가 옆으로 날리고 나무가 살짝 흔들려요.</li>
+        <li>눈이 셀수록 먼 산과 언덕이 뿌옇게 가려져요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 02 하늘 · 나무 모양 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">02</span><h2>A안 · 하늘</h2><p>정했어요 · 하늘은 지금 시각을 따라 바뀌고, 설정에서 고정할 수 있어요</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-snow" data-doan-frame="tree-moon" data-doan-implements="src/scenes/tree.ts" data-doan-title="나무 · 달밤">
+      <canvas class="scene" data-snow2 data-view="tree" data-sky="moon" data-fall="0.3" data-trail="5"></canvas>
+      <div class="statusbar"><span>23:10</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a class="on" aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass"><a class="on">나무</a><a>발밑</a></nav>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>언덕 위 나무 · 달밤 · <span data-stat="fall">가루눈</span></span><span>발자국 <span data-stat="steps">0걸음</span></span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+          <div class="seg">
+            <button class="on" data-snow2-act="fall" data-value="0.3">가루눈</button>
+            <button data-snow2-act="fall" data-value="0.6">눈</button>
+            <button data-snow2-act="fall" data-value="1">함박눈</button>
+          </div>
+          <button class="icon-btn" data-snow2-act="fresh" aria-label="새 눈으로 덮기"><svg class="ico"><use href="#i-snow"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-snow" data-doan-frame="tree-dawn" data-doan-implements="src/scenes/tree.ts" data-doan-title="나무 · 푸른 새벽">
+      <canvas class="scene" data-snow2 data-view="tree" data-sky="dawn" data-fall="0.6" data-trail="6"></canvas>
+      <div class="statusbar"><span>6:20</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a class="on" aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass"><a class="on">나무</a><a>발밑</a></nav>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>언덕 위 나무 · 새벽 · <span data-stat="fall">눈</span></span><span>발자국 <span data-stat="steps">0걸음</span></span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+          <div class="seg">
+            <button data-snow2-act="fall" data-value="0.3">가루눈</button>
+            <button class="on" data-snow2-act="fall" data-value="0.6">눈</button>
+            <button data-snow2-act="fall" data-value="1">함박눈</button>
+          </div>
+          <button class="icon-btn" data-snow2-act="fresh" aria-label="새 눈으로 덮기"><svg class="ico"><use href="#i-snow"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-snow" data-doan-frame="tree-sky-sheet" data-doan-implements="src/views/scene-view.ts" data-doan-title="나무 · 설정 · 하늘 고르기">
+      <canvas class="scene" data-snow2 data-view="tree" data-sky="now" data-fall="0.6" data-trail="5"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a class="on" aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass"><a class="on">나무</a><a>발밑</a></nav>
+      <div class="scrim"></div>
+      <div class="ui sheet glass-strong" data-doan-id="tree-sky-sheet-panel">
+        <div class="grab"></div>
+        <div class="sheet-head"><h3>설정</h3><button class="icon-btn" aria-label="닫기"><svg class="ico"><use href="#i-x"/></svg></button></div>
+        <p class="sub">타이머가 끝나면 소리가 3분 동안 천천히 작아져요.</p>
+        <h4>타이머</h4>
+        <div class="chips"><button>15분</button><button class="on">30분</button><button>1시간</button><button>계속</button></div>
+        <h4>소리 섞기</h4>
+        <div class="mix" data-doan-id="tree-sky-sheet-mix">
+          <div class="mix-row"><svg class="ico sm"><use href="#i-foot"/></svg><span>뽀드득</span><div class="slider"><i style="width:80%"></i><b style="left:80%"></b></div><span class="val">80</span></div>
+          <div class="mix-row"><svg class="ico sm"><use href="#i-snow"/></svg><span>눈 오는 밤</span><div class="slider"><i style="width:55%"></i><b style="left:55%"></b></div><span class="val">55</span></div>
+          <div class="mix-row"><svg class="ico sm"><use href="#i-wind"/></svg><span>바람 한 줄기</span><div class="slider"><i style="width:40%"></i><b style="left:40%"></b></div><span class="val">40</span></div>
+          <div class="mix-row"><svg class="ico sm"><use href="#i-tram"/></svg><span>먼 기차</span><div class="slider"><i style="width:30%"></i><b style="left:30%"></b></div><span class="val">30</span></div>
+        </div>
+        <h4>하늘</h4>
+        <div class="chips" data-doan-id="tree-sky-chips">
+          <button class="on" data-snow2-act="sky" data-value="now">자동</button>
+          <button data-snow2-act="sky" data-value="dusk">해 질 녘</button>
+          <button data-snow2-act="sky" data-value="moon">달밤</button>
+          <button data-snow2-act="sky" data-value="dawn">새벽</button>
+        </div>
+        <h4>화면</h4>
+        <div class="tend-row snow-cover-row"><span><b>발자국을 눈으로 덮기</b><small>끄면 찍은 발자국이 그대로 남아요</small></span><span class="switch"></span></div>
+        <button class="btn-block">완료</button>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes">
+      <h4>하늘 세 가지 · 기본은 자동</h4>
+      <ul>
+        <li><b>해 질 녘</b>(8~19시, 01의 화면): 분홍과 보라. 눈멍 색과 가장 잘 어울려요. 하루 중 가장 오래 보이는 하늘이에요.</li>
+        <li><b>달밤</b>(19~5시): 달빛에 나무 그림자가 눈 위로 길게 드리워요. 별이 보이고, 가루눈일 때 가장 맑아요.</li>
+        <li><b>푸른 새벽</b>(5~8시): 온통 파란 눈벌판, 오른쪽 지평선만 살짝 밝아와요.</li>
+        <li>한낮의 하얀 눈벌판은 너무 밝아서 글자가 안 읽히고 눈부셔요. 낮에도 해 질 녘 하늘을 써요.</li>
+      </ul>
+      <h4>설정에서 고정하기</h4>
+      <ul>
+        <li>왼쪽 아래 설정 시트의 소리 섞기 아래, ‘화면 · 발자국을 눈으로 덮기’ 위에 <b>하늘: 자동 · 해 질 녘 · 달밤 · 새벽</b>을 둬요. 타이머 · 소리 섞기 순서는 지금 앱 그대로예요. 기본은 <b>자동</b>이에요. 오른쪽 화면에서 눌러 바꿔 볼 수 있어요.</li>
+        <li>장면 위에는 버튼을 더하지 않아요. 아래 독은 눈 세기와 새 눈만 그대로 둬요.</li>
+        <li>고른 하늘은 기기에 기억해요. 홈 카드도 같은 하늘을 따라가요.</li>
+        <li>소리 섞기는 나무 장면의 네 층(뽀드득 · 눈 오는 밤 · 바람 한 줄기 · 먼 기차)으로 바뀌어요. 05의 소리 계획과 같아요.</li>
+      </ul>
+      <h4>나무 모양</h4>
+      <ul>
+        <li><b>잎 진 나무로 정했어요.</b> 우산처럼 넓게 퍼진 가지 하나하나에 눈이 얹히고, 털 때 가지 끝에서 가루가 날려요.</li>
+        <li>가문비나무 시안은 접었어요. 설정에서 나무를 고르게 하지 않아요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 03 데스크톱 · 홈 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">03</span><h2>A안 · 데스크톱과 홈 카드</h2><p>제안 · 넓은 화면은 언덕이 옆으로 길게 이어져요</p></div>
+  <div class="row-body">
+
+    <div class="screen desk theme-snow" data-doan-frame="tree-desktop" data-doan-implements="src/scenes/tree.ts" data-doan-title="나무 · 데스크톱">
+      <canvas class="scene" data-snow2 data-view="tree" data-sky="dusk" data-fall="0.6" data-trail="9"></canvas>
+      <div class="ui d-top">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <nav class="tabs seven glass"><a>불멍</a><a>비멍</a><a>물멍</a><a>모래멍</a><a>별멍</a><a class="on">눈멍</a><a>지하철멍</a></nav>
+        <div class="d-top-right">
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+          <button class="icon-btn glass" aria-label="전체화면"><svg class="ico"><use href="#i-max"/></svg></button>
+        </div>
+      </div>
+      <nav class="ui subscenes glass desk-sub"><a class="on">나무</a><a>발밑</a></nav>
+      <div class="ui d-shade" aria-hidden="true"></div>
+      <div class="ui d-now">
+        <strong><span class="eq"><i></i><i></i><i></i><i></i></span>눈 오는 언덕의 나무</strong>
+        <span><span data-stat="fall">눈</span> · 발자국 <span data-stat="steps">0걸음</span></span>
+      </div>
+      <div class="ui d-dock glass" data-doan-id="tree-d-dock">
+        <button class="chip-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg>설정</button>
+        <span class="sep"></span>
+        <div class="seg narrow">
+          <button data-snow2-act="fall" data-value="0.3">가루눈</button>
+          <button class="on" data-snow2-act="fall" data-value="0.6">눈</button>
+          <button data-snow2-act="fall" data-value="1">함박눈</button>
+        </div>
+        <button class="chip-btn" data-snow2-act="fresh"><svg class="ico"><use href="#i-snow"/></svg>새 눈</button>
+        <span class="sep"></span>
+        <div class="vol"><svg class="ico"><use href="#i-volume"/></svg><div class="slider"><i style="width:60%"></i><b style="left:60%"></b></div></div>
+      </div>
+      <div class="ui d-keys stack" data-doan-id="tree-d-keys"><span><kbd>↑</kbd><kbd>↓</kbd> 눈 세기 · <kbd>N</kbd> 새 눈</span><span>클릭하면 발자국 · 나무를 누르면 눈이 떨어져요</span></div>
+    </div>
+
+    <div class="screen phone" data-doan-frame="tree-home" data-doan-implements="src/views/home-view.ts" data-doan-title="홈 · 눈멍 카드가 나무로">
+      <div class="home-bg"></div>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui home-head">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <h1>오늘은 어떤 멍?</h1>
+        <p>소리를 켜고, 아무 생각 없이 바라보세요.</p>
+      </div>
+      <div class="ui cards-m seven" data-doan-id="tree-home-cards">
+        <a class="card theme-fire">
+          <canvas class="scene" data-fire2 data-fy="0.6" data-scale="1.35" data-auto-add="10"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-log"/></svg>장작 넣기</span>
+          <div class="card-info"><div><h3>불멍</h3><p>타닥타닥, 장작 타는 소리</p></div></div>
+        </a>
+        <a class="card theme-rain">
+          <canvas class="scene" data-rain2 data-frame="none" data-intensity="0.6"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-rain"/></svg>비 세기 조절</span>
+          <div class="card-info"><div><h3>비멍</h3><p>창가에 앉아 듣는 빗소리</p></div></div>
+        </a>
+        <a class="card theme-water">
+          <canvas class="scene" data-scene="aquarium" data-scale="1.1"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-fish"/></svg>먹이 주기 · 물결</span>
+          <div class="card-info"><div><h3>물멍</h3><p>어항 · 바다 · 연못</p></div></div>
+        </a>
+        <a class="card theme-sand">
+          <canvas class="scene" data-sand data-palette="sunset" data-speed="1" data-prefill="0.45"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-sand"/></svg>색모래 붓기</span>
+          <div class="card-info"><div><h3>모래멍</h3><p>사르르, 색모래 쌓이는 소리</p></div></div>
+        </a>
+        <a class="card theme-star">
+          <canvas class="scene" data-star data-season="autumn" data-night="night" data-floor="34" data-top="70" data-turn="-34" data-meteor="6" data-guide="0"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-star"/></svg>별자리 · 별똥별</span>
+          <div class="card-info"><div><h3>별멍</h3><p>풀밭에 누워 듣는 밤소리</p></div></div>
+        </a>
+        <a class="card theme-snow" data-doan-id="tree-home-card">
+          <canvas class="scene" data-snow2 data-view="tree" data-card data-sky="dusk" data-fall="0.6" data-trail="3"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-snow"/></svg>발자국 · 나무 털기</span>
+          <div class="card-info"><div><h3>눈멍</h3><p>뽀드득, 새 눈 밟는 소리</p></div></div>
+        </a>
+        <a class="card theme-subway wide">
+          <canvas class="scene" data-subway data-view="card" data-show="0.6" data-seed="7"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-spark"/></svg>불꽃 올리기</span>
+          <div class="card-info"><div><h3>지하철멍<span class="new-dot">NEW</span></h3><p>덜컹덜컹, 한강 위 불꽃놀이</p></div></div>
+        </a>
+      </div>
+      <div class="ui home-foot"><svg class="ico sm"><use href="#i-headphones"/></svg>이어폰을 끼면 더 좋아요</div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone" data-doan-frame="tree-home-toss" data-doan-implements="src/views/home-view.ts" data-doan-title="홈 · 토스 앱 (광고 보고 열기)">
+      <div class="home-bg"></div>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui home-head">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <h1>오늘은 어떤 멍?</h1>
+        <p>소리를 켜고, 아무 생각 없이 바라보세요.</p>
+      </div>
+      <div class="ui cards-m seven" data-doan-id="tree-home-toss-cards">
+        <a class="card theme-fire">
+          <canvas class="scene" data-fire2 data-fy="0.6" data-scale="1.35" data-auto-add="10"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-log"/></svg>장작 넣기</span>
+          <div class="card-info"><div><h3>불멍</h3><p>타닥타닥, 장작 타는 소리</p></div></div>
+        </a>
+        <a class="card theme-rain">
+          <canvas class="scene" data-rain2 data-frame="none" data-intensity="0.6"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-rain"/></svg>비 세기 조절</span>
+          <div class="card-info"><div><h3>비멍</h3><p>창가에 앉아 듣는 빗소리</p></div></div>
+        </a>
+        <a class="card theme-water">
+          <canvas class="scene" data-scene="aquarium" data-scale="1.1"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-fish"/></svg>먹이 주기 · 물결</span>
+          <div class="card-info"><div><h3>물멍</h3><p>어항 · 바다 · 연못</p></div></div>
+        </a>
+        <a class="card theme-sand locked">
+          <canvas class="scene" data-sand data-palette="sunset" data-speed="1" data-prefill="0.45"></canvas>
+          <span class="card-tag glass lock"><svg class="ico sm"><use href="#i-lock"/></svg>광고 보고 열기</span>
+          <div class="card-info"><div><h3>모래멍</h3><p>사르르, 색모래 쌓이는 소리</p></div></div>
+        </a>
+        <a class="card theme-star locked">
+          <canvas class="scene" data-star data-season="autumn" data-night="night" data-floor="34" data-top="70" data-turn="-34" data-meteor="6" data-guide="0"></canvas>
+          <span class="card-tag glass lock"><svg class="ico sm"><use href="#i-lock"/></svg>광고 보고 열기</span>
+          <div class="card-info"><div><h3>별멍</h3><p>풀밭에 누워 듣는 밤소리</p></div></div>
+        </a>
+        <a class="card theme-snow locked" data-doan-id="tree-home-toss-card">
+          <canvas class="scene" data-snow2 data-view="tree" data-card data-sky="dusk" data-fall="0.6" data-trail="3"></canvas>
+          <span class="card-tag glass lock"><svg class="ico sm"><use href="#i-lock"/></svg>광고 보고 열기</span>
+          <div class="card-info"><div><h3>눈멍</h3><p>뽀드득, 새 눈 밟는 소리</p></div></div>
+        </a>
+        <a class="card theme-subway wide">
+          <canvas class="scene" data-subway data-view="card" data-show="0.6" data-seed="7"></canvas>
+          <span class="card-tag glass"><svg class="ico sm"><use href="#i-spark"/></svg>불꽃 올리기</span>
+          <div class="card-info"><div><h3>지하철멍<span class="new-dot">NEW</span></h3><p>덜컹덜컹, 한강 위 불꽃놀이</p></div></div>
+        </a>
+      </div>
+      <div class="ui home-foot"><svg class="ico sm"><use href="#i-headphones"/></svg>이어폰을 끼면 더 좋아요</div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes">
+      <h4>데스크톱</h4>
+      <ul>
+        <li>탭 · 장면 전환 · 독 · 단축키 자리는 지금 눈멍 데스크톱과 같아요. 시계탑이 나무로 바뀐 것뿐이에요.</li>
+        <li>넓은 화면에서는 언덕이 옆으로 길게 이어지고, 양옆으로 방풍림과 먼 산줄기가 더 보여요. 기차가 지나가는 길도 길어져요.</li>
+        <li>나무를 가운데보다 조금 오른쪽에 둬서 왼쪽 아래 ‘지금 장면’ 글자와 겹치지 않아요.</li>
+        <li>설정 · 새 눈 · 음량은 그대로예요. 오른쪽 아래 안내에 ‘나무를 누르면 눈이 떨어져요’를 새로 넣었어요.</li>
+      </ul>
+      <h4>토스 앱 홈</h4>
+      <ul>
+        <li>지금 앱의 토스 규칙 그대로예요. <b>불멍 · 비멍 · 물멍</b>은 늘 열려 있고, <b>지하철멍</b>은 나온 첫 주(11.17~11.23)라 열려 있어요.</li>
+        <li><b>모래멍 · 별멍 · 눈멍</b>은 태그 자리에 ‘광고 보고 열기’가 뜨고 미리보기가 살짝 어두워져요. 광고를 끝까지 보면 그날 자정까지 열려요.</li>
+        <li>잠겨 있어도 눈멍 카드는 나무 장면이 그대로 움직여요. 해 질 녘 나무가 보여서 열어 보고 싶어지는 자리예요.</li>
+        <li><b>정했어요:</b> 장면이 나무로 바뀌어도 눈멍은 새 멍이 아니에요. NEW도 첫 주 무료도 붙이지 않고 지금처럼 광고 보고 열어요.</li>
+      </ul>
+      <h4>홈 카드</h4>
+      <ul>
+        <li>눈멍 카드는 <b>해 질 녘의 나무 한 그루</b>예요. 눈이 내리고 나무까지 발자국이 조금 찍혀 있어요.</li>
+        <li>왼쪽 위 태그와 왼쪽 아래 글자를 비우려고 나무를 오른쪽에 붙였어요. 분홍 하늘이라 일곱 장 중에서도 눈멍 색이 또렷해요.</li>
+        <li>태그는 할 수 있는 것으로 ‘발자국 · 나무 털기’예요. 설명 ‘뽀드득, 새 눈 밟는 소리’는 그대로 둬요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 04 다른 눈멍 시안 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">04</span><h2>다른 눈멍 시안 · B · C · D안</h2><p>제안 · 세 번째 장면 후보로 그렸어요. 나무 대신 넣을 수도 있어요</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-snow" data-doan-frame="globe-mobile" data-doan-title="B안 · 스노우글로브">
+      <canvas class="scene" data-snow2 data-view="globe" data-fall="0.6" data-auto></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a class="on" aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes three glass" data-doan-id="globe-subscenes"><a>나무</a><a>발밑</a><a class="on">글로브</a></nav>
+      <div class="ui snow-finger" data-snow2-finger></div>
+      <div class="ui hint top below-sub glass" data-doan-id="globe-hint"><svg class="ico sm"><use href="#i-hand"/></svg>끌어서 흔들어요</div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>스노우글로브 · <span data-stat="fall">눈</span></span><span>흔들기 <span data-stat="count">0번</span></span></div>
+        <div class="dock glass" data-doan-id="globe-dock">
+          <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+          <div class="seg">
+            <button data-snow2-act="fall" data-value="0.3">가루눈</button>
+            <button class="on" data-snow2-act="fall" data-value="0.6">눈</button>
+            <button data-snow2-act="fall" data-value="1">함박눈</button>
+          </div>
+          <button class="icon-btn" data-snow2-act="shake" aria-label="흔들기"><svg class="ico"><use href="#i-globe"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-snow" data-doan-frame="onsen-mobile" data-doan-title="C안 · 노천탕">
+      <canvas class="scene" data-snow2 data-view="onsen" data-fall="0.6" data-auto></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a class="on" aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes three glass" data-doan-id="onsen-subscenes"><a>나무</a><a>발밑</a><a class="on">노천탕</a></nav>
+      <div class="ui snow-finger" data-snow2-finger></div>
+      <div class="ui hint top below-sub glass" data-doan-id="onsen-hint"><svg class="ico sm"><use href="#i-hand"/></svg>물을 누르면 물결, 끌면 손으로 저어요</div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>노천탕 · <span data-stat="fall">눈</span></span><span>탕 41℃</span></div>
+        <div class="dock glass" data-doan-id="onsen-dock">
+          <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+          <div class="seg">
+            <button data-snow2-act="fall" data-value="0.3">가루눈</button>
+            <button class="on" data-snow2-act="fall" data-value="0.6">눈</button>
+            <button data-snow2-act="fall" data-value="1">함박눈</button>
+          </div>
+          <button class="icon-btn on" data-snow2-act="lamp" aria-label="석등 끄기"><svg class="ico"><use href="#i-lantern"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <div class="screen phone theme-snow" data-doan-frame="crystal-mobile" data-doan-title="D안 · 눈 결정">
+      <canvas class="scene" data-snow2 data-view="crystal" data-fall="0.6" data-auto></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a class="on" aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes three glass" data-doan-id="crystal-subscenes"><a>나무</a><a>발밑</a><a class="on">눈 결정</a></nav>
+      <div class="ui snow-finger" data-snow2-finger></div>
+      <div class="ui hint top below-sub glass" data-doan-id="crystal-hint"><svg class="ico sm"><use href="#i-hand"/></svg>장갑을 누르면 눈송이를 받아요</div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>장갑 위 · <span data-stat="fall">눈</span></span><span>모은 결정 <span data-stat="count">0개</span></span></div>
+        <div class="dock glass" data-doan-id="crystal-dock">
+          <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+          <div class="seg">
+            <button data-snow2-act="fall" data-value="0.3">가루눈</button>
+            <button class="on" data-snow2-act="fall" data-value="0.6">눈</button>
+            <button data-snow2-act="fall" data-value="1">함박눈</button>
+          </div>
+          <button class="icon-btn" aria-label="모은 결정 보기"><svg class="ico"><use href="#i-book"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes v2-concepts" data-doan-id="concepts-notes">
+      <div class="concept">
+        <h5>B안 · 스노우글로브<small>손에 쥐는 물건</small></h5>
+        <dl>
+          <dt>손으로</dt><dd>끌어서 흔들면 글로브가 손을 따라 살짝 밀리고, 속의 눈이 소용돌이쳐요. 눌렀다 떼면 톡 건드린 만큼만 날려요. 폰에서는 기기를 흔들어도 돼요.</dd>
+          <dt>바라보기</dt><dd>눈이 <b>20초쯤</b> 걸려 오두막과 나무 위로 천천히 내려앉아요. 다 가라앉으면 고요해져요.</dd>
+          <dt>소리</dt><dd>흔들 때 유리 속 물이 찰랑, 방 안의 고요. 태엽을 감으면 오르골이 도는 것도 어울려요(오타루 오르골).</dd>
+          <dt>걸리는 점</dt><dd>‘흔들고 → 기다리기’가 모래멍의 비우기와 리듬이 닮았어요. 바깥 풍경이 아니라 방 안이에요.</dd>
+        </dl>
+      </div>
+      <div class="concept">
+        <h5>C안 · 노천탕<small>따뜻한 물과 찬 눈</small></h5>
+        <dl>
+          <dt>손으로</dt><dd>물을 누르면 물결이 퍼지고 김이 손을 피해 비켜나요. 끌면 손으로 물을 젓는 것처럼 물결이 이어져요. 석등 버튼으로 불을 끄면 달빛만 남아요.</dd>
+          <dt>바라보기</dt><dd>김이 끝없이 피어오르고, 눈송이가 물에 닿는 자리마다 작은 물결이 생겼다 사라져요. 대나무 물받이에서 물이 졸졸 떨어져요.</dd>
+          <dt>소리</dt><dd>졸졸 흐르는 물, 김 오르는 고요, 가지에서 떨어지는 눈, 먼 바람.</dd>
+          <dt>걸리는 점</dt><dd>물결은 물멍 연못과 겹쳐요. 밟는 맛(뽀드득)이 없어서 눈멍답기보다 ‘온천멍’에 가까워요.</dd>
+        </dl>
+      </div>
+      <div class="concept">
+        <h5>D안 · 눈 결정<small>가장 가까이서 보는 눈</small></h5>
+        <dl>
+          <dt>손으로</dt><dd>장갑을 누르면 눈송이 하나를 받아 결정이 크게 자라나요. 8초쯤 반짝이다 녹아서 물방울이 돼요. 결정마다 생김새와 생긴 온도가 이름표로 떠요.</dd>
+          <dt>바라보기</dt><dd>장갑 위에 작은 눈송이가 하나둘 내려앉았다 녹아요. 함박눈이면 나뭇가지 모양, 가루눈이면 육각판이 자주 나와요.</dd>
+          <dt>소리</dt><dd>결정을 받을 때 아주 작은 ‘팅’. 나머지는 눈 오는 밤의 고요.</dd>
+          <dt>걸리는 점</dt><dd>풍경이 없어서 장면이라기보다 놀이에 가까워요. 모은 결정 도감(버튼)까지 가면 일이 커져요.</dd>
+        </dl>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 05 비교 · 소리 · 정해야 할 것 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">05</span><h2>이전과 비교 · 소리 · 정해야 할 것</h2><p>만들기 전에 볼 것</p></div>
+  <div class="row-body">
+
+    <div class="screen phone theme-snow before" data-doan-frame="snow-before" data-doan-title="이전 · 시계탑 (지금 앱)">
+      <canvas class="scene" data-snow data-view="street" data-fall="0.6" data-trail="7"></canvas>
+      <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="ui m-top">
+        <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+        <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a class="on" aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+        <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+      </div>
+      <nav class="ui subscenes glass"><a class="on">시계탑</a><a>발밑</a></nav>
+      <div class="ui hint glass before-tag">이전 · 지금 앱의 시계탑</div>
+      <div class="ui m-bottom">
+        <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>시계탑 앞 · <span data-stat="fall">눈</span></span><span>발자국 <span data-stat="steps">0걸음</span></span></div>
+        <div class="dock glass">
+          <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+          <div class="seg">
+            <button data-snow-act="fall" data-value="0.3">가루눈</button>
+            <button class="on" data-snow-act="fall" data-value="0.6">눈</button>
+            <button data-snow-act="fall" data-value="1">함박눈</button>
+          </div>
+          <button class="icon-btn" data-snow-act="fresh" aria-label="새 눈으로 덮기"><svg class="ico"><use href="#i-snow"/></svg></button>
+        </div>
+      </div>
+      <div class="home-ind"></div>
+    </div>
+
+    <aside class="notes compare-v2" data-doan-frame="snow-v2-compare" data-doan-title="네 시안 한눈에">
+      <h4>네 시안 한눈에</h4>
+      <table class="alt-compare four">
+        <tr><th></th><th class="pick">A · 나무</th><th>B · 스노우글로브</th><th>C · 노천탕</th><th>D · 눈 결정</th></tr>
+        <tr><td>보는 것</td><td>눈벌판과 나무 한 그루, 하늘</td><td>탁자 위 유리구슬 속 작은 겨울</td><td>김 오르는 탕, 눈 쌓인 바위와 석등</td><td>장갑 위에 내려앉은 결정</td></tr>
+        <tr><td>손으로</td><td>밟기 · 걸어가기 · 나무 털기</td><td>흔들기</td><td>물결 · 젓기 · 석등</td><td>눈송이 받기</td></tr>
+        <tr><td>손 안 대면</td><td>기차 · 바람 · 하늘이 시각 따라</td><td>눈이 천천히 가라앉아요</td><td>김과 물결이 끝없이</td><td>작은 눈송이가 내려앉고 녹아요</td></tr>
+        <tr><td>뽀드득</td><td>있어요</td><td>없어요</td><td>없어요</td><td>없어요</td></tr>
+        <tr><td>홋카이도</td><td>비에이 언덕, 방풍림</td><td>오타루 오르골(소리)</td><td>삿포로 조잔케이 같은 온천</td><td>나카야 우키치로의 눈 결정</td></tr>
+        <tr><td>겹치는 멍</td><td>별멍 겨울(눈 덮인 풀밭)과 조금</td><td>모래멍(흔들고 기다리기)</td><td>물멍 연못(물결)</td><td>없어요</td></tr>
+        <tr><td>발밑과 함께</td><td>잘 어울려요 · 끌기가 같아요</td><td>잘 어울려요 · 손맛이 달라요</td><td>어색해요 · 맨발로 눈?</td><td>잘 어울려요 · 둘 다 가까이 봐요</td></tr>
+        <tr><td>만들 양</td><td>보통 (시계탑을 바꾸는 정도)</td><td>보통</td><td>많음 (김 · 물 · 빛)</td><td>보통</td></tr>
+      </table>
+    </aside>
+
+    <aside class="notes snow-wide" data-doan-frame="snow-v2-sound" data-doan-implements="src/audio/sounds/snow.ts" data-doan-title="나무 장면 소리 계획">
+      <h4>소리 섞기 · 시계탑에서 나무로</h4>
+      <table class="snow-table">
+        <tr><th>층</th><th>소리</th><th>언제</th></tr>
+        <tr><td>뽀드득</td><td>밟는 소리 (지금 녹음 그대로). 나무를 털 때 ‘푸스스’도 이 크기를 따라요</td><td>밟고 털 때마다</td></tr>
+        <tr><td>눈 오는 밤</td><td>눈이 소리를 먹은 먹먹한 공기 (지금 합성음 그대로)</td><td>늘</td></tr>
+        <tr><td>바람 한 줄기</td><td>들판을 쓸고 지나가는 바람. 화면에서 눈가루가 날리는 순간과 맞춰요</td><td>30초에 한 번쯤</td></tr>
+        <tr><td>먼 기차</td><td>멀리 덜컹거리며 지나가는 기차. 화면의 기차와 같은 쪽에서 들려요</td><td>1분에 한 번쯤</td></tr>
+      </table>
+      <h4>바뀌는 것</h4>
+      <ul>
+        <li><b>먼 전차</b>(삿포로 노면전차) → <b>먼 기차</b>, <b>시계탑 종</b> → <b>바람 한 줄기</b>. 시계탑이 없으니 종도 빼요.</li>
+        <li>기차와 바람은 <b>화면에 보이는 것과 소리가 같이</b> 와요. 지금 전차는 소리만 있어요.</li>
+        <li>녹음(CC0)은 듣기 보드 snow-sound 에서 골라 앱에 넣었어요: 먼 기차 #520188 · 바람 한 줄기 #574565 · 푸스스 #775014.</li>
+        <li>발밑도 같은 소리 섞기를 써요. 발밑의 시계탑 맨홀 뚜껑은 그대로 두거나 눈꽃 무늬로 바꿀 수 있어요.</li>
+      </ul>
+    </aside>
+
+    <aside class="notes snow-mid" data-doan-frame="snow-v2-decide" data-doan-title="정해야 할 것">
+      <h4>정했어요</h4>
+      <ul>
+        <li><b>A안을 시계탑 자리에.</b> 나무는 <b>잎 진 나무</b>, 하늘은 <b>지금 시각 따라 자동</b>이고 설정에서 고정할 수 있어요 (02).</li>
+        <li><b>장면 이름은 ‘나무’.</b> 비에이는 처음 그릴 때 떠올린 곳으로만 남기고, 앱에서는 장면 전환 · 상태 줄 · 데스크톱 글자 모두 ‘나무’로 써요. 상태 줄은 ‘언덕 위 나무’예요.</li>
+        <li><b>눈 쓸기는 빼요.</b> 나무 장면에도 발밑에도 두지 않아요. 끌면 걸어가기 하나예요.</li>
+        <li><b>주제 이름은 ‘홋카이도의 겨울’.</b> ‘삿포로의 겨울밤’에서 넓혀요. 발밑의 시계탑 맨홀 뚜껑처럼 삿포로 이야기도 그 안에 들어가요. README와 홈 문구는 그대로여도 돼요.</li>
+      </ul>
+      <h4>제안</h4>
+      <ul>
+        <li><b>장면 구성.</b> 장면은 <b>나무 · 발밑</b> 두 개, 처음 장면과 홈 카드는 나무예요.</li>
+        <li>세 번째 장면을 더한다면 <b>B안 스노우글로브</b>를 추천해요. 눈멍 안에 ‘풍경 · 발밑 · 물건’이 고르게 들어가요.</li>
+      </ul>
+      <h4 class="ask">정해야 할 것</h4>
+      <ul>
+        <li><b>B · C · D안.</b> 세 번째 장면으로 하나 더할지, 지금은 두 장면으로 둘지.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- 홈 카드의 다른 멍 미리보기 (다른 시안과 같은 스크립트) · 이전 시계탑은 snow.js -->
+<script src="../assets/mong-scenes.js"></script>
+<script src="../assets/fire-v2.js"></script>
+<script src="../assets/rain-v2.js"></script>
+<script src="../assets/sand.js"></script>
+<script src="../assets/star.js"></script>
+<script src="../assets/snow.js"></script>
+<script src="../assets/subway.js"></script>
+<script src="../assets/snow-v2.js"></script>
+</body>
+</html>

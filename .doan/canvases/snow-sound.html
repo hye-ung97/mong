@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="doan:canvas" content="snow-sound">
+<meta name="doan:width" content="2300">
+<title>눈멍 · 나무 소리 후보</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/mong.css">
+<link rel="stylesheet" href="../assets/snow.css">
+<link rel="stylesheet" href="../assets/subway-listen.css">
+<link rel="stylesheet" href="../assets/snow-listen.css">
+</head>
+<body class="board listen-board theme-snow">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- source: .doan/canvases/subway-sound.html (지하철멍 소리 후보) -->
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></symbol>
+  </defs>
+</svg>
+
+<section class="row first">
+  <div class="row-head"><span class="row-no">눈멍 · 나무 · 소리</span><h2>소리 후보 · 들어 보고 고르기</h2><p>먼 기차 · 바람 한 줄기 · 푸스스. 전부 Freesound 의 CC0 녹음이에요</p></div>
+  <div class="row-body">
+    <div class="snow-col">
+
+      <div class="sub-listen snow-listen" data-doan-frame="snow-sound-try" data-doan-title="장면처럼 들어 보기">
+        <p>줄마다 재생 버튼으로 녹음 전체를 듣거나, <b>추천 구간</b> 버튼으로 앱에 넣을 부분만 들어 보세요. 푸스스는 <b>덩이</b> 버튼으로 한 덩이씩 들어요. ‘이걸로 고르기’를 누르면 아래 버튼이 그 녹음으로 장면에서처럼 한 번 틀어요 (기차는 왼쪽에서 오른쪽으로 지나가요). 녹음마다 크기가 달라서 비슷한 크기로 맞춰 틀어요. 설명은 올린 사람이 쓴 글과 소리 크기를 재서 적은 거예요. <b>제가 귀로 들어 본 건 아니라서</b>, 직접 듣고 골라 주세요. 소리는 Freesound 미리듣기를 바로 불러와서 인터넷이 필요해요.</p>
+        <div class="try" data-doan-id="sound-try">
+          <button class="try-btn" type="button" data-try="train"><svg class="ico"><use href="#i-play"/></svg><span>기차 지나가기</span></button>
+          <button class="try-btn" type="button" data-try="wind"><svg class="ico"><use href="#i-play"/></svg><span>바람 한 줄기</span></button>
+          <button class="try-btn" type="button" data-try="shake"><svg class="ico"><use href="#i-play"/></svg><span>나무 톡 · 푸스스</span></button>
+          <span class="try-state" data-try-state role="status"></span>
+          <p class="try-picked" data-try-picked></p>
+        </div>
+      </div>
+
+      <div class="sub-listen snow-listen" data-doan-frame="snow-sound-train" data-doan-title="먼 기차">
+        <h4><span class="layer-no">먼 기차</span>1분에 한 번쯤 먼 들판을 가로질러요. 녹음 한가운데가 기차가 화면 가운데를 지날 때예요</h4>
+        <p class="in-app"><b>앱에 넣었어요.</b> 세 추천을 이 구간대로 잘라 public/sounds/snow/train.m4a · wind.m4a · shake.m4a 로 넣었어요 (feat/snow-tree). 푸스스는 덩이 하나씩, 눈이 많이 남았을수록 큰 덩이가 나요.</p>
+        <div class="cand pick" data-doan-id="snd-520188" data-layer="train" data-src="https://cdn.freesound.org/previews/520/520188_6667441-hq.mp3" data-gain="10" data-segs="0-21" data-fade="1.5" data-short="탁 트인 들판 · 먼 기차">
+          <span class="no">1</span>
+          <span class="name"><b>FXSaSc Train Passing Far Open Field</b><a href="https://freesound.org/people/Profispiesser/sounds/520188/">Profispiesser · #520188</a><small>22초 · 탁 트인 들판 저 멀리 지나가는 기차</small></span>
+          <audio controls preload="none" src="https://cdn.freesound.org/previews/520/520188_6667441-hq.mp3"></audio>
+          <span class="why"><b>조용히 다가왔다가 멀어지는 한 번의 통과</b>가 22초에 딱 들어 있어요. 가장 큰 곳이 10초쯤이라 가운데 맞추기 좋아요. 낮은 우르릉이 대부분이고 바탕이 아주 조용해요. 작게 녹음돼서 많이 키워요 (+20dB).<span class="segs"></span></span>
+          <button class="use" type="button">이걸로 고르기</button>
+        </div>
+        <div class="cand" data-doan-id="snd-17206" data-layer="train" data-src="https://cdn.freesound.org/previews/17/17206_21830-hq.mp3" data-gain="0.29" data-segs="0-17" data-fade="1.5" data-short="신칸센 · 120m">
+          <span class="no">2</span>
+          <span class="name"><b>from_a_distance.aif</b><a href="https://freesound.org/people/Heigh-hoo/sounds/17206/">Heigh-hoo · #17206</a><small>23초 · 일본, 120m 떨어진 신칸센이 지나가요</small></span>
+          <audio controls preload="none" src="https://cdn.freesound.org/previews/17/17206_21830-hq.mp3"></audio>
+          <span class="why"><b>일본 기차</b>라 홋카이도 장면과 결이 맞아요. 다가오고 멀어지는 모양이 또렷해요 (가장 큰 곳 8초쯤). 다만 덜컹보다 <b>쉬익 하는 바람 소리</b>에 가깝고, 동네 한가운데라 17초 뒤로 다른 소리가 섞여요. 1번보다 가까워서 크게 들려요.<span class="segs"></span></span>
+          <button class="use" type="button">이걸로 고르기</button>
+        </div>
+        <div class="cand" data-doan-id="snd-570607" data-layer="train" data-src="https://cdn.freesound.org/previews/570/570607_3562198-hq.mp3" data-gain="3.7" data-segs="5-29" data-fade="2" data-short="먼 전동차">
+          <span class="no">3</span>
+          <span class="name"><b>passing train.wav</b><a href="https://freesound.org/people/gecop/sounds/570607/">gecop · #570607</a><small>38초 · 멀리 지나가는 여객 전동차 (2021)</small></span>
+          <audio controls preload="none" src="https://cdn.freesound.org/previews/570/570607_3562198-hq.mp3"></audio>
+          <span class="why">가운데 소리가 5초부터 29초까지 천천히 부풀었다 가라앉아요. <b>낮은 웅웅이 처음부터 끝까지 깔려 있어서</b> (바람막이 · 먼 길 소리로 보여요) 낮은 쪽을 걸러야 해요.<span class="segs"></span></span>
+          <button class="use" type="button">이걸로 고르기</button>
+        </div>
+        <div class="cand" data-doan-id="snd-547950" data-layer="train" data-src="https://cdn.freesound.org/previews/547/547950_189568-hq.mp3" data-gain="1.15" data-segs="38-62" data-fade="2" data-short="화물 열차 · 500m">
+          <span class="no">4</span>
+          <span class="name"><b>Distant Train 2 RX.flac</b><a href="https://freesound.org/people/greysound/sounds/547950/">greysound · #547950</a><small>5분 27초 · 미국 뉴욕주, 500m 떨어진 화물 열차 (집들 너머)</small></span>
+          <audio controls preload="none" src="https://cdn.freesound.org/previews/547/547950_189568-hq.mp3"></audio>
+          <span class="why">길고 무거운 화물 열차예요. 덜컹거림이 1~3번보다 많아요. <b>1분 30초쯤 경적과 건널목 소리</b>가 있어서 그 앞 38~62초를 추천해요. 파일이 커서 불러오는 데 조금 걸려요.<span class="segs"></span></span>
+          <button class="use" type="button">이걸로 고르기</button>
+        </div>
+        <div class="cand" data-doan-id="snd-841541" data-layer="train" data-src="https://cdn.freesound.org/previews/841/841541_6998158-hq.mp3" data-gain="3.5" data-segs="0-22" data-fade="1" data-short="먼 경적">
+          <span class="no">5</span>
+          <span class="name"><b>Distant Train</b><a href="https://freesound.org/people/flumpytripod/sounds/841541/">flumpytripod · #841541</a><small>23초 · 멀리서 우는 기차 경적, 미국 오하이오 남부</small></span>
+          <audio controls preload="none" src="https://cdn.freesound.org/previews/841/841541_6998158-hq.mp3"></audio>
+          <span class="why">달리는 소리보다 <b>먼 경적</b>이 대부분이에요 (처음 3초, 18~20초). 1번 위에 아주 작게 얹는 용도로 들어 보세요. 자연 소리가 조금 섞여 있대요.<span class="segs"></span></span>
+          <button class="use" type="button">이걸로 고르기</button>
+        </div>
+      </div>
+
+      <div class="sub-listen snow-listen" data-doan-frame="snow-sound-wind" data-doan-title="바람 한 줄기">
+        <h4><span class="layer-no">바람 한 줄기</span>30초에 한 번쯤 언덕의 가루눈을 쓸고 가요. 앱에서는 3~8초 길이에 맞춰 앞뒤를 줄여요</h4>
+        <div class="cand pick" data-doan-id="snd-574565" data-layer="wind" data-src="https://cdn.freesound.org/previews/574/574565_97550-hq.mp3" data-gain="1.1" data-segs="84-92" data-fade="1.2" data-short="겨울 나무 사이 돌풍">
+          <span class="no">1</span>
+          <span class="name"><b>Wind winter trees variable gusts 70km mono clean 77mel 190208.flac</b><a href="https://freesound.org/people/TRP/sounds/574565/">TRP · #574565</a><small>6분 15초 · 겨울, 시속 70km 돌풍이 나무 사이로 (모노, 깨끗한 녹음)</small></span>
+          <audio controls preload="none" src="https://cdn.freesound.org/previews/574/574565_97550-hq.mp3"></audio>
+          <span class="why"><b>돌풍이 하나씩 또렷하게 왔다 가요.</b> 84~92초는 3초 동안 부풀고 5초 동안 잦아들어요. 마이크에 바람 부딪는 소리 없이 매끈해요. 잦아든 뒤에도 바람이 조금 남아서 끝은 줄여야 해요. 다른 돌풍: 112~121초, 168~177초.<span class="segs"></span></span>
+          <button class="use" type="button">이걸로 고르기</button>
+        </div>
+        <div class="cand" data-doan-id="snd-438865" data-layer="wind" data-src="https://cdn.freesound.org/previews/438/438865_2524442-hq.mp3" data-gain="1.24" data-segs="18.5-26.5" data-fade="0.4" data-short="차가운 돌풍 (옛 효과음)">
+          <span class="no">2</span>
+          <span class="name"><b>G55-11-Cold Wind Gusts.wav</b><a href="https://freesound.org/people/craigsmith/sounds/438865/">craigsmith · #438865</a><small>1분 24초 · 눈보라 속 같은 ‘차가운’ 돌풍, 옛 효과음 모음</small></span>
+          <audio controls preload="none" src="https://cdn.freesound.org/previews/438/438865_2524442-hq.mp3"></audio>
+          <span class="why"><b>돌풍마다 거의 조용해질 때까지 잦아들어서</b> 하나만 잘라 쓰기 가장 쉬워요 (10초마다 한 번, 8초 길이). 다만 높은 휘파람 소리가 많다고 적혀 있어서 <b>폭풍처럼 들릴 수 있어요</b>. 들판보다 효과음 느낌이에요.<span class="segs"></span></span>
+          <button class="use" type="button">이걸로 고르기</button>
+        </div>
+        <div class="cand" data-doan-id="snd-567107" data-layer="wind" data-src="https://cdn.freesound.org/previews/567/567107_97550-hq.mp3" data-gain="1.07" data-segs="31-38.5" data-fade="1.2" data-short="겨울 · 쓸고 가는 작은 돌풍">
+          <span class="no">3</span>
+          <span class="name"><b>200207 Wind winter little sweeping gusts phasey.wav</b><a href="https://freesound.org/people/TRP/sounds/567107/">TRP · #567107</a><small>2분 3초 · 겨울, 높은 나무 사이를 쓸고 가는 작은 돌풍</small></span>
+          <audio controls preload="none" src="https://cdn.freesound.org/previews/567/567107_97550-hq.mp3"></audio>
+          <span class="why">1번과 같은 사람 녹음인데 더 <b>잔잔해요</b>. 대신 바람이 쉬지 않고 이어져서 돌풍이 두드러지지 않아요 (오르내림 5dB 남짓). 앞뒤를 많이 줄여야 한 줄기처럼 들려요.<span class="segs"></span></span>
+          <button class="use" type="button">이걸로 고르기</button>
+        </div>
+        <div class="cand" data-doan-id="snd-454213" data-layer="wind" data-src="https://cdn.freesound.org/previews/454/454213_612689-hq.mp3" data-gain="11" data-segs="74-80" data-fade="1" data-short="눈가루 날리는 겨울바람">
+          <span class="no">4</span>
+          <span class="name"><b>swirling winter wind gusty grains sand.flac</b><a href="https://freesound.org/people/kyles/sounds/454213/">kyles · #454213</a><small>1분 54초 · 소용돌이치는 겨울바람에 눈가루 · 모래알이 날려요</small></span>
+          <audio controls preload="none" src="https://cdn.freesound.org/previews/454/454213_612689-hq.mp3"></audio>
+          <span class="why"><b>가루눈이 쓸려 가는 사각거림</b>이 들어 있어서 장면과 가장 닮았을 수 있어요. 아주 작게 녹음돼서 많이 키워요 (+21dB). 돌풍 모양은 약해요 (6초 동안 5dB 오르내림).<span class="segs"></span></span>
+          <button class="use" type="button">이걸로 고르기</button>
+        </div>
+        <div class="cand" data-doan-id="snd-473816" data-layer="wind" data-src="https://cdn.freesound.org/previews/473/473816_5454234-hq.mp3" data-gain="0.47" data-segs="62-68.5" data-fade="1" data-short="눈보라 · 크레이들 산">
+          <span class="no">5</span>
+          <span class="name"><b>Wind during snow storm #2.m4a</b><a href="https://freesound.org/people/guyburns/sounds/473816/">guyburns · #473816</a><small>1분 45초 · 호주 태즈메이니아 크레이들 산, 해 질 녘 눈보라 (시속 30~50km)</small></span>
+          <audio controls preload="none" src="https://cdn.freesound.org/previews/473/473816_5454234-hq.mp3"></audio>
+          <span class="why"><b>눈 오는 산의 진짜 돌풍</b>이에요. 62~68초에 크게 한 번 몰아쳐요. 바람이 계속 세게 불어서 잔잔한 장면엔 셀 수 있고, <b>끝에 차가 들어오는 소리</b>가 있어요.<span class="segs"></span></span>
+          <button class="use" type="button">이걸로 고르기</button>
+        </div>
+      </div>
+
+      <div class="sub-listen snow-listen" data-doan-frame="snow-sound-shake" data-doan-title="푸스스">
+        <h4><span class="layer-no">푸스스</span>나무를 누르면 가지에서 눈 덩이가 떨어져요. 한 번에 한 덩이씩 틀어요</h4>
+        <div class="cand pick" data-doan-id="snd-775014" data-layer="shake" data-src="https://cdn.freesound.org/previews/775/775014_13973196-hq.mp3" data-gain="0.8" data-segs="9.2-11,12.1-13.95,33.2-34.8,36.3-38.15,39.6-41.9,43.1-43.95,44.85-45.55,46.05-46.85,47.95-48.45,49.75-51.4,52.3-53.65" data-fade="0.03" data-short="눈이 무너져 내림 (가까이)">
+          <span class="no">1</span>
+          <span class="name"><b>Snow - Collapse and fall</b><a href="https://freesound.org/people/Vrymaa/sounds/775014/">Vrymaa · #775014</a><small>55초 · 눈이 무너지고 떨어지는 소리 여러 번, 가까이서</small></span>
+          <audio controls preload="none" src="https://cdn.freesound.org/previews/775/775014_13973196-hq.mp3"></audio>
+          <span class="why"><b>바탕 잡음 · 울림이 없고 덩이가 하나씩 떨어져서</b> 잘라 쓰기 가장 좋아요 (0.5~2.3초 덩이 11개). 가까이서 녹음해서 툭 하는 낮은 소리가 커요. 낮은 쪽을 거르면 가볍게 들릴 거예요. 갈라진 틈으로 무너지는 소리라고 적혀 있어서 <b>바삭한 소리가 섞였는지</b> 들어 보세요.<span class="segs"></span></span>
+          <button class="use" type="button">이걸로 고르기</button>
+        </div>
+        <div class="cand" data-doan-id="snd-720057" data-layer="shake" data-src="https://cdn.freesound.org/previews/720/720057_6701472-hq.mp3" data-gain="1" data-segs="3.1-4,40.55-42.1,45.7-46,57-57.3,68.15-68.7" data-fade="0.03" data-short="눈 녹는 날 · 나무에서 떨어지는 눈">
+          <span class="no">2</span>
+          <span class="name"><b>It thaws: the snow falls from the trees</b><a href="https://freesound.org/people/mikolay/sounds/720057/">mikolay · #720057</a><small>1분 33초 · 눈이 녹는 날, 나무에서 눈이 떨어져요 (좋은 장비로 녹음)</small></span>
+          <audio controls preload="none" src="https://cdn.freesound.org/previews/720/720057_6701472-hq.mp3"></audio>
+          <span class="why"><b>진짜로 나무에서 떨어지는 눈</b>이에요. 바탕이 아주 조용해요. 덩이는 다섯 개뿐이고, 40~42초가 가장 좋은 덩이(툭 + 흩어지는 소리)예요. 녹는 날이라 <b>젖은 툭 소리나 물방울</b>에 가까울 수 있어요.<span class="segs"></span></span>
+          <button class="use" type="button">이걸로 고르기</button>
+        </div>
+        <div class="cand" data-doan-id="snd-817624" data-layer="shake" data-src="https://cdn.freesound.org/previews/817/817624_7529214-hq.mp3" data-gain="6" data-segs="50.1-50.65,127.45-127.8,157.2-158.55,194.3-194.7" data-fade="0.04" data-short="눈 온 아침 · 가지에서 떨어지는 눈">
+          <span class="no">3</span>
+          <span class="name"><b>Neige_Villy_voisinage</b><a href="https://freesound.org/people/nicotep/sounds/817624/">nicotep · #817624</a><small>8분 12초 · 프랑스 부르고뉴, 눈 온 아침 가지에서 눈 뭉치가 떨어져요</small></span>
+          <audio controls preload="none" src="https://cdn.freesound.org/previews/817/817624_7529214-hq.mp3"></audio>
+          <span class="why"><b>장면과 가장 비슷한 상황</b>(눈 쌓인 가지에서 뭉치가 떨어짐)이에요. 하지만 <b>개 짖는 소리, 새, 개울, 트럭</b>이 섞여 있고 뭉치 소리가 작아요. 덩이 버튼은 소리 크기로 찾은 자리라 새소리가 겹쳤을 수 있어요. 파일이 커요.<span class="segs"></span></span>
+          <button class="use" type="button">이걸로 고르기</button>
+        </div>
+        <div class="cand" data-doan-id="snd-452094" data-layer="shake" data-src="https://cdn.freesound.org/previews/452/452094_612689-hq.mp3" data-gain="4" data-segs="11-14.5" data-fade="0.6" data-short="바람에 나무에서 쏟아지는 눈가루">
+          <span class="no">4</span>
+          <span class="name"><b>forest wind blow snow of tree trickle like rain stick cool mono.flac</b><a href="https://freesound.org/people/kyles/sounds/452094/">kyles · #452094</a><small>48초 · 바람에 나무에서 눈가루가 레인스틱처럼 쏟아져요</small></span>
+          <audio controls preload="none" src="https://cdn.freesound.org/previews/452/452094_612689-hq.mp3"></audio>
+          <span class="why"><b>가루눈이 사르르 흘러내리는 ‘푸스스’</b>에 가장 가까운 결이에요. 덩이로 나뉘지 않고 이어져서 11~14.5초 한 번만 잘라 써요 (3.5초, 덩이보다 길어요). 1번 덩이 뒤에 작게 얹어도 좋아요.<span class="segs"></span></span>
+          <button class="use" type="button">이걸로 고르기</button>
+        </div>
+      </div>
+
+    </div>
+
+    <aside class="notes listen-notes" data-doan-frame="snow-sound-notes" data-doan-title="장면에서 · 고른 다음">
+      <h4>장면에서 나는 자리</h4>
+      <ul>
+        <li><b>먼 기차</b> 1분에 한 번쯤 먼 들판을 가로질러요. 녹음 한가운데를 기차가 화면 가운데를 지나는 순간에 맞추고, 지나가는 쪽으로 소리를 옮겨요. <code>public/sounds/snow/train.m4a</code></li>
+        <li><b>바람 한 줄기</b> 30초에 한 번쯤 언덕의 가루눈을 쓸고 가요. 3~8초 길이에 맞춰 앞뒤를 줄여요. <code>wind.m4a</code></li>
+        <li><b>푸스스</b> 나무를 누르면 가지에서 눈이 떨어져요. 녹음 안의 덩이 하나씩 틀어요 (덩이 자리는 표로 적어 둬요). <code>shake.m4a</code></li>
+        <li><b>눈 오는 밤</b>은 지금처럼 합성음 그대로예요.</li>
+        <li>모두 모노 m4a 로 넣어요. 녹음을 받기 전이나 받지 못했을 때는 합성음이 대신 나요. 출처는 <code>public/sounds/CREDITS.md</code>.</li>
+      </ul>
+      <h4>추천 구간</h4>
+      <ul>
+        <li><b>기차</b> 1번 0~21초 전체 (가장 큰 곳 10초쯤). 앞뒤 1.5초를 줄이고 +20dB.</li>
+        <li><b>바람</b> 1번 84~92초 (3초 부풀고 5초 잦아들어요). 앞 1초 · 뒤 2초를 줄여요.</li>
+        <li><b>푸스스</b> 1번에서 덩이 11개: 9.2 · 12.1 · 33.2 · 36.3 · 39.6 · 43.1 · 44.85 · 46.05 · 47.95 · 49.75 · 52.3초부터 0.5~2.3초씩. 낮은 쪽(120Hz 아래)을 걸러요.</li>
+      </ul>
+      <h4>보드에서만 써요</h4>
+      <ul>
+        <li>이 보드의 후보, 추천 구간 · 덩이 버튼, ‘장면처럼 들어 보기’는 보드에서만 써요 (.doan/assets/snow-listen.js · snow-listen.css). 앱 코드에는 없어요.</li>
+        <li>지금 앱의 합성음과 나란히 들어 보는 버튼은 없어요. 합성음은 앱에서 들어 주세요.</li>
+        <li>고른 것은 이 브라우저에만 저장돼요. 고른 다음 알려 주시면 잘라서 앱에 넣을게요.</li>
+        <li>후보에서 뺀 것: 기차 #593082 (유튜브 영상에서 따온 소리라고 적혀 있어요), 바람 #379471 · #381853 (마이크에 바로 분 소리), 푸스스 #116136 (도시 웅웅이 커요) · #379213 (너무 작아요).</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<script src="../assets/snow-listen.js"></script>
+</body>
+</html>

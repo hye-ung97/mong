@@ -17,7 +17,7 @@ const GROUP_IDS = GROUPS.map((g) => g.id);
 
 /**
  * #/  ·  #/fire  ·  #/rain  ·  #/water (last used)  ·  #/water/aquarium|sea|pond  ·  #/sand  ·  #/star  ·  #/snow (last used)
- * ·  #/snow/clocktower|underfoot  ·  #/subway (last used)  ·  #/subway/seat|door|window
+ * ·  #/snow/tree|underfoot (an old #/snow/clocktower opens tree)  ·  #/subway (last used)  ·  #/subway/seat|door|window
  */
 function parse(hash: string): Route {
   const [first, second] = hash.replace(/^#\/?/, '').split('/').filter(Boolean);
@@ -27,7 +27,8 @@ function parse(hash: string): Route {
     return { view: 'scene', id: sub };
   }
   if (first === 'snow') {
-    const sub = SNOW.find((s) => s.id === second)?.id ?? settings().snow;
+    // 나무 took the place of 시계탑: old links and bookmarks to it open 나무
+    const sub = second === 'clocktower' ? 'tree' : (SNOW.find((s) => s.id === second)?.id ?? settings().snow);
     return { view: 'scene', id: sub };
   }
   if (first === 'subway') {

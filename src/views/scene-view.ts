@@ -16,6 +16,7 @@ import {
 import { SAND_PALETTES, Sand, isSandMode, type SandMode, type SandPalette } from '../scenes/sand';
 import { Sea } from '../scenes/sea';
 import { SNOW_FALLS, SnowScene } from '../scenes/snow';
+import { SNOW_SKIES, Tree, type SnowSky } from '../scenes/tree';
 import { STAR_PHASES, STAR_SEASONS, Star, type StarPhase } from '../scenes/star';
 import { SHOWS, Subway } from '../scenes/subway';
 import { starLayersFor } from '../audio/sounds/star';
@@ -46,6 +47,10 @@ const WOODS: readonly { id: WoodKind; label: string; desc: string }[] = [
 ];
 
 const TIMER_CHOICES = [15, 30, 60, 0] as const;
+
+/** 눈멍 · 나무 has two hints, one after the other: shaking the tree, then walking. */
+const TREE_SHAKE_HINT = '나무를 누르면 가지의 눈이 떨어져요';
+const TREE_WALK_HINT = '누르면 발자국, 끌면 그 길로 걸어가요';
 const timerLabel = (m: number) => (m === 0 ? '계속' : m === 60 ? '1시간' : `${m}분`);
 
 /**
@@ -133,14 +138,15 @@ const COPY: Record<SceneId, Copy> = {
     keys: [{ keys: ['↑', '↓'], text: '밤 깊이 · <kbd>S</kbd> 계절 · <kbd>C</kbd> 별자리' }, { keys: ['Space'], text: '별똥별 · 밝은 별을 누르면 별자리' }],
     land: '별멍',
   },
-  clocktower: {
-    now: '시계탑 앞 · <span data-bind="fall">눈</span>',
+  tree: {
+    now: '언덕 위 나무 · <span data-bind="fall">눈</span>',
     aside: '발자국 <b data-bind="steps">0</b>걸음',
-    hint: '누르면 발자국, 끌면 눈을 쓸어요',
-    title: '눈 오는 밤 · 시계탑',
+    // until the tree has been shaken; then TREE_WALK_HINT, until a footprint
+    hint: TREE_SHAKE_HINT,
+    title: '눈 오는 언덕의 나무',
     sub: '<span data-bind="fall">눈</span> · 발자국 <b data-bind="steps">0</b>걸음',
-    keys: [{ keys: ['↑', '↓'], text: '눈 세기 · <kbd>N</kbd> 새 눈' }, { text: '클릭하면 발자국, 끌면 눈을 쓸어요' }],
-    land: '눈멍 · 시계탑',
+    keys: [{ keys: ['↑', '↓'], text: '눈 세기 · <kbd>N</kbd> 새 눈' }, { text: '클릭하면 발자국 · 나무를 누르면 눈이 떨어져요' }],
+    land: '눈멍 · 나무',
   },
   underfoot: {
     now: '눈 오는 밤 · <span data-bind="fall">눈</span>',
@@ -279,6 +285,7 @@ export class SceneView implements View {
   private get sand() { return this.scene instanceof Sand ? this.scene : null; }
   private get star() { return this.scene instanceof Star ? this.scene : null; }
   private get snow() { return this.scene instanceof SnowScene ? this.scene : null; }
+  private get tree() { return this.scene instanceof Tree ? this.scene : null; }
   private get subway() { return this.scene instanceof Subway ? this.scene : null; }
 
   private $<T extends Element = HTMLElement>(sel: string): T {
@@ -401,7 +408,7 @@ export class SceneView implements View {
           <button class="dock-btn only-d" data-act="star-guide" aria-pressed="false" aria-label="별자리 알려 주기">${icon('star')}<span>별자리</span></button>
           <button class="dock-btn" data-act="season" aria-label="계절 바꾸기">${icon('leaf')}<span class="only-d" data-bind="star-season">여름</span></button>`;
         break;
-      case 'clocktower':
+      case 'tree':
       case 'underfoot':
         main = this.seg(SNOW_LEVELS, 'snow-fall', s.snowFall, '눈 세기');
         extra = `<button class="dock-btn" data-act="snow-fresh" aria-label="새 눈으로 덮기">${icon('snow')}<span class="only-d">새 눈</span></button>`;
@@ -434,7 +441,7 @@ export class SceneView implements View {
       pond: { act: 'feed', icon: 'food', label: '먹이 주기' },
       sand: { act: 'sand-flip', icon: 'flip', label: '뒤집기' },
       star: { act: 'meteor', icon: 'star', label: '별똥별' },
-      clocktower: { act: 'snow-cycle', icon: 'snow', label: '눈 세기 바꾸기' },
+      tree: { act: 'snow-cycle', icon: 'snow', label: '눈 세기 바꾸기' },
       underfoot: { act: 'snow-cycle', icon: 'snow', label: '눈 세기 바꾸기' },
       seat: { act: 'firework', icon: 'spark', label: '불꽃 올리기' },
       door: { act: 'firework', icon: 'spark', label: '불꽃 올리기' },
@@ -464,8 +471,15 @@ export class SceneView implements View {
       : this.star
           ? `<h4>화면</h4><label class="switch-row"><span><b>별자리 알려 주기</b><small>가끔 별자리 하나를 이어 이름을 보여 줘요</small></span><input class="switch" type="checkbox" data-act="star-guide" ${s.starGuide ? 'checked' : ''}></label>`
           : this.snow
-            ? `<h4>화면</h4><label class="switch-row"><span><b>발자국을 눈으로 덮기</b><small>${this.id === 'clocktower' ? '끄면 찍은 발자국과 쓴 자리가 그대로 남아요' : '끄면 찍은 발자국이 그대로 남아요'}</small></span><input class="switch" type="checkbox" data-act="snow-cover" ${s.snowCover ? 'checked' : ''}></label>`
+            ? `<h4>화면</h4><label class="switch-row"><span><b>발자국을 눈으로 덮기</b><small>끄면 찍은 발자국이 그대로 남아요</small></span><input class="switch" type="checkbox" data-act="snow-cover" ${s.snowCover ? 'checked' : ''}></label>`
             : '';
+    // 나무: the sky, between the sound mix and the screen settings
+    const sky = this.tree
+      ? `<h4>하늘</h4><div class="chips" role="radiogroup" aria-label="하늘">${SNOW_SKIES.map((k) => {
+        const on = k.id === s.snowSky;
+        return `<button role="radio" data-act="snow-sky" data-value="${k.id}" class="${on ? 'on' : ''}" aria-checked="${on}">${k.label}</button>`;
+      }).join('')}</div>`
+      : '';
     return `
       <div class="sheet glass-strong" role="dialog" aria-modal="true" aria-label="설정">
         <div class="grab"></div>
@@ -476,6 +490,7 @@ export class SceneView implements View {
           `<button role="radio" data-act="timer" data-value="${m}">${timerLabel(m)}</button>`).join('')}</div>
         <h4>소리 섞기</h4>
         <div class="mix">${rows}</div>
+        ${sky}
         ${tend}
         <button class="btn-block" data-act="close">완료</button>
       </div>`;
@@ -778,7 +793,7 @@ export class SceneView implements View {
     if (this.fire) {
       // 불멍: a tap on the fire stirs it; logs go in with the dock button or by dragging
       if (!this.fire.pokeAt(x, y)) return;
-    } else if (this.rain || this.sea || this.sand || this.snow) return; // 비멍 wipes the glass, 바다 walks the sand, 모래멍 pulls the stream, 눈멍 steps and sweeps: each with its own drag handlers
+    } else if (this.rain || this.sea || this.sand || this.snow) return; // 비멍 wipes the glass, 바다 walks the sand, 모래멍 pulls the stream, 눈멍 steps and walks: each with its own drag handlers
     else if (this.aquarium) {
       const what = this.aquarium.poke(x, y);
       if (what === 'feed') {
@@ -960,7 +975,7 @@ export class SceneView implements View {
     this.sand?.flip();
   }
 
-  /* ---------- 눈멍: footprints, sweeping (시계탑), walking (발밑) ---------- */
+  /* ---------- 눈멍: footprints and walking (나무 · 발밑), shaking the tree (나무) ---------- */
   private setupSnow() {
     const snow = this.snow!;
     const canvas = this.host.canvas;
@@ -975,14 +990,21 @@ export class SceneView implements View {
     };
     place();
     this.listen(window, 'resize', place);
+    // 나무's hint asks for the tree first, then for a walk; it goes once both have been done
+    const tried = { tree: !this.tree, ground: false };
+    const pressed = (what: 'tree' | 'ground') => {
+      tried[what] = true;
+      if (tried.tree && tried.ground) this.el.classList.add('hint-done');
+      else if (tried.tree) this.el.querySelectorAll('.hint:not(.hint-embers)').forEach((n) => { n.innerHTML = `${icon('hand', 'sm')}${TREE_WALK_HINT}`; });
+    };
     this.listen(canvas, 'pointerdown', (e: PointerEvent) => {
       if (this.blocking) return;
       canvas.setPointerCapture(e.pointerId);
-      if (snow.pressStart(...this.host.toScene(e.clientX, e.clientY))) this.el.classList.add('hint-done');
+      if (snow.pressStart(...this.host.toScene(e.clientX, e.clientY))) pressed(this.tree?.lastPress ?? 'ground');
     });
     this.listen(canvas, 'pointermove', (e: PointerEvent) => {
       if (!snow.pressMove(...this.host.toScene(e.clientX, e.clientY))) return;
-      this.el.classList.add('hint-done');
+      pressed('ground');
       this.armIdle();
     });
     this.listen(canvas, 'pointerup', () => snow.pressEnd());
@@ -1092,7 +1114,19 @@ export class SceneView implements View {
     this.toast(this.snow.fall.label);
   }
 
-  /** 새 눈: fresh snow covers every footprint (and swept patch) at once. */
+  /** 나무 · 하늘: 자동 (the hour) or one sky for good. The home card follows it too. */
+  private setSnowSky(v: SnowSky) {
+    if (!this.tree || !SNOW_SKIES.some((k) => k.id === v)) return;
+    this.tree.setSky(v);
+    save({ snowSky: v });
+    this.el.querySelectorAll<HTMLElement>('[data-act="snow-sky"]').forEach((b) => {
+      const on = b.dataset.value === v;
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-checked', String(on));
+    });
+  }
+
+  /** 새 눈: fresh snow covers every footprint at once. */
   private freshSnow() {
     if (!this.snow) return;
     this.snow.fresh();
@@ -1303,6 +1337,9 @@ export class SceneView implements View {
       case 'snow-fresh':
         this.freshSnow();
         break;
+      case 'snow-sky':
+        this.setSnowSky(t.dataset.value as SnowSky);
+        break;
       case 'show':
         this.setShow(Number(t.dataset.value));
         break;
@@ -1360,7 +1397,7 @@ export class SceneView implements View {
       save({ volume: v, muted: false });
       audio.refreshVolume();
     } else if (t.dataset.act === 'mix' && t.dataset.layer) {
-      // 시계탑 and 발밑 share one mix, and so do 지하철멍's three seats: changing it in one keeps it in the others
+      // 나무 and 발밑 share one mix, and so do 지하철멍's three seats: changing it in one keeps it in the others
       const shared = isSnow(this.id) ? SNOW.map((x) => x.id) : isSubway(this.id) ? SUBWAY.map((x) => x.id) : [this.id];
       for (const id of shared) setMix(id, t.dataset.layer, v);
       audio.setLayer(this.id, t.dataset.layer, v);

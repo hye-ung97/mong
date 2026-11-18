@@ -2,6 +2,7 @@ import type { WoodKind } from '../scenes/fire';
 import { seasonNow, type Season } from '../scenes/pond';
 import { DEFAULT_PALETTE, isSandMode, isSandPalette, type SandMode, type SandPalette } from '../scenes/sand';
 import type { StarPhase } from '../scenes/star';
+import type { SnowSky } from '../scenes/tree';
 import type { GroupId, SceneId, SnowId, SubwayId, WaterId } from '../scenes/registry';
 
 export interface Settings {
@@ -30,10 +31,12 @@ export interface Settings {
   starHold: boolean;
   starFireflies: boolean;
   starGuide: boolean;
-  /** 눈멍: the scene last seen (starts at 시계탑), how hard it snows (0.3 · 0.6 · 1), whether new snow fills footprints. */
+  /** 눈멍: the scene last seen (starts at 나무), how hard it snows (0.3 · 0.6 · 1), whether new snow fills footprints. */
   snow: SnowId;
   snowFall: number;
   snowCover: boolean;
+  /** 눈멍 · 나무: the sky. `auto` follows the local hour (해 질 녘 · 달밤 · 새벽). */
+  snowSky: SnowSky;
   /** 지하철멍: the seat last taken (starts at 맞은편 창) and how many fireworks go up (0.3 · 0.6 · 1). */
   subway: SubwayId;
   subwayShow: number;
@@ -68,9 +71,10 @@ const DEFAULTS: Settings = {
   starHold: false,
   starFireflies: true,
   starGuide: true,
-  snow: 'clocktower',
+  snow: 'tree',
   snowFall: 0.6,
   snowCover: true,
+  snowSky: 'auto',
   subway: 'seat',
   subwayShow: 0.6,
   timer: 0,
@@ -96,6 +100,7 @@ export function settings(): Settings {
     hints: [...(stored.hints ?? [])],
   };
   migrateSand(cache);
+  migrateSnow(cache);
   return cache;
 }
 
@@ -111,6 +116,25 @@ function migrateSand(s: Settings) {
   if (!isSandMode(raw.sandMode)) s.sandMode = DEFAULTS.sandMode;
   if (typeof raw.sandAutoflip !== 'boolean') s.sandAutoflip = DEFAULTS.sandAutoflip;
   for (const old of ['sandSpeed', 'sandAutoEmpty', 'sandTilt']) delete raw[old];
+}
+
+/** 눈멍 settings saved by an older version. */
+function migrateSnow(s: Settings) {
+  // 눈멍's first scene was 시계탑 ('clocktower') until 나무 took its place. The mix carries over:
+  // 먼 전차 becomes 먼 기차, and 시계탑 종 is gone
+  const mix = s.mix as Record<string, Record<string, number> | undefined>;
+  if ((s.snow as string) === 'clocktower') s.snow = 'tree';
+  if (mix.clocktower) {
+    mix.tree ??= mix.clocktower;
+    delete mix.clocktower;
+  }
+  for (const id of ['tree', 'underfoot'] as const) {
+    const m = mix[id];
+    if (!m || !('tram' in m || 'bell' in m)) continue;
+    const { tram, bell: _bell, ...rest } = m;
+    mix[id] = tram !== undefined && rest.train === undefined ? { ...rest, train: tram } : rest;
+  }
+  if (!['auto', 'dusk', 'moon', 'dawn'].includes(s.snowSky)) s.snowSky = 'auto';
 }
 
 export function save(patch: Partial<Settings>) {

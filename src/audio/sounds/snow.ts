@@ -2,19 +2,34 @@ import { SceneSound, type LayerDef } from '../sound';
 import { blip, burst, filter, gain, loopNoise, rnd } from '../synth';
 
 /*
- * 눈멍 (시계탑 · 발밑) share one soundscape and one mix.
+ * 눈멍 (홋카이도의 겨울: 나무 · 발밑) share one soundscape and one mix.
  * Recordings (all CC0, Freesound — see public/sounds/CREDITS.md), mono, chosen on a listening page:
  *   steps.m4a   billox30 "Close-micd Snow Steps" (#175002), 20 single footfalls laid end to end
- *   deep.m4a    msimmonsvoice "Footsteps in snow, various speeds" (#719624), 16 single footfalls in snow
- *               30 cm deep, laid end to end: the boot sinking into a snow pile
- *   sweep.m4a   Vrymaa "Broom - Sweep, outdoor" (#734668), four strokes
- *   tram.m4a    AmazingRolo "tram bell" (#448366), the bell and the streetcar pulling away
- *   bell.m4a    MVMTech "Church Bell" (#569356), one stroke
- * 눈 오는 밤 stays synthesized (the listening page's choice). Until a recording has loaded, or if it
- * fails to, the synthesized sound it replaced plays instead.
+ *   train.m4a   Profispiesser "FXSaSc Train Passing Far Open Field" (#520188), the whole 21 s pass
+ *   wind.m4a    TRP "Wind winter trees variable gusts 70km" (#574565), one 8 s gust from 1:24
+ *   shake.m4a   Vrymaa "Snow - Collapse and fall" (#775014), 11 clumps of snow falling, laid end to end
+ * 눈 오는 밤 stays synthesized (the listening page's choice). Until a recording has loaded, or if it fails
+ * to, the synthesized sound it replaced plays instead.
+ *
+ * 나무 shows its train and its gusts and reports each one (events `train`, `gust`), so what is heard
+ * comes from where it is seen. 발밑 and the home card show neither: there the sound brings them itself.
  */
 
 const BASE = `${import.meta.env.BASE_URL}sounds/snow/`;
+
+/**
+ * Recordings this soundscape plays, by name (`${BASE}${name}.m4a`). To use a new recording for a
+ * synthesized sound, add the file and its name here; its player below is already waiting for it:
+ *   wind   바람 한 줄기: wind across open snow, ~5–8 s, swelling and dying away
+ *   train  먼 기차: a train passing far off, ~15–30 s, quiet at both ends (centred on the train's pass)
+ *   shake  푸스스: snow sliding off branches and thudding onto snow, ~1–2 s
+ */
+const RECORDINGS = ['steps', 'wind', 'train', 'shake'] as const;
+type RecordingName = (typeof RECORDINGS)[number];
+/** The clumps of snow inside shake.m4a: where each starts and how long it lasts (seconds). One plays per shake. */
+const SHAKE_CLUMPS: readonly (readonly [number, number])[] = [
+  [0, 1.8], [2.05, 1.85], [4.15, 1.6], [6, 1.85], [8.1, 2.3], [10.65, 0.85], [11.75, 0.7], [12.7, 0.8], [13.75, 0.5], [14.5, 1.65], [16.4, 1.35],
+];
 
 /** The footfalls inside steps.m4a: where each starts and how long it lasts (seconds). */
 const STEPS: readonly (readonly [number, number])[] = [
@@ -22,49 +37,33 @@ const STEPS: readonly (readonly [number, number])[] = [
   [11.6, 0.89], [12.74, 0.92], [13.91, 0.75], [14.91, 1.08], [16.24, 0.89], [17.38, 0.91], [18.54, 0.76], [19.55, 0.87], [20.67, 0.86], [21.78, 0.99],
 ];
 const STEP_GAIN = 0.55;
-/** The footfalls inside deep.m4a, heard when the boot sinks into a snow pile. */
-const DEEP_STEPS: readonly (readonly [number, number])[] = [
-  [0, 0.84], [1.09, 1.19], [2.53, 0.89], [3.67, 0.89], [4.81, 0.84], [5.9, 0.77], [6.92, 0.85], [8.02, 0.78],
-  [9.05, 0.81], [10.11, 1.04], [11.4, 0.99], [12.64, 0.94], [13.83, 0.79], [14.87, 0.77], [15.89, 0.82], [16.96, 0.74],
-];
-const DEEP_GAIN = 0.6;
-/** sweep.m4a: where each stroke starts, and the stretch that repeats while the broom keeps going. */
-const SWEEP_STROKES = [0.06, 1.08, 1.92, 2.88] as const;
-const SWEEP_LOOP = [0.9, 3.7] as const;
-const SWEEP_GAIN = 0.45;
-/** The broom is heard this long after the last sweep (the scene reports one every 0.17 s while dragging). */
-const SWEEP_HOLD = 0.3;
-const TRAM_GAIN = 0.8;
-const BELL_GAIN = 0.4;
+/** Levels of the recordings to come, once they are added (wind.m4a · train.m4a · shake.m4a). */
+const WIND_GAIN = 0.6;
+const TRAIN_GAIN = 0.7;
+const SHAKE_GAIN = 0.5;
 
 export const SNOW_LAYERS: readonly LayerDef[] = [
   { id: 'steps', label: '뽀드득', icon: 'foot', def: 0.8 },
-  { id: 'night', label: '눈 오는 밤', icon: 'wind', def: 0.55 },
-  { id: 'tram', label: '먼 전차', icon: 'tram', def: 0.3 },
-  { id: 'bell', label: '시계탑 종', icon: 'bell', def: 0.5 },
+  { id: 'night', label: '눈 오는 밤', icon: 'snow', def: 0.55 },
+  { id: 'wind', label: '바람 한 줄기', icon: 'wind', def: 0.4 },
+  { id: 'train', label: '먼 기차', icon: 'tram', def: 0.3 },
 ];
 
-/** The clock tower's bell strikes once every this many minutes (on the wall clock: :00, :10, :20 …). */
-export const BELL_EVERY_MIN = 10;
-/** A streetcar passes in the distance about this often (seconds, on average). */
-const TRAM_EVERY = 75;
-
-/** Seconds until the next whole BELL_EVERY_MIN on the local clock. */
-function secondsToNextBell(now = new Date()) {
-  const into = (now.getMinutes() % BELL_EVERY_MIN) * 60 + now.getSeconds() + now.getMilliseconds() / 1000;
-  const left = BELL_EVERY_MIN * 60 - into;
-  return left >= BELL_EVERY_MIN * 60 - 0.05 ? 0 : left;
-}
+/** Where no scene shows them (발밑, the home card): a gust about every 30 s, a train about once a minute. */
+const GUST_EVERY = 30;
+const TRAIN_EVERY = 60;
 
 export class SnowSound extends SceneSound {
   private hiss!: GainNode;
   private fall = 0.6;
-  private nextBell = -1;
+  /** the scene on screen shows the train and the gusts, and reports them */
+  private driven = false;
+  private nextGust = -1;
+  private nextTrain = -1;
   private disposed = false;
-  private rec: { steps?: AudioBuffer; deep?: AudioBuffer; sweep?: AudioBuffer; tram?: AudioBuffer; bell?: AudioBuffer } = {};
+  private rec: Partial<Record<RecordingName, AudioBuffer>> = {};
+  private clacks: AudioBuffer | null = null;
   private lastStep = -1;
-  private lastDeep = -1;
-  private broom: { src: AudioBufferSourceNode; g: GainNode; p: StereoPannerNode } | null = null;
 
   /** 눈 오는 밤: air that snow has made quiet, a low wind under it, and the faint hiss of flakes landing. */
   start() {
@@ -83,7 +82,7 @@ export class SnowSound extends SceneSound {
     this.hiss = gain(c, this.hissFor(this.fall));
     this.keep(loopNoise(c, this.env.noise.pink, this.hiss));
     this.hiss.connect(filter(c, 'bandpass', 5200, 0.4)).connect(night);
-    for (const id of ['steps', 'deep', 'sweep', 'tram', 'bell'] as const) {
+    for (const id of RECORDINGS) {
       this.load(`${BASE}${id}.m4a`)
         .then((b) => {
           if (!this.disposed) this.rec[id] = b;
@@ -94,11 +93,6 @@ export class SnowSound extends SceneSound {
 
   dispose() {
     this.disposed = true;
-    try {
-      this.broom?.src.stop();
-    } catch {
-      // already stopped
-    }
     super.dispose();
   }
 
@@ -107,36 +101,45 @@ export class SnowSound extends SceneSound {
   }
 
   update(state: Record<string, number>) {
+    this.driven = state.drives === 1;
     const f = state.fall ?? this.fall;
     if (f === this.fall) return;
     this.fall = f;
     this.hiss.gain.setTargetAtTime(this.hissFor(f), this.ctx.currentTime, 1.5);
   }
 
+  /** With nothing on screen to bring them (발밑, the home card), gusts and trains come by themselves. */
   schedule(until: number) {
     const now = this.ctx.currentTime;
-    if (this.nextBell < 0) this.nextBell = now + secondsToNextBell();
-    while (this.nextBell <= until) {
-      if (this.nextBell >= now - 0.05) this.strike(Math.max(now, this.nextBell));
-      this.nextBell += BELL_EVERY_MIN * 60;
+    if (this.driven) {
+      this.nextGust = this.nextTrain = -1;
+      return;
     }
-    this.poisson('tram', 1 / TRAM_EVERY, until, (t) => this.tram(t));
+    if (this.nextGust < 0) this.nextGust = now + rnd(8, 20);
+    if (this.nextTrain < 0) this.nextTrain = now + rnd(15, 40);
+    while (this.nextGust <= until) {
+      if (this.nextGust >= now - 0.05) this.gust(Math.max(now, this.nextGust), rnd(4.5, 6.5));
+      this.nextGust += GUST_EVERY * rnd(0.6, 1.4);
+    }
+    while (this.nextTrain <= until) {
+      if (this.nextTrain >= now - 0.05) this.train(Math.max(now, this.nextTrain), rnd(18, 26), Math.random() < 0.5 ? 1 : -1);
+      this.nextTrain += TRAIN_EVERY * rnd(0.6, 1.4);
+    }
   }
 
   event(name: string, data?: Record<string, number | string>) {
-    const x = typeof data?.x === 'number' ? data.x : 0.5;
-    const pan = (x - 0.5) * 1.3;
+    const num = (k: string, d: number) => (typeof data?.[k] === 'number' ? (data[k] as number) : d);
+    const pan = (num('x', 0.5) - 0.5) * 1.3;
+    const t = this.ctx.currentTime + 0.01;
     if (name === 'step') {
-      // in a snow pile: the deep-snow footfalls. Until they have loaded, the usual ones
-      if (data?.deep && this.rec.deep) this.lastDeep = this.footfall(this.rec.deep, DEEP_STEPS, DEEP_GAIN, this.lastDeep, pan);
-      else if (this.rec.steps) this.lastStep = this.footfall(this.rec.steps, STEPS, STEP_GAIN, this.lastStep, pan);
+      if (this.rec.steps) this.lastStep = this.footfall(this.rec.steps, STEPS, STEP_GAIN, this.lastStep, pan);
       else this.crunch(pan);
-    } else if (name === 'sweep') {
-      if (this.rec.sweep) this.sweep(this.rec.sweep, pan);
-      else this.swish(pan);
-    } else if (name === 'fresh') {
+    } else if (name === 'shake') this.shake(t, num('amount', 1), pan * 0.85);
+    else if (name === 'gust') this.gust(t, num('dur', 5));
+    else if (name === 'train') this.train(t, num('dur', 20), num('dir', 1) < 0 ? -1 : 1);
+    else if (name === 'fresh') {
       // new snow settling over everything: a soft breath
-      burst(this.ctx, this.layer('night'), this.ctx.currentTime + 0.02, this.env.noise.pink, { dur: 1.1, gain: 0.12, type: 'lowpass', freq: 1400, attack: 0.35 });
+      burst(this.ctx, this.layer('night'), t + 0.01, this.env.noise.pink, { dur: 1.1, gain: 0.12, type: 'lowpass', freq: 1400, attack: 0.35 });
     }
   }
 
@@ -160,40 +163,6 @@ export class SnowSound extends SceneSound {
     src.start(t, at, len + 0.05);
     src.onended = () => p.disconnect();
     return i;
-  }
-
-  /**
-   * 사락사락: the broom recording runs for as long as sweeps keep coming and fades out soon after the
-   * last one. Each run starts on a stroke.
-   */
-  private sweep(buf: AudioBuffer, pan: number) {
-    const c = this.ctx;
-    const now = c.currentTime;
-    const to = Math.max(-1, Math.min(1, pan));
-    let b = this.broom;
-    if (!b) {
-      const src = c.createBufferSource();
-      src.buffer = buf;
-      src.loop = true;
-      src.loopStart = SWEEP_LOOP[0];
-      src.loopEnd = SWEEP_LOOP[1];
-      src.playbackRate.value = rnd(0.95, 1.05);
-      const g = gain(c, 0);
-      const p = c.createStereoPanner();
-      p.pan.value = to;
-      src.connect(g).connect(p).connect(this.layer('steps'));
-      src.start(now, SWEEP_STROKES[Math.floor(Math.random() * SWEEP_STROKES.length)]);
-      const mine = (b = this.broom = { src, g, p });
-      src.onended = () => {
-        p.disconnect();
-        if (this.broom === mine) this.broom = null;
-      };
-    }
-    b.p.pan.setTargetAtTime(to, now, 0.1);
-    b.g.gain.cancelScheduledValues(now);
-    b.g.gain.setTargetAtTime(SWEEP_GAIN, now, 0.03);
-    b.g.gain.setTargetAtTime(0, now + SWEEP_HOLD, 0.08);
-    b.src.stop(now + SWEEP_HOLD + 0.6); // a later sweep pushes this back
   }
 
   /**
@@ -238,87 +207,154 @@ export class SnowSound extends SceneSound {
     blip(c, this.layer('steps'), t, { f0: 96, f1: 48, dur: 0.1, gain: 0.22, sweep: 0.08, pan });
   }
 
-  /** (합성) 사락: snow pushed aside by a sweep. */
-  private swish(pan: number) {
-    burst(this.ctx, this.layer('steps'), this.ctx.currentTime + 0.01, this.env.noise.white, {
-      dur: 0.24, gain: 0.16, type: 'bandpass', freq: rnd(2600, 3600), q: 0.7, attack: 0.08, pan,
-    });
-  }
-
-  /** 먼 전차: a streetcar rumbling past a few blocks away, left to right or back, with its bell. */
-  private tram(t: number) {
+  /**
+   * 푸스스: snow pouring off the shaken branches, then a few lumps thudding onto the hill. As loud as
+   * 뽀드득 (its layer), and softer the less snow was left on the branches (`amount` 0…1).
+   */
+  private shake(t: number, amount: number, pan: number) {
     const c = this.ctx;
-    const rec = this.rec.tram;
+    const out = this.layer('steps');
+    const k = 0.4 + 0.6 * Math.max(0, Math.min(1, amount));
+    const p = c.createStereoPanner();
+    p.pan.value = Math.max(-1, Math.min(1, pan));
+    p.connect(out);
+    const rec = this.rec.shake;
     if (rec) {
-      // the recording: its bell, then the streetcar pulling away. Softened and drifting off to one side
-      const side = Math.random() < 0.5 ? -1 : 1;
       const src = c.createBufferSource();
       src.buffer = rec;
-      src.playbackRate.value = rnd(0.97, 1.03);
-      const p = c.createStereoPanner();
-      p.pan.setValueAtTime(-0.15 * side, t);
-      p.pan.linearRampToValueAtTime(0.7 * side, t + rec.duration);
-      src.connect(filter(c, 'lowpass', 2400)).connect(gain(c, TRAM_GAIN * rnd(0.7, 1))).connect(p).connect(this.layer('tram'));
-      this.keep(src).start(t);
+      src.playbackRate.value = rnd(0.94, 1.06);
+      // a bigger clump when more snow was left on the branches
+      const pool = SHAKE_CLUMPS.filter(([, len]) => (amount > 0.5 ? len >= 1.3 : len < 1.9));
+      const [from, len] = pool[Math.floor(Math.random() * pool.length)];
+      src.connect(gain(c, SHAKE_GAIN * k)).connect(p);
+      src.start(t, from, len);
       src.onended = () => p.disconnect();
       return;
     }
-    const dur = rnd(8, 11);
-    const dir = Math.random() < 0.5 ? -1 : 1;
+    const src = c.createBufferSource();
+    src.buffer = this.env.noise.white;
+    const lp = filter(c, 'lowpass', 2600);
+    lp.frequency.setValueAtTime(2600, t);
+    lp.frequency.exponentialRampToValueAtTime(420, t + 1.2);
     const g = c.createGain();
     g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(0.5, t + dur * 0.45);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    const p = c.createStereoPanner();
-    p.pan.setValueAtTime(-0.7 * dir, t);
-    p.pan.linearRampToValueAtTime(0.7 * dir, t + dur);
-    const src = c.createBufferSource();
-    src.buffer = this.env.noise.brown;
-    src.loop = true;
-    src.connect(filter(c, 'bandpass', rnd(140, 190), 0.9)).connect(g).connect(p).connect(this.layer('tram'));
-    src.start(t, Math.random() * this.env.noise.brown.duration);
-    src.stop(t + dur + 0.1);
+    g.gain.exponentialRampToValueAtTime(0.32 * k, t + 0.05);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 1.3);
+    src.connect(lp).connect(g).connect(p);
+    src.start(t, Math.random() * (src.buffer.duration - 1.5), 1.4);
     src.onended = () => p.disconnect();
-    // its bell, twice, softened by the distance
-    const far = filter(c, 'lowpass', 2400);
-    far.connect(this.layer('tram'));
-    const at = t + dur * rnd(0.3, 0.5);
-    const bellPan = -0.2 * dir;
-    for (const dt of [0, 0.22]) blip(c, far, at + dt, { f0: 1480, f1: 1460, dur: 0.5, gain: 0.05, pan: bellPan });
-    window.setTimeout(() => far.disconnect(), (at - c.currentTime + 2) * 1000);
+    for (let i = 0, at = t + 0.32; i < 3; i++, at += rnd(0.12, 0.26)) {
+      const f0 = rnd(70, 96);
+      blip(c, out, at, { f0, f1: 40, dur: 0.15, sweep: 0.12, gain: 0.13 * k, pan: pan + rnd(-0.2, 0.2) });
+    }
   }
 
-  /** 시계탑 종: one stroke of a bronze bell across the street. Inharmonic partials, the high ones die first. */
-  private strike(t: number) {
+  /** 바람 한 줄기: a gust crossing the open snow, left to right like the snow dust it carries. */
+  private gust(t: number, dur: number) {
     const c = this.ctx;
-    if (this.rec.bell) {
+    const p = c.createStereoPanner();
+    p.pan.setValueAtTime(-0.35, t);
+    p.pan.linearRampToValueAtTime(0.35, t + dur);
+    p.connect(this.layer('wind'));
+    const rec = this.rec.wind;
+    if (rec) {
+      const len = Math.min(rec.duration, dur + 2);
       const src = c.createBufferSource();
-      src.buffer = this.rec.bell;
-      const g = gain(c, BELL_GAIN);
-      src.connect(filter(c, 'lowpass', 2600)).connect(g).connect(this.layer('bell'));
-      this.keep(src).start(t);
-      src.onended = () => g.disconnect();
-      return;
-    }
-    const base = 233;
-    const out = gain(c, 0.16);
-    out.connect(filter(c, 'lowpass', 2600)).connect(this.layer('bell'));
-    const partials: [number, number, number][] = [
-      [0.5, 0.45, 9], [1, 1, 7], [1.183, 0.6, 5], [1.506, 0.35, 4], [2, 0.4, 3.5], [2.514, 0.2, 2.5], [2.662, 0.15, 2], [3.011, 0.1, 1.6],
-    ];
-    for (const [ratio, amp, decay] of partials) {
-      const o = c.createOscillator();
-      o.frequency.value = base * ratio * rnd(0.998, 1.002);
+      src.buffer = rec;
       const g = c.createGain();
       g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(amp, t + 0.006);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + decay);
-      o.connect(g).connect(out);
-      o.start(t);
-      o.stop(t + decay + 0.1);
-      o.onended = () => g.disconnect();
+      g.gain.linearRampToValueAtTime(WIND_GAIN, t + Math.min(0.6, len * 0.2));
+      g.gain.setValueAtTime(WIND_GAIN, t + len - Math.min(1, len * 0.25));
+      g.gain.linearRampToValueAtTime(0.0001, t + len);
+      src.connect(g).connect(p);
+      this.keep(src).start(t, 0, len);
+      src.onended = () => p.disconnect();
+      return;
     }
-    burst(c, out, t, this.env.noise.white, { dur: 0.03, gain: 0.25, type: 'bandpass', freq: 1800, q: 1.2 });
-    window.setTimeout(() => out.disconnect(), (t - c.currentTime + 10) * 1000);
+    // the body of the gust: noise whose pitch rises as it swells and falls as it dies
+    const src = c.createBufferSource();
+    src.buffer = this.env.noise.white;
+    src.loop = true;
+    const bp = filter(c, 'bandpass', 380, 0.7);
+    bp.frequency.setValueAtTime(380, t);
+    bp.frequency.linearRampToValueAtTime(980, t + dur * 0.5);
+    bp.frequency.linearRampToValueAtTime(360, t + dur);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(0.34, t + dur * 0.45);
+    g.gain.linearRampToValueAtTime(0.0001, t + dur);
+    src.connect(bp).connect(g).connect(p);
+    // and the fine hiss of snow dust lifted off the hill
+    const hp = filter(c, 'bandpass', 4200, 0.6);
+    const g2 = c.createGain();
+    g2.gain.setValueAtTime(0.0001, t);
+    g2.gain.linearRampToValueAtTime(0.05, t + dur * 0.5);
+    g2.gain.linearRampToValueAtTime(0.0001, t + dur);
+    src.connect(hp).connect(g2).connect(p);
+    this.keep(src).start(t, Math.random() * src.buffer.duration);
+    src.stop(t + dur + 0.1);
+    src.onended = () => p.disconnect();
+  }
+
+  /**
+   * 먼 기차: a train rumbling over the far fields, clattering on the rail joints. `dir` 1 crosses from
+   * left to right, -1 back; `dur` is how long it is in sight, and it is loudest halfway.
+   */
+  private train(t: number, dur: number, dir: 1 | -1) {
+    const c = this.ctx;
+    const panAt = (dt: number) => (-0.8 + (1.6 * Math.max(0, Math.min(dur, dt))) / dur) * dir;
+    const p = c.createStereoPanner();
+    p.connect(this.layer('train'));
+    const rec = this.rec.train;
+    if (rec) {
+      // the recording's middle where the train is halfway across
+      const lead = (dur - rec.duration) / 2;
+      const from = Math.max(0, -lead);
+      const len = Math.min(rec.duration - from, dur);
+      const at = t + Math.max(0, lead);
+      p.pan.setValueAtTime(panAt(at - t), at);
+      p.pan.linearRampToValueAtTime(panAt(at - t + len), at + len);
+      const src = c.createBufferSource();
+      src.buffer = rec;
+      const g = c.createGain();
+      g.gain.setValueAtTime(0.0001, at);
+      g.gain.linearRampToValueAtTime(TRAIN_GAIN, at + Math.min(1.5, len * 0.2));
+      g.gain.setValueAtTime(TRAIN_GAIN, at + len - Math.min(1.5, len * 0.2));
+      g.gain.linearRampToValueAtTime(0.0001, at + len);
+      src.connect(filter(c, 'lowpass', 2400)).connect(g).connect(p);
+      this.keep(src).start(at, from, len);
+      src.onended = () => p.disconnect();
+      return;
+    }
+    p.pan.setValueAtTime(panAt(0), t);
+    p.pan.linearRampToValueAtTime(panAt(dur), t + dur);
+    const src = c.createBufferSource();
+    src.buffer = this.clackLoop();
+    src.loop = true;
+    src.playbackRate.value = rnd(0.92, 1.08);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(0.5, t + dur * 0.5);
+    g.gain.linearRampToValueAtTime(0.0001, t + dur);
+    src.connect(filter(c, 'lowpass', 240)).connect(g).connect(p);
+    this.keep(src).start(t, Math.random() * src.buffer.duration);
+    src.stop(t + dur + 0.1);
+    src.onended = () => p.disconnect();
+  }
+
+  /** (합성) 덜컹덜컹: rumble with the wheels knocking twice on each rail joint, looping. */
+  private clackLoop() {
+    if (this.clacks) return this.clacks;
+    const c = this.ctx;
+    const sr = c.sampleRate;
+    const n = Math.floor(sr * 1.68);
+    const buf = c.createBuffer(1, n, sr);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+    for (const at of [0.1, 0.32, 0.94, 1.16]) {
+      const i0 = Math.floor(at * sr);
+      for (let j = 0; j < sr * 0.03 && i0 + j < n; j++) d[i0 + j] += (Math.random() * 2 - 1) * 3 * Math.exp(-j / (sr * 0.006));
+    }
+    return (this.clacks = buf);
   }
 }

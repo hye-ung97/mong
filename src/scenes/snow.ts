@@ -2,7 +2,7 @@ import { Scene, type SceneVariant } from './base';
 import { TAU, clamp, rand } from './util';
 
 /*
- * 눈멍: the parts its two scenes share (시계탑 · 발밑) — how hard it snows, footprints that new snow
+ * 눈멍 (홋카이도의 겨울): the parts its two scenes share (나무 · 발밑) — how hard it snows, footprints that new snow
  * slowly fills, the puffs of snow a step kicks up, and 새 눈 (fresh snow over everything at once).
  */
 
@@ -31,8 +31,6 @@ interface Print {
   sq: number;
   /** crumbs of snow pushed out around it */
   cr: [number, number, number][];
-  /** px the boot sank into a snow pile; 0 on the thin snow of open ground */
-  deep: number;
 }
 
 interface Puff { x: number; y: number; vx: number; vy: number; t: number; dur: number; r: number }
@@ -41,7 +39,7 @@ interface Walker { x: number; y: number; ang: number }
 
 export interface SnowOpts {
   fall?: number;
-  /** new snow fills footprints (and swept ground); off: they stay */
+  /** new snow fills footprints; off: they stay */
   cover?: boolean;
 }
 
@@ -58,6 +56,12 @@ export function addRoundRect(x: CanvasRenderingContext2D, px: number, py: number
   x.closePath();
 }
 
+/** Colours (`r,g,b`) of a footprint's shade, its darkest dents and the shadows under its crumbs. */
+export interface PrintTint { shade: string; dark: string; crumb: string }
+
+/** Night snow under a street lamp (발밑). 나무 tints its prints to the sky. */
+const NIGHT_TINT: PrintTint = { shade: '52,70,116', dark: '16,24,60', crumb: '60,78,122' };
+
 /** Sole and heel of a boot, toe toward -y. */
 function solePath(x: CanvasRenderingContext2D) {
   x.beginPath();
@@ -66,7 +70,7 @@ function solePath(x: CanvasRenderingContext2D) {
 }
 
 /** A boot print pressed into snow: the hollow, its lit far rim, the tread, crumbs around it. */
-function drawPrint(x: CanvasRenderingContext2D, p: Print) {
+function drawPrint(x: CanvasRenderingContext2D, p: Print, tint: PrintTint) {
   const a = 1 - Math.pow(clamp(p.age, 0, 1), 1.6);
   if (a <= 0) return;
   const k = ease(clamp(p.life / 0.16, 0, 1));
@@ -85,7 +89,7 @@ function drawPrint(x: CanvasRenderingContext2D, p: Print) {
   x.restore();
   place(0);
   solePath(x);
-  x.fillStyle = `rgba(52,70,116,${0.62 * a * k})`;
+  x.fillStyle = `rgba(${tint.shade},${0.62 * a * k})`;
   x.fill();
   x.clip();
   x.strokeStyle = `rgba(226,236,252,${0.17 * a * k})`;
@@ -96,84 +100,16 @@ function drawPrint(x: CanvasRenderingContext2D, p: Print) {
     x.lineTo(12, y - 2);
   }
   x.stroke();
-  x.fillStyle = `rgba(16,24,60,${0.3 * a * k})`;
+  x.fillStyle = `rgba(${tint.dark},${0.3 * a * k})`;
   x.fillRect(-12, -29, 24, 7);
   x.fillRect(-12, 8, 24, 5);
   x.restore();
   for (const c of p.cr) {
-    x.fillStyle = `rgba(60,78,122,${0.3 * a * k})`;
+    x.fillStyle = `rgba(${tint.crumb},${0.3 * a * k})`;
     x.beginPath();
     x.arc(p.x + c[0], p.y + c[1] * p.sq + 1.4, c[2], 0, TAU);
     x.fill();
     x.fillStyle = `rgba(255,255,255,${0.9 * a * k})`;
-    x.beginPath();
-    x.arc(p.x + c[0], p.y + c[1] * p.sq, c[2], 0, TAU);
-    x.fill();
-  }
-}
-
-/**
- * A boot print sunk deep into a snow pile. No ground shows: above the sole the hole's inner wall is
- * in blue shade, below it lies the packed snow at the bottom with the tread pressed in, and the front
- * rim catches the light.
- */
-function drawDeepPrint(x: CanvasRenderingContext2D, p: Print) {
-  const a = 1 - Math.pow(clamp(p.age, 0, 1), 1.6);
-  if (a <= 0) return;
-  const k = ease(clamp(p.life / 0.2, 0, 1));
-  const s = p.sc;
-  const d = p.deep * k;
-  const place = (dy: number) => {
-    x.translate(p.x, p.y + dy);
-    x.scale(1, p.sq);
-    x.rotate(p.ang + Math.PI / 2);
-    x.scale(s, s);
-  };
-  x.save();
-  place(2.6 * s);
-  solePath(x);
-  x.fillStyle = `rgba(255,255,255,${0.95 * a * k})`;
-  x.fill();
-  x.restore();
-  x.save();
-  // the hole, its inner wall in shade; everything below stays inside it
-  x.save();
-  place(0);
-  solePath(x);
-  x.fillStyle = `rgba(118,136,186,${0.95 * a * k})`;
-  x.fill();
-  x.restore();
-  x.clip();
-  // the packed bottom, as far down as the boot went
-  x.save();
-  place(d);
-  solePath(x);
-  x.fillStyle = `rgba(206,217,239,${a * k})`;
-  x.fill();
-  x.clip();
-  x.strokeStyle = `rgba(120,140,192,${0.55 * a * k})`;
-  x.lineWidth = 1.8;
-  x.beginPath();
-  for (let y = -23; y <= 24; y += 5) {
-    x.moveTo(-12, y);
-    x.lineTo(12, y - 2);
-  }
-  x.stroke();
-  x.restore();
-  // shade the wall casts on the bottom
-  const top = p.y - 14 * s + d;
-  const g = x.createLinearGradient(0, top, 0, top + 9 * s);
-  g.addColorStop(0, `rgba(70,90,150,${0.28 * a * k})`);
-  g.addColorStop(1, 'rgba(70,90,150,0)');
-  x.fillStyle = g;
-  x.fillRect(p.x - 40 * s, top - 30 * s, 80 * s, 46 * s);
-  x.restore();
-  for (const c of p.cr) {
-    x.fillStyle = `rgba(60,78,122,${0.3 * a * k})`;
-    x.beginPath();
-    x.arc(p.x + c[0], p.y + c[1] * p.sq + 1.6, c[2], 0, TAU);
-    x.fill();
-    x.fillStyle = `rgba(255,255,255,${0.95 * a * k})`;
     x.beginPath();
     x.arc(p.x + c[0], p.y + c[1] * p.sq, c[2], 0, TAU);
     x.fill();
@@ -196,7 +132,7 @@ export function snowVignette(w: number, h: number, dpr: number, strength: number
 }
 
 /**
- * Base for 시계탑 and 발밑. A press leaves a boot print (left and right feet take turns, toes
+ * Base for 나무 and 발밑. A press leaves a boot print (left and right feet take turns, toes
  * pointing the way you walk), snow puffs out around it, and falling snow fills it in again.
  */
 export abstract class SnowScene extends Scene {
@@ -211,7 +147,8 @@ export abstract class SnowScene extends Scene {
   /** bottom edge (CSS px) of the controls at the top of the screen, if any */
   protected top: number | null = null;
   private side = 1;
-  private last: { x: number; y: number; ang: number; t: number } | null = null;
+  /** the last print pressed, so the next one points the way you walk */
+  protected last: { x: number; y: number; ang: number; t: number } | null = null;
 
   constructor(variant: SceneVariant, opts: SnowOpts = {}) {
     super(variant);
@@ -229,7 +166,7 @@ export abstract class SnowScene extends Scene {
     this.covering = on;
   }
 
-  /** 새 눈: snow covers every footprint (and swept patch) within a second. */
+  /** 새 눈: snow covers every footprint within a second. */
   fresh() {
     this.flush = true;
     this.emit('fresh');
@@ -247,7 +184,7 @@ export abstract class SnowScene extends Scene {
     return { fall: this.fall.v };
   }
 
-  /** A press on the scene. True when it did something (a footprint, the start of a sweep). */
+  /** A press on the scene. True when it did something (a footprint, shaking the tree). */
   abstract pressStart(x: number, y: number): boolean;
   /** Dragging. True when something new happened (to keep the controls awake). */
   abstract pressMove(x: number, y: number): boolean;
@@ -265,11 +202,6 @@ export abstract class SnowScene extends Scene {
   protected get stillCovering() {
     return false;
   }
-  /** How deep the snow lies here, 0 (the thin snow of open ground) … 1 (the top of a full snow pile). */
-  protected depthAt(_x: number, _y: number) {
-    return 0;
-  }
-
   protected puff(x: number, y: number, n: number, spread: number, up: boolean) {
     for (let i = 0; i < n; i++) {
       const a = rand(0, TAU);
@@ -296,24 +228,20 @@ export abstract class SnowScene extends Scene {
     const off = 12 * sc * this.side;
     const px = x + Math.cos(ang + Math.PI / 2) * off;
     const py = y + Math.sin(ang + Math.PI / 2) * off * sq;
-    // in a snow pile the boot sinks deep and pushes out bigger lumps
-    const dep = this.depthAt(px, py);
-    const deep = dep > 0.06 ? (2.5 + 4 * dep) * sc : 0;
     const cr: [number, number, number][] = [];
     for (let i = 0; i < 9; i++) {
       const a = rand(0, TAU);
       const rad = rand(26, 40) * sc;
-      cr.push([Math.cos(a) * rad * 0.7, Math.sin(a) * rad, rand(0.8, 2.1) * sc * (deep ? 1.7 : 1)]);
+      cr.push([Math.cos(a) * rad * 0.7, Math.sin(a) * rad, rand(0.8, 2.1) * sc]);
     }
-    this.prints.push({ x: px, y: py, ang, life: 0, age: 0, sc, sq, cr, deep });
+    this.prints.push({ x: px, y: py, ang, life: 0, age: 0, sc, sq, cr });
     if (this.prints.length > MAX_PRINTS) this.prints.shift();
     this.last = { x, y, ang, t: this.t };
     if (!byHand) return;
     this.steps++;
     this.stat('steps', this.steps);
     this.puff(px, py, 9, sc, false);
-    if (deep) this.puff(px, py, 8, sc * 1.2, true);
-    this.emit('step', { x: clamp(x / this.w, 0, 1), deep: deep ? 1 : 0 });
+    this.emit('step', { x: clamp(x / this.w, 0, 1) });
   }
 
   /** Someone walked here a while ago: a trail already half filled with snow. */
@@ -361,13 +289,8 @@ export abstract class SnowScene extends Scene {
     if (this.puffs.length) this.puffs = this.puffs.filter((p) => p.t < 1);
   }
 
-  /** `shallow` / `deep`: only the prints on open ground, or only those sunk into a snow pile. */
-  protected drawPrints(x: CanvasRenderingContext2D, which: 'all' | 'shallow' | 'deep' = 'all') {
-    for (const p of this.prints) {
-      if (p.deep) {
-        if (which !== 'shallow') drawDeepPrint(x, p);
-      } else if (which !== 'deep') drawPrint(x, p);
-    }
+  protected drawPrints(x: CanvasRenderingContext2D, tint: PrintTint = NIGHT_TINT) {
+    for (const p of this.prints) drawPrint(x, p, tint);
   }
 
   protected drawPuffs(x: CanvasRenderingContext2D) {

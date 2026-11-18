@@ -2,7 +2,6 @@ import type { IconName } from '../icons';
 import type { Settings } from '../lib/settings';
 import { Aquarium } from './aquarium';
 import type { Scene, SceneVariant } from './base';
-import { ClockTower } from './clocktower';
 import { Fire } from './fire';
 import { Pond } from './pond';
 import { Rain } from './rain';
@@ -10,11 +9,12 @@ import { Sand } from './sand';
 import { Sea } from './sea';
 import { Star } from './star';
 import { Subway } from './subway';
+import { Tree } from './tree';
 import { Underfoot } from './underfoot';
 
-export type SceneId = 'fire' | 'rain' | 'aquarium' | 'sea' | 'pond' | 'sand' | 'star' | 'clocktower' | 'underfoot' | SubwayId;
+export type SceneId = 'fire' | 'rain' | 'aquarium' | 'sea' | 'pond' | 'sand' | 'star' | 'tree' | 'underfoot' | SubwayId;
 export type WaterId = 'aquarium' | 'sea' | 'pond';
-export type SnowId = 'clocktower' | 'underfoot';
+export type SnowId = 'tree' | 'underfoot';
 /** 지하철멍's three seats: 맞은편 창 · 문 앞 · 창가. */
 export type SubwayId = 'seat' | 'door' | 'window';
 export type GroupId = 'fire' | 'rain' | 'water' | 'sand' | 'star' | 'snow' | 'subway';
@@ -35,9 +35,9 @@ export const WATER: readonly { id: WaterId; label: string }[] = [
   { id: 'pond', label: '연못' },
 ];
 
-/** 눈멍's two scenes. 시계탑 comes first: it is where 눈멍 opens the first time. */
+/** 눈멍 (홋카이도의 겨울)'s two scenes. 나무 comes first: it is where 눈멍 opens the first time. */
 export const SNOW: readonly { id: SnowId; label: string }[] = [
-  { id: 'clocktower', label: '시계탑' },
+  { id: 'tree', label: '나무' },
   { id: 'underfoot', label: '발밑' },
 ];
 
@@ -48,10 +48,10 @@ export const SUBWAY: readonly { id: SubwayId; label: string }[] = [
   { id: 'window', label: '창가' },
 ];
 
-export const SCENE_IDS: readonly SceneId[] = ['fire', 'rain', 'aquarium', 'sea', 'pond', 'sand', 'star', 'clocktower', 'underfoot', 'seat', 'door', 'window'];
+export const SCENE_IDS: readonly SceneId[] = ['fire', 'rain', 'aquarium', 'sea', 'pond', 'sand', 'star', 'tree', 'underfoot', 'seat', 'door', 'window'];
 
 export const isWater = (id: SceneId): id is WaterId => id === 'aquarium' || id === 'sea' || id === 'pond';
-export const isSnow = (id: SceneId): id is SnowId => id === 'clocktower' || id === 'underfoot';
+export const isSnow = (id: SceneId): id is SnowId => id === 'tree' || id === 'underfoot';
 export const isSubway = (id: SceneId): id is SubwayId => id === 'seat' || id === 'door' || id === 'window';
 export const groupOf = (id: SceneId): GroupId => (isWater(id) ? 'water' : isSnow(id) ? 'snow' : isSubway(id) ? 'subway' : id);
 export const routeOf = (id: SceneId) =>
@@ -83,11 +83,11 @@ export function createScene(id: SceneId, variant: SceneVariant, s: Settings): Sc
       return variant === 'card'
         ? new Star(variant, { season: s.starSeason, phase: 'night', hold: true })
         : new Star(variant, { season: s.starSeason, phase: s.starPhase, hold: s.starHold, fireflies: s.starFireflies, guide: s.starGuide });
-    case 'clocktower':
-      // the home card always shows it gently snowing, with footprints filling in
+    case 'tree':
+      // the home card always shows it gently snowing, with footprints filling in, under the chosen sky
       return variant === 'card'
-        ? new ClockTower(variant, { fall: 0.6, cover: true })
-        : new ClockTower(variant, { fall: s.snowFall, cover: s.snowCover });
+        ? new Tree(variant, { fall: 0.6, cover: true, sky: s.snowSky })
+        : new Tree(variant, { fall: s.snowFall, cover: s.snowCover, sky: s.snowSky });
     case 'underfoot':
       return variant === 'card'
         ? new Underfoot(variant, { fall: 0.6, cover: true })
