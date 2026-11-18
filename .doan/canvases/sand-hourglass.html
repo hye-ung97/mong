@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="doan:canvas" content="sand-hourglass">
+<meta name="doan:width" content="2800">
+<title>모래멍 · 모래시계 디벨롭</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/mong.css">
+<link rel="stylesheet" href="../assets/fire-v2.css">
+<link rel="stylesheet" href="../assets/sand.css">
+<link rel="stylesheet" href="../assets/sand-v2.css">
+<link rel="stylesheet" href="../assets/sand-hourglass.css">
+</head>
+<body class="board theme-sand hg-board">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- source: .doan/canvases/subway-fire.html (src/icons.ts 와 같은 아이콘) -->
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+    <symbol id="i-rain" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.24"/><path d="M16 14v6M8 14v6M12 16v6"/></symbol>
+    <symbol id="i-fish" viewBox="0 0 24 24"><path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z"/><path d="M18 12v.5"/><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"/><path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5 .23 6.5C6.58 18.03 7 16 7 13.33"/></symbol>
+    <symbol id="i-sand" viewBox="0 0 24 24"><path d="M6 2h12M6 22h12"/><path d="M7 2v4a5 5 0 0 0 2 4l3 2 3-2a5 5 0 0 0 2-4V2"/><path d="M7 22v-4a5 5 0 0 1 2-4l3-2 3 2a5 5 0 0 1 2 4v4"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3c.8 5.4 3.6 8.2 9 9-5.4.8-8.2 3.6-9 9-.8-5.4-3.6-8.2-9-9 5.4-.8 8.2-3.6 9-9z"/></symbol>
+    <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 2v20M3.3 7l17.4 10M20.7 7 3.3 17"/><path d="m9.5 3.5 2.5 2 2.5-2M9.5 20.5l2.5-2 2.5 2M3.6 10.6l3-1.1-.5-3.2M20.4 13.4l-3 1.1.5 3.2M3.6 13.4l3 1.1-.5 3.2M20.4 10.6l-3-1.1.5-3.2"/></symbol>
+    <symbol id="i-subway" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="15" rx="3.5"/><path d="M5 11h14"/><path d="M8.5 14.5h.01M15.5 14.5h.01"/><path d="m8 21 1.5-3M16 21l-1.5-3"/></symbol>
+    <symbol id="i-max" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
+    <!-- 새 아이콘 (코드에 없어요): 뒤집기 -->
+    <symbol id="i-flip" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></symbol>
+        <symbol id="i-status" viewBox="0 0 70 12">
+      <g fill="currentColor" stroke="none">
+        <rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4.5" y="6" width="3" height="6" rx="1"/><rect x="9" y="3.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="1" width="3" height="11" rx="1"/>
+        <path d="M30 3.2a10 10 0 0 1 13 0l-1.4 1.5a8 8 0 0 0-10.2 0zM32.4 5.9a6.4 6.4 0 0 1 8.2 0l-1.5 1.5a4.2 4.2 0 0 0-5.2 0zM36.5 11.5l-2.1-2.2a3 3 0 0 1 4.2 0z"/>
+        <rect x="49" y="1" width="18" height="10" rx="3" fill="none" stroke="currentColor" stroke-opacity=".45"/>
+        <rect x="51" y="3" width="14" height="6" rx="1.6"/>
+        <rect x="68" y="4.2" width="1.6" height="3.6" rx=".8" opacity=".45"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ================= 개요 ================= -->
+<section class="brief" data-doan-frame="hg-brief" data-doan-title="모래시계 · 개요">
+  <div>
+    <div class="ov-brand"><span class="orb lg"></span>mong · 모래멍</div>
+    <h1>모래시계를<br>진짜 모래처럼</h1>
+    <p class="lead"><a href="sand-v2.html">모래멍 v2</a>에서 고른 B 모래시계를 다듬었어요. 알갱이 하나하나가 보이고, 줄기와 쌓이는 모양이 실제 모래시계처럼 움직여요. 모래 색은 일곱 가지 중에서 고를 수 있어요.</p>
+    <div class="ov-meta"><span>디자인 시안 · B 디벨롭</span><span>2026.11.18</span><span>화면을 끌면 기울고, 독 버튼이 다 움직여요</span></div>
+  </div>
+  <div>
+    <h3>v2 B 에서 달라진 점</h3>
+    <ul class="changes" data-doan-id="hg-changes">
+      <li><em>알갱이</em><b>색 막대에서 모래 알갱이로</b><span>알갱이가 1px로 네 배 촘촘해졌어요. 알갱이마다 밝기가 다르고, 스무 개 중 하나는 검은 광물, 서른 개 중 하나는 석영이라 겉에 나오면 가끔 반짝여요.</span></li>
+      <li><em>빛</em><b>둥근 유리 안의 모래</b><span>가운데는 밝고 유리에 닿은 가장자리는 어두워서 모래가 납작한 판이 아니라 둥근 덩어리로 보여요. 오른쪽 위 스탠드를 향한 비탈은 밝고, 겉에서 깊을수록 어두워요.</span></li>
+      <li><em>줄기</em><b>가는 한 줄, 아래로 갈수록 흩어져요</b><span>목에서는 촘촘한 한 줄로 나오고, 떨어지며 빨라질수록 꼬리가 길어져요. 원뿔 꼭대기에 부딪친 알갱이 일부는 튀었다가 내려앉아요.</span></li>
+      <li><em>쌓임</em><b>조금씩 쌓이다 한 번에 흘러내려요</b><span>떨어진 자리에 잠깐 붙어 있다가 비탈이 가팔라지면 모래가 사르르 미끄러져요. 위 칸은 목 위부터 꺼져 깔때기 모양이 돼요.</span></li>
+    </ul>
+  </div>
+  <div>
+    <h3>색 고르기 · 설정</h3>
+    <p class="rec" data-doan-id="hg-color-rec" style="margin-top:0"><b>독 왼쪽 동그라미</b>를 누르면 독 위에 트레이가 열려요. 위에는 <b>모래 색</b>, 아래에는 <b>설정</b>(모래 소리 · 다 내려가면 다시 뒤집기, 기본 꺼짐)이 있어요. 시간은 독에서 골라요. 장면을 누르면 닫혀요.</p>
+    <h4>정한 것</h4>
+    <ul class="asks" data-doan-id="hg-asks">
+      <li>기본 색은 <b>노을</b>(색 띠)</li>
+      <li>설정은 따로 시트를 두지 않고 <b>트레이 안</b>에. 독은 색 · 시간 · 뒤집기 세 가지</li>
+      <li>색은 고르는 <b>즉시</b> 바뀌어요. 쌓인 모양은 그대로 두고 0.7초 동안 새 색으로 번져요</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 01 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">01</span><h2>모래시계 세 장면</h2><p>모두 움직여요 · 화면을 좌우로 끌면 기울고, 독의 동그라미로 색을 바꿔 보세요</p></div>
+  <div class="hg-cols">
+
+    <div class="hg-col">
+      <div class="hg-head"><h3>기본 · 노을</h3><p>처음 열면 노을 색 띠. 위 칸 다섯 줄이 아래에서 줄무늬 원뿔이 돼요</p></div>
+      <div class="screen phone theme-sand" data-doan-frame="hg-main" data-doan-title="모래시계 · 노을">
+        <canvas class="scene" data-hg data-palette="dusk" data-mode="loop" data-cycle="60" data-prefill="0.38"></canvas>
+        <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+        <div class="ui m-top">
+          <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+          <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a class="on" aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+        </div>
+        <div class="ui toast glass hg-toast" data-hg-toast><span class="dot"></span><span></span></div>
+        <div class="ui m-bottom">
+          <div class="hg-tray glass-strong" data-hg-tray data-doan-id="hg-main-tray">
+            <div class="hg-tray-head"><b>모래 색</b><span>쌓인 모양은 그대로, 색만 바뀌어요</span></div>
+            <h5>한 가지 색</h5>
+            <div class="hg-sw"><button data-hg-act="palette" data-value="desert"><span class="hg-chip hg-desert"></span>사막</button><button data-hg-act="palette" data-value="white"><span class="hg-chip hg-white"></span>백사</button><button data-hg-act="palette" data-value="black"><span class="hg-chip hg-black"></span>흑사</button><button data-hg-act="palette" data-value="rose"><span class="hg-chip hg-rose"></span>장밋빛</button></div>
+            <h5>색 띠</h5>
+            <div class="hg-sw"><button data-hg-act="palette" data-value="dune"><span class="hg-chip hg-dune"></span>사구</button><button data-hg-act="palette" data-value="dusk"><span class="hg-chip hg-dusk"></span>노을</button><button data-hg-act="palette" data-value="sea"><span class="hg-chip hg-sea"></span>바다</button></div>
+            <div class="hg-tray-sep"></div>
+            <div class="hg-tray-head"><b>설정</b><span>독의 시간과 함께 써요</span></div>
+            <div class="mix-row hg-vol"><svg class="ico sm"><use href="#i-volume"/></svg><span>모래 소리</span><div class="slider"><i style="width:60%"></i><b style="left:60%"></b></div><span class="val">60</span></div>
+            <button class="tend-row hg-auto" role="switch" aria-checked="false" data-hg-act="autoflip"><span><b>다 내려가면 다시 뒤집기</b><small>켜면 15분 · 30분이 끝난 뒤 다시 시작해요</small></span><span class="switch off"></span></button>
+          </div>
+          <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>모래시계 소리 · <span data-hg-stat="palette"></span></span><span data-hg-stat="aside"></span></div>
+          <div class="dock glass hg-dock" data-doan-id="hg-main-dock">
+            <button class="icon-btn hg-pick" aria-label="모래 색 · 설정" data-hg-act="tray" data-doan-id="hg-main-pick"><span class="hg-chip hg-dusk" data-hg-swatch></span></button>
+            <div class="seg"><button data-hg-act="mode" data-value="15">15분</button><button data-hg-act="mode" data-value="30">30분</button><button data-hg-act="mode" data-value="loop">끝없이</button></div>
+            <button class="icon-btn" aria-label="뒤집기" data-hg-act="flip"><svg class="ico"><use href="#i-flip"/></svg></button>
+          </div>
+        </div>
+        <div class="home-ind"></div>
+      </div>
+      <aside class="notes">
+        <div class="not-in-code"><b>시안이에요. 코드에는 아직 없어요</b>모래시계 장면, 색 · 설정 트레이, 독(색 · 시간 · 뒤집기), 뒤집기 아이콘이 새로 생겨요.</div>
+        <h4>무엇을 보나</h4>
+        <ul>
+          <li>위 칸은 목 위부터 꺼져 깔때기가 되고, 둘레 모래가 그쪽으로 흘러들어요</li>
+          <li>아래 원뿔은 꼭대기에 조금 쌓였다가 비탈을 따라 사르르 흘러내려요</li>
+          <li>보드에서는 1분에 한 번 다 내려가고, 끝없이면 2.2초 쉬었다 저절로 뒤집혀요</li>
+        </ul>
+      </aside>
+    </div>
+
+    <div class="hg-col">
+      <div class="hg-head"><h3>트레이 · 사막</h3><p>모래 색과 설정이 한 트레이에 있어요. 열린 채로 시작하니 다른 색을 눌러 보세요</p></div>
+      <div class="screen phone theme-sand" data-doan-frame="hg-color" data-doan-title="모래시계 · 트레이">
+        <canvas class="scene" data-hg data-palette="desert" data-mode="loop" data-cycle="60" data-prefill="0.55" data-tray="open"></canvas>
+        <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+        <div class="ui m-top">
+          <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+          <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a class="on" aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+        </div>
+        <div class="ui toast glass hg-toast" data-hg-toast><span class="dot"></span><span></span></div>
+        <div class="ui m-bottom">
+          <div class="hg-tray glass-strong" data-hg-tray data-doan-id="hg-color-tray">
+            <div class="hg-tray-head"><b>모래 색</b><span>쌓인 모양은 그대로, 색만 바뀌어요</span></div>
+            <h5>한 가지 색</h5>
+            <div class="hg-sw"><button data-hg-act="palette" data-value="desert"><span class="hg-chip hg-desert"></span>사막</button><button data-hg-act="palette" data-value="white"><span class="hg-chip hg-white"></span>백사</button><button data-hg-act="palette" data-value="black"><span class="hg-chip hg-black"></span>흑사</button><button data-hg-act="palette" data-value="rose"><span class="hg-chip hg-rose"></span>장밋빛</button></div>
+            <h5>색 띠</h5>
+            <div class="hg-sw"><button data-hg-act="palette" data-value="dune"><span class="hg-chip hg-dune"></span>사구</button><button data-hg-act="palette" data-value="dusk"><span class="hg-chip hg-dusk"></span>노을</button><button data-hg-act="palette" data-value="sea"><span class="hg-chip hg-sea"></span>바다</button></div>
+            <div class="hg-tray-sep"></div>
+            <div class="hg-tray-head"><b>설정</b><span>독의 시간과 함께 써요</span></div>
+            <div class="mix-row hg-vol"><svg class="ico sm"><use href="#i-volume"/></svg><span>모래 소리</span><div class="slider"><i style="width:60%"></i><b style="left:60%"></b></div><span class="val">60</span></div>
+            <button class="tend-row hg-auto" role="switch" aria-checked="false" data-hg-act="autoflip"><span><b>다 내려가면 다시 뒤집기</b><small>켜면 15분 · 30분이 끝난 뒤 다시 시작해요</small></span><span class="switch off"></span></button>
+          </div>
+          <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>모래시계 소리 · <span data-hg-stat="palette"></span></span><span data-hg-stat="aside"></span></div>
+          <div class="dock glass hg-dock" data-doan-id="hg-color-dock">
+            <button class="icon-btn hg-pick" aria-label="모래 색 · 설정" data-hg-act="tray" data-doan-id="hg-color-pick"><span class="hg-chip hg-desert" data-hg-swatch></span></button>
+            <div class="seg"><button data-hg-act="mode" data-value="15">15분</button><button data-hg-act="mode" data-value="30">30분</button><button data-hg-act="mode" data-value="loop">끝없이</button></div>
+            <button class="icon-btn" aria-label="뒤집기" data-hg-act="flip"><svg class="ico"><use href="#i-flip"/></svg></button>
+          </div>
+        </div>
+        <div class="home-ind"></div>
+      </div>
+      <aside class="notes">
+        <h4>트레이</h4>
+        <ul>
+          <li>제목 <span class="copy">모래 색</span>, 설명 <span class="copy">쌓인 모양은 그대로, 색만 바뀌어요</span>, 묶음 이름 <span class="copy">한 가지 색</span> · <span class="copy">색 띠</span> (모두 새 문구)</li>
+          <li>색 띠는 위 칸에서 다섯 줄로 깔려 있다가, 아래에서는 섞여 원뿔 모양 줄무늬가 돼요</li>
+          <li>독 동그라미는 지금 고른 색을 보여 줘요. 열려 있으면 테두리가 생겨요</li>
+          <li>설정: <span class="copy">모래 소리</span> 크기, <span class="copy">다 내려가면 다시 뒤집기</span> 켜고 끄기(새 문구). <b>기본은 꺼짐</b>이라 15분 · 30분 뒤 멈춰요. 끝없이는 늘 다시 뒤집어요</li>
+        </ul>
+      </aside>
+    </div>
+
+    <div class="hg-col">
+      <div class="hg-head"><h3>15분 타이머 · 흑사</h3><p>어두운 모래라 석영 반짝임이 별처럼 보여요</p></div>
+      <div class="screen phone theme-sand" data-doan-frame="hg-timer" data-doan-title="모래시계 · 15분 타이머">
+        <canvas class="scene" data-hg data-palette="black" data-mode="15" data-cycle="60" data-prefill="0.22"></canvas>
+        <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+        <div class="ui m-top">
+          <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+          <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a class="on" aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+        </div>
+        <div class="ui toast glass hg-toast" data-hg-toast><span class="dot"></span><span></span></div>
+        <div class="ui m-bottom">
+          <div class="hg-tray glass-strong" data-hg-tray data-doan-id="hg-timer-tray">
+            <div class="hg-tray-head"><b>모래 색</b><span>쌓인 모양은 그대로, 색만 바뀌어요</span></div>
+            <h5>한 가지 색</h5>
+            <div class="hg-sw"><button data-hg-act="palette" data-value="desert"><span class="hg-chip hg-desert"></span>사막</button><button data-hg-act="palette" data-value="white"><span class="hg-chip hg-white"></span>백사</button><button data-hg-act="palette" data-value="black"><span class="hg-chip hg-black"></span>흑사</button><button data-hg-act="palette" data-value="rose"><span class="hg-chip hg-rose"></span>장밋빛</button></div>
+            <h5>색 띠</h5>
+            <div class="hg-sw"><button data-hg-act="palette" data-value="dune"><span class="hg-chip hg-dune"></span>사구</button><button data-hg-act="palette" data-value="dusk"><span class="hg-chip hg-dusk"></span>노을</button><button data-hg-act="palette" data-value="sea"><span class="hg-chip hg-sea"></span>바다</button></div>
+            <div class="hg-tray-sep"></div>
+            <div class="hg-tray-head"><b>설정</b><span>독의 시간과 함께 써요</span></div>
+            <div class="mix-row hg-vol"><svg class="ico sm"><use href="#i-volume"/></svg><span>모래 소리</span><div class="slider"><i style="width:60%"></i><b style="left:60%"></b></div><span class="val">60</span></div>
+            <button class="tend-row hg-auto" role="switch" aria-checked="false" data-hg-act="autoflip"><span><b>다 내려가면 다시 뒤집기</b><small>켜면 15분 · 30분이 끝난 뒤 다시 시작해요</small></span><span class="switch off"></span></button>
+          </div>
+          <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>모래시계 소리 · <span data-hg-stat="palette"></span></span><span data-hg-stat="aside"></span></div>
+          <div class="dock glass hg-dock" data-doan-id="hg-timer-dock">
+            <button class="icon-btn hg-pick" aria-label="모래 색 · 설정" data-hg-act="tray" data-doan-id="hg-timer-pick"><span class="hg-chip hg-black" data-hg-swatch></span></button>
+            <div class="seg"><button data-hg-act="mode" data-value="15">15분</button><button data-hg-act="mode" data-value="30">30분</button><button data-hg-act="mode" data-value="loop">끝없이</button></div>
+            <button class="icon-btn" aria-label="뒤집기" data-hg-act="flip"><svg class="ico"><use href="#i-flip"/></svg></button>
+          </div>
+        </div>
+        <div class="home-ind"></div>
+      </div>
+      <aside class="notes">
+        <h4>타이머</h4>
+        <ul>
+          <li>15분 · 30분을 고르면 그 시간 동안 다 내려가요. 보드에서는 1분을 15분으로 늘려 남은 시간을 보여 줘요</li>
+          <li>다 내려가면 <span class="copy">15분이 다 됐어요</span> 알림이 뜨고 멈춰요(기본). 트레이의 <span class="copy">다 내려가면 다시 뒤집기</span>를 켜면 다시 뒤집혀요. 멈춘 뒤에도 뒤집기 버튼으로 다시 시작할 수 있어요</li>
+          <li>뒤집기 버튼은 언제든 돼요. 위아래 모래가 자리를 바꿔요</li>
+        </ul>
+      </aside>
+    </div>
+
+    <div class="hg-side">
+      <aside class="notes" data-doan-id="hg-build">
+        <div class="not-in-code"><b>만들 때 메모 · 코드에는 아직 없어요</b>보드의 움직임은 <code>.doan/assets/sand-hourglass.js</code>에 있어요.</div>
+        <h4>모래 색 일곱 가지</h4>
+        <table class="hg-palette-table" data-doan-id="hg-palettes">
+          <tbody>
+            <tr><td><span class="hg-chip hg-desert"></span></td><td>사막</td><td>모래빛</td><td><span class="tag">새 색</span></td></tr>
+            <tr><td><span class="hg-chip hg-white"></span></td><td>백사</td><td>흰 해변 모래</td><td><span class="tag">새 색</span></td></tr>
+            <tr><td><span class="hg-chip hg-black"></span></td><td>흑사</td><td>화산 모래 · 석영이 별처럼 반짝여요</td><td><span class="tag">새 색</span></td></tr>
+            <tr><td><span class="hg-chip hg-rose"></span></td><td>장밋빛</td><td>분홍 산호 모래</td><td><span class="tag">새 색</span></td></tr>
+            <tr><td><span class="hg-chip hg-dune"></span></td><td>사구</td><td>v2 사막 · 다섯 띠</td><td></td></tr>
+            <tr><td><span class="hg-chip hg-dusk"></span></td><td>노을</td><td>지금 앱 노을을 차분하게 · 다섯 띠</td><td><span class="tag">기본</span></td></tr>
+            <tr><td><span class="hg-chip hg-sea"></span></td><td>바다</td><td>지금 앱 바다를 차분하게 · 다섯 띠</td><td></td></tr>
+          </tbody>
+        </table>
+        <h4>알갱이와 색</h4>
+        <ul>
+          <li>칸마다 색이 아니라 <b>알갱이 정보</b>(띠 0~4 · 밝기 0~63 · 보통/검은 점/석영)를 저장해요. 색은 그릴 때 색 묶음 표에서 찾아요. 그래서 색을 바꿔도 모양은 그대로예요</li>
+          <li>색 묶음마다 띠 다섯 × 종류 셋 × 밝기 64 = 960색 표를 한 번 만들어 둬요</li>
+        </ul>
+        <h4>빛</h4>
+        <ul>
+          <li>둥근 유리 빛(가운데 밝고 가장자리 어둡게)은 그릇 모양으로 정해지니 처음에 한 번 구워 두고 곱해요</li>
+          <li>겉면 빛은 두 칸 옆과의 높이 차이, 깊이 그늘은 겉에서 센 칸 수로 매 프레임 계산해요</li>
+        </ul>
+        <h4>움직임</h4>
+        <ul>
+          <li>지금 <code>land()</code>에 ‘떨어진 자리에 붙어 있을 확률’(아래 칸 42%)을 더하고, 한 프레임에 한 칸씩만 미끄러지는 <code>slide()</code>를 두세 번 불러요. 이게 사르르 흘러내리는 사태가 돼요</li>
+          <li>줄기: 목에서 가운데로 모아 내보내고, 옆 속도를 아주 조금 줘요. 빨리 떨어지는 알갱이 16%는 튀어요</li>
+          <li>60fps에서 두 칸 합쳐 약 13만 칸을 매 프레임 칠해요. 앱에서는 모래가 멈춘 칸을 건너뛰면 더 가벼워져요</li>
+        </ul>
+        <h4>소리</h4>
+        <ul><li>소리 보드(<a href="sand-sound.html">sand-sound</a>)에서 고른 녹음: 줄기 <code>stream.m4a</code>(설탕 붓기 #98794), 사태 <code>slide.m4a</code>(유리 위를 미끄러지는 모래 #199395), 뒤집기 <code>flip.m4a</code>(작은 모래시계 돌리기 #625655 + 유리병 내려놓기 #235498)</li></ul>
+      </aside>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= 02 데스크톱 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">02</span><h2>PC 화면</h2><p>폰과 같은 모래시계를 탁자 위에 그대로 놓았어요 · 끌면 기울고, 독이 다 움직여요</p></div>
+  <div class="hg-desk-row">
+    <div class="hg-col">
+      <div class="hg-head"><h3>기본 · 노을</h3><p>가운데 모래시계, 아래 독에 색 · 시간 · 뒤집기 · 소리를 한 줄로</p></div>
+    <div class="screen desk theme-sand" data-doan-frame="hg-desk" data-doan-title="모래시계 · 데스크톱">
+      <canvas class="scene" data-hg data-palette="dusk" data-mode="loop" data-cycle="60" data-prefill="0.4" data-top="120"></canvas>
+      <div class="ui d-top">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <nav class="tabs seven glass" aria-label="장면"><a>불멍</a><a>비멍</a><a>물멍</a><a class="on">모래멍</a><a>별멍</a><a>눈멍</a><a>지하철멍</a></nav>
+        <div class="d-top-right">
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+          <button class="icon-btn glass" aria-label="전체화면"><svg class="ico"><use href="#i-max"/></svg></button>
+        </div>
+      </div>
+      <div class="ui toast glass hg-toast" data-hg-toast><span class="dot"></span><span></span></div>
+      <div class="ui d-now">
+        <strong><span class="eq"><i></i><i></i><i></i><i></i></span>모래시계 소리</strong>
+        <span><span data-hg-stat="palette"></span> · <span data-hg-stat="aside"></span></span>
+      </div>
+      <div class="ui hg-tray hg-desk-tray glass-strong" data-hg-tray data-doan-id="hg-desk-tray">
+        <div class="hg-tray-head"><b>모래 색</b><span>쌓인 모양은 그대로, 색만 바뀌어요</span></div>
+        <h5>한 가지 색</h5>
+        <div class="hg-sw"><button data-hg-act="palette" data-value="desert"><span class="hg-chip hg-desert"></span>사막</button><button data-hg-act="palette" data-value="white"><span class="hg-chip hg-white"></span>백사</button><button data-hg-act="palette" data-value="black"><span class="hg-chip hg-black"></span>흑사</button><button data-hg-act="palette" data-value="rose"><span class="hg-chip hg-rose"></span>장밋빛</button></div>
+        <h5>색 띠</h5>
+        <div class="hg-sw"><button data-hg-act="palette" data-value="dune"><span class="hg-chip hg-dune"></span>사구</button><button data-hg-act="palette" data-value="dusk"><span class="hg-chip hg-dusk"></span>노을</button><button data-hg-act="palette" data-value="sea"><span class="hg-chip hg-sea"></span>바다</button></div>
+        <div class="hg-tray-sep"></div>
+        <div class="hg-tray-head"><b>설정</b><span>소리 크기는 독에서 조절해요</span></div>
+        <button class="tend-row hg-auto" role="switch" aria-checked="false" data-hg-act="autoflip"><span><b>다 내려가면 다시 뒤집기</b><small>켜면 15분 · 30분이 끝난 뒤 다시 시작해요</small></span><span class="switch off"></span></button>
+      </div>
+      <div class="ui d-dock glass hg-d-dock" data-doan-id="hg-desk-dock">
+        <button class="chip-btn hg-pick" data-hg-act="tray" aria-label="모래 색 · 설정" data-doan-id="hg-desk-pick"><span class="hg-chip hg-dusk" data-hg-swatch></span>모래 색</button>
+        <span class="sep"></span>
+        <div class="seg"><button data-hg-act="mode" data-value="15">15분</button><button data-hg-act="mode" data-value="30">30분</button><button data-hg-act="mode" data-value="loop">끝없이</button></div>
+        <button class="chip-btn" data-hg-act="flip" aria-keyshortcuts="Space" title="뒤집기 (스페이스)"><svg class="ico"><use href="#i-flip"/></svg>뒤집기<kbd class="hg-kbd">Space</kbd></button>
+        <span class="sep"></span>
+        <div class="vol"><svg class="ico"><use href="#i-volume"/></svg><div class="slider"><i style="width:60%"></i><b style="left:60%"></b></div></div>
+      </div>
+    </div>
+    </div>
+    <div class="hg-col">
+      <div class="hg-head"><h3>트레이 열림 · 사막</h3><p>독의 ‘모래 색’을 누르면 그 위에 트레이가 떠요. 바깥을 누르면 닫혀요</p></div>
+    <div class="screen desk theme-sand" data-doan-frame="hg-desk-tray" data-doan-title="모래시계 · 데스크톱 · 트레이">
+      <canvas class="scene" data-hg data-palette="desert" data-mode="15" data-cycle="60" data-prefill="0.3" data-top="120" data-tray="open"></canvas>
+      <div class="ui d-top">
+        <div class="wordmark"><span class="orb"></span>mong</div>
+        <nav class="tabs seven glass" aria-label="장면"><a>불멍</a><a>비멍</a><a>물멍</a><a class="on">모래멍</a><a>별멍</a><a>눈멍</a><a>지하철멍</a></nav>
+        <div class="d-top-right">
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+          <button class="icon-btn glass" aria-label="전체화면"><svg class="ico"><use href="#i-max"/></svg></button>
+        </div>
+      </div>
+      <div class="ui toast glass hg-toast" data-hg-toast><span class="dot"></span><span></span></div>
+      <div class="ui d-now">
+        <strong><span class="eq"><i></i><i></i><i></i><i></i></span>모래시계 소리</strong>
+        <span><span data-hg-stat="palette"></span> · <span data-hg-stat="aside"></span></span>
+      </div>
+      <div class="ui hg-tray hg-desk-tray glass-strong" data-hg-tray data-doan-id="hg-desk-t-tray">
+        <div class="hg-tray-head"><b>모래 색</b><span>쌓인 모양은 그대로, 색만 바뀌어요</span></div>
+        <h5>한 가지 색</h5>
+        <div class="hg-sw"><button data-hg-act="palette" data-value="desert"><span class="hg-chip hg-desert"></span>사막</button><button data-hg-act="palette" data-value="white"><span class="hg-chip hg-white"></span>백사</button><button data-hg-act="palette" data-value="black"><span class="hg-chip hg-black"></span>흑사</button><button data-hg-act="palette" data-value="rose"><span class="hg-chip hg-rose"></span>장밋빛</button></div>
+        <h5>색 띠</h5>
+        <div class="hg-sw"><button data-hg-act="palette" data-value="dune"><span class="hg-chip hg-dune"></span>사구</button><button data-hg-act="palette" data-value="dusk"><span class="hg-chip hg-dusk"></span>노을</button><button data-hg-act="palette" data-value="sea"><span class="hg-chip hg-sea"></span>바다</button></div>
+        <div class="hg-tray-sep"></div>
+        <div class="hg-tray-head"><b>설정</b><span>소리 크기는 독에서 조절해요</span></div>
+        <button class="tend-row hg-auto" role="switch" aria-checked="false" data-hg-act="autoflip"><span><b>다 내려가면 다시 뒤집기</b><small>켜면 15분 · 30분이 끝난 뒤 다시 시작해요</small></span><span class="switch off"></span></button>
+      </div>
+      <div class="ui d-dock glass hg-d-dock" data-doan-id="hg-desk-t-dock">
+        <button class="chip-btn hg-pick" data-hg-act="tray" aria-label="모래 색 · 설정" data-doan-id="hg-desk-t-pick"><span class="hg-chip hg-desert" data-hg-swatch></span>모래 색</button>
+        <span class="sep"></span>
+        <div class="seg"><button data-hg-act="mode" data-value="15">15분</button><button data-hg-act="mode" data-value="30">30분</button><button data-hg-act="mode" data-value="loop">끝없이</button></div>
+        <button class="chip-btn" data-hg-act="flip" aria-keyshortcuts="Space" title="뒤집기 (스페이스)"><svg class="ico"><use href="#i-flip"/></svg>뒤집기<kbd class="hg-kbd">Space</kbd></button>
+        <span class="sep"></span>
+        <div class="vol"><svg class="ico"><use href="#i-volume"/></svg><div class="slider"><i style="width:60%"></i><b style="left:60%"></b></div></div>
+      </div>
+    </div>
+    </div>
+  </div>
+  <aside class="notes hg-desk-notes" data-doan-id="hg-desk-notes">
+    <div class="not-in-code"><b>시안이에요. 코드에는 아직 없어요</b>데스크톱 모래시계 장면과 독, 트레이가 새로 생겨요.</div>
+    <h4>폰과 다른 점</h4>
+    <ul>
+      <li>모래시계 크기는 폰과 같아요(유리 높이 540). 화면이 넓어도 키우지 않고 탁자 위 물건처럼 가운데 둬요. 알갱이 수가 같아 무게도 같아요</li>
+      <li>독이 넓어서 <span class="copy">모래 색</span> · <span class="copy">뒤집기</span>에 글자를 붙이고, 소리 크기는 독 오른쪽 슬라이더로 꺼냈어요. 그래서 트레이의 설정에는 <span class="copy">다 내려가면 다시 뒤집기</span>만 남아요</li>
+      <li>지금 상태(색 · 남은 시간)는 왼쪽 아래, 알림은 독 위에 떠요</li>
+      <li>키보드는 <b>스페이스 = 뒤집기</b> 하나만 받아요. 다른 키(방향키 기울이기 등)는 두지 않아요. 보드에서는 마우스를 올린 PC 화면에서 눌러 보세요</li>
+    </ul>
+  </aside>
+</section>
+
+<script src="../assets/sand-hourglass.js"></script>
+</body>
+</html>

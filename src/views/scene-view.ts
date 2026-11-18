@@ -13,7 +13,7 @@ import { Rain } from '../scenes/rain';
 import {
   GROUPS, SNOW, SUBWAY, WATER, createScene, groupOf, groupRoute, isSnow, isSubway, isWater, routeOf, type GroupId, type SceneId,
 } from '../scenes/registry';
-import { SAND_PALETTES, Sand, type SandPalette } from '../scenes/sand';
+import { SAND_PALETTES, Sand, isSandMode, type SandMode, type SandPalette } from '../scenes/sand';
 import { Sea } from '../scenes/sea';
 import { SNOW_FALLS, SnowScene } from '../scenes/snow';
 import { STAR_PHASES, STAR_SEASONS, Star, type StarPhase } from '../scenes/star';
@@ -32,7 +32,8 @@ const FIRE_FLIGHT = 380; // ms the light takes from the button to the river
 interface Level { v: number; label: string }
 const RAIN_LEVELS: readonly Level[] = [{ v: 0.25, label: '보슬비' }, { v: 0.6, label: '비' }, { v: 1, label: '장대비' }];
 const WAVE_LEVELS: readonly Level[] = [{ v: 0.6, label: '잔잔' }, { v: 1, label: '보통' }, { v: 1.5, label: '높음' }];
-const SAND_LEVELS: readonly Level[] = [{ v: 0.3, label: '솔솔' }, { v: 0.6, label: '보통' }, { v: 1, label: '콸콸' }];
+/** 모래멍: how long one run of the hourglass takes. */
+const SAND_MODES: readonly { v: SandMode; label: string }[] = [{ v: '15', label: '15분' }, { v: '30', label: '30분' }, { v: 'loop', label: '끝없이' }];
 const SNOW_LEVELS: readonly Level[] = SNOW_FALLS.map(({ v, label }) => ({ v, label }));
 const SHOW_LEVELS: readonly Level[] = SHOWS.map(({ v, label }) => ({ v, label }));
 const nearest = (levels: readonly Level[], v: number) =>
@@ -115,12 +116,12 @@ const COPY: Record<SceneId, Copy> = {
     land: '물멍 · 연못',
   },
   sand: {
-    now: '모래 소리 · <span data-bind="palette">노을</span>',
-    aside: '채움 <span data-bind="fill">0</span>%',
-    hint: '화면을 끌면 모래가 따라와요',
-    title: '모래 소리',
-    sub: '<span data-bind="speed">보통</span> · <span data-bind="palette">노을</span> · 채움 <span data-bind="fill">0</span>%',
-    keys: [{ keys: ['↑', '↓'], text: '속도 · <kbd>E</kbd> 비우기' }, { text: '화면을 끌면 모래가 따라와요' }],
+    now: '모래시계 소리 · <span data-bind="palette">노을</span>',
+    aside: '<span data-bind="sand-aside"></span>',
+    title: '모래시계 소리',
+    sub: '<span data-bind="palette">노을</span> · <span data-bind="sand-aside"></span>',
+    // Space (뒤집기) is shown on the dock's button itself
+    keys: [],
     land: '모래멍',
   },
   star: {
@@ -184,11 +185,8 @@ const NAME_GONE = 350; // ms the fade takes
 const phoneUpright = () =>
   matchMedia('(max-width: 767.98px)').matches && !matchMedia('(orientation: landscape) and (max-height: 500px)').matches;
 
-const swatch = (p: SandPalette, cls = '') => `<span class="swatch pal-${p} ${cls}" aria-hidden="true"></span>`;
-
-/** Tilt sensing exists (phones); iOS also wants to be asked from a tap. */
-type OrientationCtor = typeof DeviceOrientationEvent & { requestPermission?: () => Promise<'granted' | 'denied'> };
-const canTilt = () => typeof DeviceOrientationEvent !== 'undefined' && matchMedia('(pointer: coarse)').matches;
+/** 모래멍: a sample of the sand — a grainy ball for one colour, five stacked stripes for a set of bands. */
+const chip = (p: SandPalette) => `<span class="hg-chip hg-${p}" aria-hidden="true"></span>`;
 
 /** A full-screen scene with its controls, sound, sleep timer and immersive mode. */
 export class SceneView implements View {
@@ -393,14 +391,7 @@ export class SceneView implements View {
         main = this.seg(WAVE_LEVELS, 'wave', s.wave, '파도 크기');
         break;
       case 'sand':
-        // phones: the colour button shows the chosen set and opens the tray. Wide screens: the four sets and 비우기 are on the dock.
-        main = this.seg(SAND_LEVELS, 'sand-speed', s.sandSpeed, '모래 속도');
-        extra = `
-          <button class="dock-btn only-m" data-act="tray" aria-haspopup="dialog" aria-label="색 고르기"><span data-bind-swatch>${swatch(s.sandPalette)}</span></button>
-          <div class="pal-chips only-d" role="radiogroup" aria-label="색 고르기">${SAND_PALETTES.map((p) =>
-            `<button role="radio" data-act="palette" data-value="${p.id}" aria-label="${p.label}" title="${p.label}">${swatch(p.id)}</button>`).join('')}</div>
-          <button class="dock-btn only-d" data-act="sand-empty">${icon('sand')}<span>비우기</span></button>`;
-        break;
+        return this.sandDockHtml();
       case 'star':
         // the lit time shows a pin while it is held; fireflies only in summer
         main = `<div class="seg star-seg" role="group" aria-label="밤 깊이">${STAR_PHASES.map((p) =>
@@ -441,7 +432,7 @@ export class SceneView implements View {
       aquarium: { act: 'feed', icon: 'food', label: '먹이 주기' },
       sea: { act: 'wave-cycle', icon: 'waves', label: '파도 크기 바꾸기' },
       pond: { act: 'feed', icon: 'food', label: '먹이 주기' },
-      sand: { act: 'sand-cycle', icon: 'sand', label: '모래 속도 바꾸기' },
+      sand: { act: 'sand-flip', icon: 'flip', label: '뒤집기' },
       star: { act: 'meteor', icon: 'star', label: '별똥별' },
       clocktower: { act: 'snow-cycle', icon: 'snow', label: '눈 세기 바꾸기' },
       underfoot: { act: 'snow-cycle', icon: 'snow', label: '눈 세기 바꾸기' },
@@ -454,7 +445,9 @@ export class SceneView implements View {
       <div class="rail-group">${tabs}</div>
       <button class="rail-main" data-act="${m.act}" aria-label="${m.label}">${icon(m.icon)}</button>
       <div class="rail-group">
-        <button class="icon-btn" data-act="sheet" aria-label="설정">${icon('sliders')}</button>
+        ${this.sand
+          ? `<button class="icon-btn hg-pick" data-act="tray" aria-haspopup="dialog" aria-expanded="false" aria-label="모래 색 · 설정"><span data-bind-chip>${chip(settings().sandPalette)}</span></button>`
+          : `<button class="icon-btn" data-act="sheet" aria-label="설정">${icon('sliders')}</button>`}
         <button class="icon-btn" data-act="mute" data-bind-mute aria-label="소리 끄기">${icon('volume')}</button>
       </div>`;
   }
@@ -468,9 +461,7 @@ export class SceneView implements View {
     }).join('');
     const tend = this.fire
       ? `<label class="switch-row"><span><b>장작 알아서 넣기</b><small>불이 약해지면 장작을 하나씩 넣어요</small></span><input class="switch" type="checkbox" data-act="auto-tend" ${s.autoTend ? 'checked' : ''}></label>`
-      : this.sand
-        ? `<label class="switch-row"><span><b>가득 차면 저절로 비우기</b><small>끄면 가득 찼을 때 모래가 멈춰요</small></span><input class="switch" type="checkbox" data-act="auto-empty" ${s.sandAutoEmpty ? 'checked' : ''}></label>`
-        : this.star
+      : this.star
           ? `<h4>화면</h4><label class="switch-row"><span><b>별자리 알려 주기</b><small>가끔 별자리 하나를 이어 이름을 보여 줘요</small></span><input class="switch" type="checkbox" data-act="star-guide" ${s.starGuide ? 'checked' : ''}></label>`
           : this.snow
             ? `<h4>화면</h4><label class="switch-row"><span><b>발자국을 눈으로 덮기</b><small>${this.id === 'clocktower' ? '끄면 찍은 발자국과 쓴 자리가 그대로 남아요' : '끄면 찍은 발자국이 그대로 남아요'}</small></span><input class="switch" type="checkbox" data-act="snow-cover" ${s.snowCover ? 'checked' : ''}></label>`
@@ -504,20 +495,42 @@ export class SceneView implements View {
       </div>`;
   }
 
+  /**
+   * 모래멍 has no settings sheet: the dock is 색 · 시간 · 뒤집기 (wide screens add words, the Space hint and the volume),
+   * and the colour circle opens a tray with the sand colours and the two settings.
+   */
+  private sandDockHtml() {
+    const s = settings();
+    const cur = s.sandMode;
+    const seg = `<div class="seg" role="radiogroup" aria-label="시간">${SAND_MODES.map((m) =>
+      `<button role="radio" data-act="sand-mode" data-value="${m.v}" class="${m.v === cur ? 'on' : ''}" aria-checked="${m.v === cur}">${m.label}</button>`).join('')}</div>`;
+    return `
+      <button class="dock-btn hg-pick" data-act="tray" aria-haspopup="dialog" aria-expanded="false" aria-label="모래 색 · 설정"><span data-bind-chip>${chip(s.sandPalette)}</span><span class="only-d">모래 색</span></button>
+      <span class="sep only-d"></span>
+      ${seg}
+      <button class="dock-btn" data-act="sand-flip" aria-label="뒤집기" aria-keyshortcuts="Space" title="뒤집기 (스페이스)">${icon('flip')}<span class="only-d">뒤집기</span><kbd class="only-d">Space</kbd></button>
+      <span class="sep only-d"></span>
+      <div class="vol only-d"><button class="vol-btn" data-act="mute" data-bind-mute aria-label="소리 끄기">${icon('volume')}</button><input class="range" type="range" min="0" max="100" data-act="volume" aria-label="음량"></div>`;
+  }
+
   private sandTrayHtml() {
     const s = settings();
-    const tilt = canTilt()
-      ? `<label class="switch-row"><span><b>폰 기울여 방향 바꾸기</b><small>기울인 쪽으로 모래 줄기가 휘어요</small></span><input class="switch" type="checkbox" data-act="sand-tilt" ${s.sandTilt ? 'checked' : ''}></label>`
-      : '';
+    const layer = layersOf(this.id)[0];
+    const vol = layer ? Math.round(((s.mix[this.id] ?? {})[layer.id] ?? layer.def) * 100) : 0;
+    const group = (g: 'one' | 'band') => `<div class="hg-sw" role="radiogroup" aria-label="${g === 'one' ? '한 가지 색' : '색 띠'}">${SAND_PALETTES.filter((p) => p.group === g).map((p) =>
+      `<button role="radio" data-act="palette" data-value="${p.id}">${chip(p.id)}${p.label}</button>`).join('')}</div>`;
     return `
-      <div class="tray pal-tray glass-strong" role="dialog" aria-label="색 고르기">
+      <div class="tray hg-tray glass-strong" role="dialog" aria-label="모래 색 · 설정">
         <div class="grab"></div>
-        <div class="tray-head"><h4>색 고르기</h4><span>지금부터 떨어지는 모래가 바뀌어요</span></div>
-        <div class="pals" role="radiogroup" aria-label="색 묶음">${SAND_PALETTES.map((p) =>
-          `<button class="pal-pick" role="radio" data-act="palette" data-value="${p.id}">${swatch(p.id, 'big')}<b>${p.label}</b></button>`).join('')}</div>
-        <label class="switch-row"><span><b>가득 차면 저절로 비우기</b><small>끄면 가득 찼을 때 모래가 멈춰요</small></span><input class="switch" type="checkbox" data-act="auto-empty" ${s.sandAutoEmpty ? 'checked' : ''}></label>
-        ${tilt}
-        <button class="tray-go" data-act="sand-empty">${icon('sand')}지금 비우기</button>
+        <div class="tray-head"><h4>모래 색</h4><span>쌓인 모양은 그대로, 색만 바뀌어요</span></div>
+        <h5>한 가지 색</h5>
+        ${group('one')}
+        <h5>색 띠</h5>
+        ${group('band')}
+        <div class="hg-sep"></div>
+        <div class="tray-head"><h4>설정</h4><span class="only-m">독의 시간과 함께 써요</span><span class="only-d">소리 크기는 독에서 조절해요</span></div>
+        ${layer ? `<label class="mix-row hg-vol only-m">${icon(layer.icon, 'sm')}<span>${layer.label}</span><input class="range" type="range" min="0" max="100" value="${vol}" data-act="mix" data-layer="${layer.id}" aria-label="${layer.label} 크기"><span class="val">${vol}</span></label>` : ''}
+        <label class="switch-row"><span><b>다 내려가면 다시 뒤집기</b><small>켜면 15분 · 30분이 끝난 뒤 다시 시작해요</small></span><input class="switch" type="checkbox" data-act="sand-autoflip" ${s.sandAutoflip ? 'checked' : ''}></label>
       </div>`;
   }
 
@@ -547,7 +560,12 @@ export class SceneView implements View {
     } else if (key === 'embers') this.el.classList.toggle('is-embers', value > 0);
     else if (key === 'phase' || key === 'hold' || key === 'season' || key === 'rush') this.refreshLabels();
     else if (key === 'hush') this.el.classList.toggle('is-hush', value > 0);
-    else if (key === 'full') this.toast(value ? '가득 찼어요. 비우고 다시 쌓을게요' : '가득 찼어요. 비우기를 누르면 다시 쌓여요');
+    else if (key === 'left') this.bind('sand-aside', `남은 ${formatClock(value * 1000)}`);
+    else if (key === 'flips') this.bind('sand-aside', `뒤집기 ${value}번`);
+    else if (key === 'done' && this.sand) {
+      const m = this.sand.mode;
+      this.toast(value ? `${m}분이 다 됐어요 · 다시 뒤집어요` : `${m}분이 다 됐어요`);
+    }
     else this.bind(key, value);
   }
 
@@ -569,16 +587,19 @@ export class SceneView implements View {
       this.syncSeg('wave', this.sea.size, WAVE_LEVELS);
     }
     if (this.sand) {
-      const pal = this.sand.palette;
-      this.bind('speed', nearest(SAND_LEVELS, this.sand.speed).label);
+      const { palette: pal, mode } = this.sand;
       this.bind('palette', SAND_PALETTES.find((p) => p.id === pal)?.label ?? '');
-      this.syncSeg('sand-speed', this.sand.speed, SAND_LEVELS);
       this.el.querySelectorAll<HTMLElement>('[data-act="palette"]').forEach((b) => {
         const on = b.dataset.value === pal;
         b.classList.toggle('on', on);
         b.setAttribute('aria-checked', String(on));
       });
-      this.el.querySelectorAll<HTMLElement>('[data-bind-swatch]').forEach((n) => { n.innerHTML = swatch(pal); });
+      this.el.querySelectorAll<HTMLElement>('[data-act="sand-mode"]').forEach((b) => {
+        const on = b.dataset.value === mode;
+        b.classList.toggle('on', on);
+        b.setAttribute('aria-checked', String(on));
+      });
+      this.el.querySelectorAll<HTMLElement>('[data-bind-chip]').forEach((n) => { n.innerHTML = chip(pal); });
     }
     if (this.star) {
       const st = this.star;
@@ -889,11 +910,11 @@ export class SceneView implements View {
     this.toast(on ? '별자리를 알려 줄게요' : '별자리 알려 주기를 껐어요');
   }
 
-  /* ---------- 모래멍: the frame, the stream under the hand, tilt ---------- */
+  /* ---------- 모래멍: the hourglass on the table, leaning under the hand ---------- */
   private setupSand() {
     const sand = this.sand!;
     const canvas = this.host.canvas;
-    // the sand rests on the stand just above the controls and counts as full when it reaches the tabs
+    // it stands between the tabs and the controls
     const place = () => {
       const view = this.el.getBoundingClientRect();
       const tops = ['.m-status', '.dock']
@@ -902,39 +923,25 @@ export class SceneView implements View {
         .map((r) => r.top);
       const top = this.$('.topbar').getBoundingClientRect();
       sand.setEdges(
-        top.height > 0 ? top.bottom - view.top + 10 : null,
-        tops.length ? Math.min(...tops) - view.top - 10 : null,
+        top.height > 0 ? top.bottom - view.top : null,
+        tops.length ? Math.min(...tops) - view.top : null,
       );
     };
     place();
     this.listen(window, 'resize', place);
+    // dragging sideways leans the glass; letting go, it settles back
     this.listen(canvas, 'pointerdown', (e: PointerEvent) => {
       if (this.blocking) return;
       canvas.setPointerCapture(e.pointerId);
       sand.dragStart(this.host.toScene(e.clientX, e.clientY)[0]);
-      this.el.classList.add('hint-done');
     });
     this.listen(canvas, 'pointermove', (e: PointerEvent) => {
       if (sand.dragMove(this.host.toScene(e.clientX, e.clientY)[0])) this.armIdle();
     });
     for (const type of ['pointerup', 'pointercancel']) this.listen(canvas, type, () => sand.dragEnd());
-    // left-right lean of the phone, whichever way it is held
-    this.listen(window, 'deviceorientation', (e: Event) => {
-      if (!settings().sandTilt) return;
-      const o = e as DeviceOrientationEvent;
-      const angle = screen.orientation?.angle ?? 0;
-      const lean = angle === 90 ? o.beta : angle === 270 ? -(o.beta ?? 0) : o.gamma;
-      sand.setTilt((lean ?? 0) / 30);
-    });
   }
 
-  private setSandSpeed(v: number) {
-    this.sand?.setSpeed(v);
-    save({ sandSpeed: v });
-    this.refreshLabels();
-    this.toast(nearest(SAND_LEVELS, v).label);
-  }
-
+  /** The colour changes at once: the sand keeps its shape and the new colour spreads over it. */
   private setPalette(id: SandPalette) {
     if (!this.sand || !SAND_PALETTES.some((p) => p.id === id)) return;
     this.sand.setPalette(id);
@@ -942,25 +949,15 @@ export class SceneView implements View {
     this.refreshLabels();
   }
 
-  private emptySand() {
-    this.sand?.empty();
-    this.closeAll();
+  private setSandMode(m: SandMode) {
+    if (!this.sand || !isSandMode(m)) return;
+    this.sand.setMode(m);
+    save({ sandMode: m });
+    this.refreshLabels();
   }
 
-  /** iOS only hands out tilt after asking from a tap; elsewhere it just works. */
-  private async setTilt(on: boolean, box: HTMLInputElement) {
-    if (on) {
-      const ask = (DeviceOrientationEvent as OrientationCtor).requestPermission;
-      if (ask) {
-        const ok = await ask.call(DeviceOrientationEvent).then((r) => r === 'granted', () => false);
-        if (!ok) {
-          box.checked = false;
-          this.toast('기울기 권한이 없어서 켤 수 없어요');
-          return;
-        }
-      }
-    } else this.sand?.setTilt(0);
-    save({ sandTilt: on });
+  private flipSand() {
+    this.sand?.flip();
   }
 
   /* ---------- 눈멍: footprints, sweeping (시계탑), walking (발밑) ---------- */
@@ -1122,6 +1119,8 @@ export class SceneView implements View {
     } else if (this.star) {
       this.star.meteor();
       this.el.classList.add('hint-done');
+    } else if (this.sand) {
+      this.flipSand();
     } else if (this.subway) {
       this.fireFromButton(fromKey);
       this.el.classList.add('hint-done');
@@ -1170,10 +1169,6 @@ export class SceneView implements View {
       const i = WAVE_LEVELS.indexOf(nearest(WAVE_LEVELS, this.sea.size));
       const next = WAVE_LEVELS[Math.max(0, Math.min(WAVE_LEVELS.length - 1, i + dir))];
       this.setWave(next.v);
-    } else if (this.sand) {
-      const i = SAND_LEVELS.indexOf(nearest(SAND_LEVELS, this.sand.speed));
-      const next = SAND_LEVELS[Math.max(0, Math.min(SAND_LEVELS.length - 1, i + dir))];
-      this.setSandSpeed(next.v);
     } else if (this.snow) {
       const i = SNOW_LEVELS.indexOf(nearest(SNOW_LEVELS, this.snow.fall.v));
       const next = SNOW_LEVELS[Math.max(0, Math.min(SNOW_LEVELS.length - 1, i + dir))];
@@ -1192,9 +1187,6 @@ export class SceneView implements View {
     } else if (this.sea) {
       const i = WAVE_LEVELS.indexOf(nearest(WAVE_LEVELS, this.sea.size));
       this.setWave(WAVE_LEVELS[(i + 1) % WAVE_LEVELS.length].v);
-    } else if (this.sand) {
-      const i = SAND_LEVELS.indexOf(nearest(SAND_LEVELS, this.sand.speed));
-      this.setSandSpeed(SAND_LEVELS[(i + 1) % SAND_LEVELS.length].v);
     } else if (this.snow) {
       const i = SNOW_LEVELS.indexOf(nearest(SNOW_LEVELS, this.snow.fall.v));
       this.setSnowFall(SNOW_LEVELS[(i + 1) % SNOW_LEVELS.length].v);
@@ -1296,14 +1288,14 @@ export class SceneView implements View {
       case 'wave':
         this.setWave(Number(t.dataset.value));
         break;
-      case 'sand-speed':
-        this.setSandSpeed(Number(t.dataset.value));
+      case 'sand-mode':
+        this.setSandMode(t.dataset.value as SandMode);
+        break;
+      case 'sand-flip':
+        this.flipSand();
         break;
       case 'palette':
         this.setPalette(t.dataset.value as SandPalette);
-        break;
-      case 'sand-empty':
-        this.emptySand();
         break;
       case 'snow-fall':
         this.setSnowFall(Number(t.dataset.value));
@@ -1319,7 +1311,6 @@ export class SceneView implements View {
         break;
       case 'rain-cycle':
       case 'wave-cycle':
-      case 'sand-cycle':
       case 'snow-cycle':
         this.cycleLevel();
         break;
@@ -1383,13 +1374,10 @@ export class SceneView implements View {
     if (t.dataset.act === 'auto-tend' && this.fire) {
       this.fire.autoTend = t.checked;
       save({ autoTend: t.checked });
-    } else if (t.dataset.act === 'auto-empty' && this.sand) {
-      this.sand.autoEmpty = t.checked;
-      save({ sandAutoEmpty: t.checked });
-      // the same switch is in the tray and in the sheet
-      this.el.querySelectorAll<HTMLInputElement>('[data-act="auto-empty"]').forEach((b) => { b.checked = t.checked; });
-    } else if (t.dataset.act === 'sand-tilt') void this.setTilt(t.checked, t);
-    else if (t.dataset.act === 'star-guide') this.setGuide(t.checked);
+    } else if (t.dataset.act === 'sand-autoflip' && this.sand) {
+      this.sand.setAutoflip(t.checked);
+      save({ sandAutoflip: t.checked });
+    } else if (t.dataset.act === 'star-guide') this.setGuide(t.checked);
     else if (t.dataset.act === 'snow-cover' && this.snow) {
       this.snow.setCover(t.checked);
       save({ snowCover: t.checked });
@@ -1418,16 +1406,13 @@ export class SceneView implements View {
       }
       case 'ArrowUp':
       case 'ArrowDown':
-        if (this.rain || this.sea || this.sand || this.snow || this.subway) {
+        if (this.rain || this.sea || this.snow || this.subway) {
           e.preventDefault();
           this.stepLevel(e.code === 'ArrowUp' ? 1 : -1);
         } else if (this.star) {
           e.preventDefault();
           this.stepPhase(e.code === 'ArrowUp' ? 1 : -1);
         }
-        break;
-      case 'KeyE':
-        this.emptySand();
         break;
       case 'KeyN':
         this.freshSnow();
@@ -1467,6 +1452,7 @@ export class SceneView implements View {
       this.fire?.setLift(true);
       this.placeDropZone();
       this.el.querySelector('.wood-split .pick')?.setAttribute('aria-expanded', 'true');
+      this.el.querySelectorAll('.hg-pick').forEach((b) => b.setAttribute('aria-expanded', 'true'));
     }
   }
 
@@ -1474,6 +1460,7 @@ export class SceneView implements View {
     this.el.classList.remove('sheet-open', 'tray-open');
     this.fire?.setLift(false);
     this.el.querySelector('.wood-split .pick')?.setAttribute('aria-expanded', 'false');
+    this.el.querySelectorAll('.hg-pick').forEach((b) => b.setAttribute('aria-expanded', 'false'));
     this.armIdle();
   }
 
@@ -1488,7 +1475,6 @@ export class SceneView implements View {
       this.host.paused = true;
       audio.suspend();
     }, SLEEP_AFTER);
-    this.sand?.setTaper(true);
     this.star?.setTaper(true);
   }
 
@@ -1496,7 +1482,6 @@ export class SceneView implements View {
     window.clearTimeout(this.sleepTimer);
     this.el.classList.remove('end-open', 'is-asleep');
     this.host.paused = false;
-    this.sand?.setTaper(false);
     this.star?.setTaper(false);
     audio.resume();
     timer.extend(10);

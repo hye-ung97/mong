@@ -74,10 +74,10 @@ export function createScene(id: SceneId, variant: SceneVariant, s: Settings): Sc
     case 'pond':
       return new Pond(variant, { drizzle: variant === 'full' && s.drizzle, season: s.season });
     case 'sand':
-      // the home card always pours fast in the default colours, so there is something to watch right away
+      // the home card is always 노을, part-way through, at a quicker pace, so there is something to watch right away
       return variant === 'card'
-        ? new Sand(variant, { speed: 1 })
-        : new Sand(variant, { speed: s.sandSpeed, palette: s.sandPalette, autoEmpty: s.sandAutoEmpty });
+        ? new Sand(variant)
+        : new Sand(variant, { palette: s.sandPalette, mode: s.sandMode, autoflip: s.sandAutoflip });
     case 'star':
       // the home card is the season outside at midnight, without the constellation names
       return variant === 'card'

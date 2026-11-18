@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="doan:canvas" content="sand-sound">
+<meta name="doan:width" content="2300">
+<title>모래멍 소리 후보</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/mong.css">
+<link rel="stylesheet" href="../assets/sand.css">
+<link rel="stylesheet" href="../assets/sand-hourglass.css">
+<link rel="stylesheet" href="../assets/sand-listen.css">
+</head>
+<body class="board listen-board theme-sand">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- source: .doan/canvases/subway-sound.html (i-play) · .doan/canvases/sand-hourglass.html (i-flip) -->
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></symbol>
+    <symbol id="i-flip" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></symbol>
+  </defs>
+</svg>
+
+<section class="row first">
+  <div class="row-head"><span class="row-no">모래멍 · 소리</span><h2>모래시계 소리 후보 · 들어 보고 고르기</h2><p>줄기 · 사태 · 뒤집기 · 끝 · 방. 전부 Freesound 의 CC0 녹음이에요</p></div>
+  <div class="row-body">
+    <div class="sand-listen" data-listen data-doan-frame="sand-sound-pick" data-doan-title="소리 후보 · 들어 보고 고르기">
+      <p>줄마다 재생 버튼으로 하나씩 들어 보세요. ‘같이 듣기에 넣기’를 누르면 층마다 하나씩 골라 위에서 한꺼번에 들어 볼 수 있어요. 같이 듣기는 왼쪽 모래시계를 따라가요. 모래가 흐르는 동안 줄기가 들리고 가끔 사태가 나고, 다 내려가면 끝 소리, 뒤집힐 때 뒤집기 소리가 나요. 녹음마다 크기가 달라서 같이 듣기에서는 비슷한 크기로 맞춰 틀어요. 설명은 올린 사람이 쓴 글과, 미리듣기의 소리 크기를 재서 적은 거예요. <b>제가 귀로 들어 본 건 아니라서</b>, 어떻게 들리는지는 직접 듣고 골라 주세요. 소리는 Freesound 미리듣기를 바로 불러와서 인터넷이 필요해요.</p>
+
+      <div class="mix" data-doan-id="sand-mix">
+        <div class="mix-mini">
+          <div class="screen hg-mini theme-sand"><canvas class="scene" data-hg data-palette="desert" data-mode="loop" data-cycle="40" data-prefill="0.5" data-top="120"></canvas></div>
+          <button class="mini-flip" type="button" data-mini-flip><svg class="ico"><use href="#i-flip"/></svg>뒤집기</button>
+        </div>
+        <div class="mix-side">
+          <div class="mix-head">
+            <button class="mix-play" type="button" data-mix-play aria-pressed="false"><svg class="ico"><use href="#i-play"/></svg><span>같이 듣기</span></button>
+            <span class="mix-hint">보드에서는 40초에 한 번 다 내려가고, 2초 쉬었다 저절로 뒤집혀요</span>
+            <span class="mix-state" data-mix-state role="status"></span>
+          </div>
+          <div class="mix-row" data-mix-layer="stream" data-kind="bed"><b>줄기</b><span class="mix-name"></span><span class="mix-when">흐르는 동안</span><input type="range" min="0" max="100" value="80" aria-label="줄기 음량"><span class="mix-vol"></span></div>
+          <div class="mix-row" data-mix-layer="slide" data-kind="shot"><b>사태</b><span class="mix-name"></span><button type="button" data-mix-once>한 번</button><input type="range" min="0" max="100" value="60" aria-label="사태 음량"><span class="mix-vol"></span></div>
+          <div class="mix-row" data-mix-layer="flip" data-kind="shot"><b>뒤집기</b><span class="mix-name"></span><button type="button" data-mix-once>한 번</button><input type="range" min="0" max="100" value="70" aria-label="뒤집기 음량"><span class="mix-vol"></span></div>
+          <div class="mix-row" data-mix-layer="end" data-kind="shot"><b>끝</b><span class="mix-name"></span><button type="button" data-mix-once>한 번</button><input type="range" min="0" max="100" value="60" aria-label="끝 음량"><span class="mix-vol"></span></div>
+          <div class="mix-row" data-mix-layer="room" data-kind="bed"><b>방</b><span class="mix-name"></span><span class="mix-when">늘</span><input type="range" min="0" max="100" value="30" aria-label="방 음량"><span class="mix-vol"></span></div>
+        </div>
+      </div>
+
+      <!-- ================= 줄기 ================= -->
+      <h4><span class="layer-no">줄기</span>목을 지나는 가는 모래. 흐르는 내내 깔리는 바탕이에요</h4>
+      <p class="rec-line"><b>추천 1번.</b> 진짜 작은 장식용 모래시계를 가까이에서, 바탕 잡음과 울림 없이 녹음했다고 적혀 있어요. 지금 소리(그릇에 붓는 모래)보다 모래시계에 가까울 거예요. 흐르는 구간이 16초 · 15초 두 번이라, 고르게 이어지는 구간(0:24~0:37)을 잘라 이어 붙여요. 1번이 너무 맑거나 얇으면 2번(역시 모래시계)이나 3번(소금, 더 촘촘)을 들어 보세요.</p>
+      <div class="cand base" data-doan-id="snd-516921" data-layer="stream" data-src="https://cdn.freesound.org/previews/516/516921_2094018-hq.mp3" data-gain="2.8" data-start="27" data-short="지금 · 모래와 소금 붓기">
+        <span class="no">0</span>
+        <span class="name"><b>pouring sand and salt 1.mp3</b><a href="https://freesound.org/people/mariethompson/sounds/516921/">mariethompson · #516921</a><small>1분 · CC0 · 지금 앱의 pour.m4a (0:27부터 31초)</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/516/516921_2094018-hq.mp3"></audio>
+        <span class="why">비교용 <b>지금 소리</b>예요. 올린 사람 설명: ‘모래와 소금을 쭉 붓는데 가끔 끊겨요’. 모래시계가 아니라 붓는 소리라 굵게 들릴 수 있어요. 같이 듣기는 0:27부터 틀어요.<span class="m">전체 -36 dBFS RMS · 1초 단위 -27 ~ -57 (끊김이 있어요)</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand pick in-mix" data-doan-id="snd-825859" data-layer="stream" data-src="https://cdn.freesound.org/previews/825/825859_13973196-hq.mp3" data-gain="3.2" data-short="장식용 모래시계 · 가까이">
+        <span class="no">1</span>
+        <span class="name"><b>Hourglass - Sand flow light</b><a href="https://freesound.org/people/Vrymaa/sounds/825859/">Vrymaa · #825859</a><small>49초 · CC0 · 작은 장식용 모래시계 (한 번에 20초)</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/825/825859_13973196-hq.mp3"></audio>
+        <span class="why">‘작은 장식용 모래시계에서 모래가 흘러내려요. <b>바탕 잡음 · 울림 없이 가까이에서</b>’라고 적혀 있어요. 흐르는 구간이 0:00~0:16, 0:23~0:38 두 번이고, 갈수록 조금씩 작아져요. 같이 듣기는 사이의 조용한 7초까지 그대로 되풀이해요.<span class="m">전체 -43 dBFS RMS · 흐를 때 -37 ~ -44 · 끝에 -48 ~ -61로 잦아들어요</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand" data-doan-id="snd-706231" data-layer="stream" data-src="https://cdn.freesound.org/previews/706/706231_15146562-hq.mp3" data-gain="7.1" data-start="3" data-short="막 뒤집은 모래시계">
+        <span class="no">2</span>
+        <span class="name"><b>HourglassSample.m4a</b><a href="https://freesound.org/people/trolandsound/sounds/706231/">trolandsound · #706231</a><small>12초 · CC0 · 막 뒤집은 모래시계, 바닥에 떨어지는 모래</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/706/706231_15146562-hq.mp3"></audio>
+        <span class="why">‘막 뒤집은 모래시계. 모래가 바닥을 치고, 모래시계가 살짝 흔들려 <b>물결치는 느낌</b>이 더해져요’. 0:03부터는 크기가 아주 고르게(-46 ~ -48) 이어져요. 대신 9초뿐이고 작게 녹음돼서 많이 키우면 잡음도 커져요. 같이 듣기는 0:03부터 틀어요.<span class="m">전체 -39 dBFS RMS · 0:03 뒤 -47 고르게 · 0:02에 -21 큰 소리 하나</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand" data-doan-id="snd-137259" data-layer="stream" data-src="https://cdn.freesound.org/previews/137/137259_2515465-hq.mp3" data-gain="0.5" data-short="소금 붓기 · 8cm">
+        <span class="no">3</span>
+        <span class="name"><b>Salt pour.wav</b><a href="https://freesound.org/people/xenognosis/sounds/137259/">xenognosis · #137259</a><small>17초 · CC0 · 소금을 쇠 · 유리 그릇에 부어요, 8~10cm 거리</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/137/137259_2515465-hq.mp3"></audio>
+        <span class="why">가는 알갱이(소금)를 <b>유리 그릇</b>에 붓는 소리라, 유리 안으로 떨어지는 느낌에 가까울 수 있어요. 17초 내내 끊김 없이 이어져요. 쇠 그릇 소리도 섞여 있어요. 0:08에 한 번 크게 튀어요.<span class="m">전체 -23 dBFS RMS · 1초 단위 -23 ~ -28 · 0:08 -13</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand" data-doan-id="snd-98794" data-layer="stream" data-src="https://cdn.freesound.org/previews/98/98794_917901-hq.mp3" data-gain="1.5" data-short="설탕 붓기">
+        <span class="no">4</span>
+        <span class="name"><b>pouring sugar.wav</b><a href="https://freesound.org/people/davahey/sounds/98794/">davahey · #98794</a><small>34초 · CC0 · 컵에서 그릇으로 설탕을 부어요 · 4,582번 받았어요</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/98/98794_917901-hq.mp3"></audio>
+        <span class="why">설명은 ‘컵에서 그릇으로 설탕 붓기’뿐이에요. 붓기 시작할 때마다 크게 튀는 소리(0:00 · 0:10 · 0:23)가 있어서, 그 사이 고른 구간만 써야 해요.<span class="m">전체 -30 dBFS RMS · 사이 구간 -36 ~ -40</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand" data-doan-id="snd-684134" data-layer="stream" data-src="https://cdn.freesound.org/previews/684/684134_1951924-hq.mp3" data-gain="1.75" data-short="통 안에서 구르는 소금">
+        <span class="no">5</span>
+        <span class="name"><b>2023-04-14 02.40.40 sal mundi.flac</b><a href="https://freesound.org/people/arseniiv/sounds/684134/">arseniiv · #684134</a><small>2분 18초 · CC0 · 돌리는 플라스틱 통 안에서 끝없이 구르는 소금</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/684/684134_1951924-hq.mp3"></audio>
+        <span class="why">‘굵은 소금과 덩어리가 <b>쉬지 않고</b> 이쪽저쪽으로 떨어져요’. 가장 길게 고르게 이어지지만, 덩어리와 플라스틱 통 소리라 가는 줄기보다 거칠 수 있어요. 휴대폰으로 녹음했대요.<span class="m">전체 -35 dBFS RMS · 1초 단위 -30 ~ -38 고르게</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+
+      <!-- ================= 사태 ================= -->
+      <h4><span class="layer-no">사태</span>아래 원뿔이 사르르 흘러내릴 때. 한 번씩 틀어요</h4>
+      <p class="rec-line"><b>추천 1번.</b> ‘유리 위를 미끄러지는 모래’라서 모래시계 안 비탈과 가장 닮은 자리예요. 9.6초 안에서 1~2초짜리 두세 개를 잘라 번갈아 틀어요. 너무 크게 들리면 2번(손에서 떨어지는 모래)이나 5번(모래 더미에 붓기)을 들어 보세요.</p>
+      <div class="cand pick in-mix" data-doan-id="snd-199395" data-layer="slide" data-src="https://cdn.freesound.org/previews/199/199395_2320755-hq.mp3" data-gain="1.9" data-start="1.5" data-len="3" data-short="유리 위를 미끄러지는 모래">
+        <span class="no">1</span>
+        <span class="name"><b>sand slide on glass FF676.aif</b><a href="https://freesound.org/people/martinimeniscus/sounds/199395/">martinimeniscus · #199395</a><small>10초 · CC0 · 유리 위를 미끄러지는 모래</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/199/199395_2320755-hq.mp3"></audio>
+        <span class="why">설명은 ‘모래, 미끄러짐, 유리’ 세 낱말이에요. <b>유리 · 모래 · 미끄러짐</b>이 다 맞아요. 0:02부터 고르게 이어져요. 같이 듣기는 1.5초부터 3초만 잘라 틀어요.<span class="m">전체 -38 dBFS RMS · 0:02 뒤 -34 ~ -39</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand" data-doan-id="snd-859912" data-layer="slide" data-src="https://cdn.freesound.org/previews/859/859912_7414526-hq.mp3" data-gain="0.67" data-short="손에서 떨어지는 모래">
+        <span class="no">2</span>
+        <span class="name"><b>Shifting sand</b><a href="https://freesound.org/people/DigPro120/sounds/859912/">DigPro120 · #859912</a><small>4초 · CC0 · 손에 쥔 모래가 바닥으로 떨어져요</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/859/859912_7414526-hq.mp3"></audio>
+        <span class="why">‘손에 쥔 모래가 떨어지는 소리’. 시작이 크고 갈수록 잦아들어서 <b>한 번 쏟아지고 멎는</b> 모양이에요. 휴대폰(아이폰 12)으로 녹음했대요.<span class="m">전체 -29 dBFS RMS · -23 → -39로 잦아들어요</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand" data-doan-id="snd-326304" data-layer="slide" data-src="https://cdn.freesound.org/previews/326/326304_3271346-hq.mp3" data-gain="1.3" data-short="모래처럼 다듬은 자갈">
+        <span class="no">3</span>
+        <span class="name"><b>sandfall5.wav</b><a href="https://freesound.org/people/Wagna/sounds/326304/">Wagna · #326304</a><small>4.5초 · CC0 · 자갈 녹음을 모래처럼 다듬었어요 · 3,237번 받았어요</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/326/326304_3271346-hq.mp3"></audio>
+        <span class="why">‘쏟아지는 모래 소리가 필요해서 <b>자갈 녹음</b>(lolamadeus #179341)을 많이 고쳤어요’. 진짜 모래가 아니에요. 원본도 CC0 예요.<span class="m">전체 -34 dBFS RMS · 1초 단위 -32 ~ -39</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand" data-doan-id="snd-467301" data-layer="slide" data-src="https://cdn.freesound.org/previews/467/467301_9895957-hq.mp3" data-gain="8" data-short="삽에서 천천히 미끄러지는 모래">
+        <span class="no">4</span>
+        <span class="name"><b>Sand slidding out of shovel slowly.wav</b><a href="https://freesound.org/people/XfiXy8/sounds/467301/">XfiXy8 · #467301</a><small>4.5초 · CC0 · 삽에서 모래 위로 천천히 미끄러지는 모래</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/467/467301_9895957-hq.mp3"></audio>
+        <span class="why">‘삽에서 모래 더미 위로’ 천천히 흘러내려요. 다만 같은 설명에 <b>‘쟁반 위 클립’</b>도 적혀 있어서, 진짜 모래인지 폴리(흉내 낸 소리)인지 들어 봐야 알아요. 아주 작게 녹음돼서 가장 많이 키워도 다른 후보보다 작아요.<span class="m">전체 -54 dBFS RMS · 최대 -30</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand" data-doan-id="snd-627070" data-layer="slide" data-src="https://cdn.freesound.org/previews/627/627070_457982-hq.mp3" data-gain="1.3" data-start="11" data-len="4" data-short="모래 더미에 붓기 · 가까이">
+        <span class="no">5</span>
+        <span class="name"><b>SAND POUR.wav</b><a href="https://freesound.org/people/nicoproson/sounds/627070/">nicoproson · #627070</a><small>1분 3초 · CC0 · 모래를 한 줌 쥐어 모래 더미에 부어요, 가까이 · 2,892번 받았어요</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/627/627070_457982-hq.mp3"></audio>
+        <span class="why"><b>모래가 모래 더미 위로</b> 떨어지는 소리라 원뿔 위 사태와 재료가 같아요. 한 줌씩 여러 번이라 잘라 쓸 거리가 많아요. 같이 듣기는 0:11부터 4초만 틀어요.<span class="m">전체 -41 dBFS RMS · 붓는 동안 -33 ~ -46</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+
+      <!-- ================= 뒤집기 ================= -->
+      <h4><span class="layer-no">뒤집기</span>모래시계를 뒤집어 나무 탁자에 내려놓을 때. 한 번씩 틀어요</h4>
+      <p class="rec-line"><b>추천 0번 + 2번.</b> 0번은 지금 쓰는 녹음의 앞부분, 작은 모래시계를 실제로 뒤집는 2.4초예요 (앱은 이 부분을 잘라 냈어요). 내려놓는 ‘톡’이 약하면 2번(큰 유리병을 나무 탁자에 내려놓기)을 뒤에 살짝 겹쳐요. 1번(막 뒤집은 모래시계)도 0:02에 큰 소리가 있어서 들어 볼 만해요.</p>
+      <div class="cand base pick in-mix" data-doan-id="snd-625655" data-layer="flip" data-src="https://cdn.freesound.org/previews/625/625655_9129912-hq.mp3" data-gain="4" data-start="0" data-len="2.4" data-short="지금 녹음의 앞부분 · 작은 모래시계 뒤집기">
+        <span class="no">0</span>
+        <span class="name"><b>Turning a Small Hour Glass.wav</b><a href="https://freesound.org/people/el_boss/sounds/625655/">el_boss · #625655</a><small>12.5초 · CC0 · 지금 앱의 empty.m4a (0:02부터 4.2초)</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/625/625655_9129912-hq.mp3"></audio>
+        <span class="why">‘아주 작은 모래시계를 <b>뒤집는 소리</b>, 모래 소리를 가까이에서’. 지금 앱은 0:02 뒤 모래 소리만 써요. 같이 듣기는 앞 2.4초(뒤집는 부분)만 틀어요. 뒤집는 소리 자체는 작아요.<span class="m">전체 -41 dBFS RMS · 0:00~0:02.4 최대 -32 (0.1초 단위)</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand" data-doan-id="snd-706231-flip" data-layer="flip" data-src="https://cdn.freesound.org/previews/706/706231_15146562-hq.mp3" data-gain="0.9" data-start="0" data-len="3.2" data-short="막 뒤집은 모래시계 · 앞 3초">
+        <span class="no">1</span>
+        <span class="name"><b>HourglassSample.m4a</b><a href="https://freesound.org/people/trolandsound/sounds/706231/">trolandsound · #706231</a><small>12초 · CC0 · 줄기 2번과 같은 녹음의 앞 3초</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/706/706231_15146562-hq.mp3"></audio>
+        <span class="why">‘막 뒤집은’ 모래시계라 앞부분에 뒤집기가 들어 있을 수 있어요. 0:02에 또렷하게 큰 소리가 하나 있는데, <b>내려놓는 소리인지 첫 모래가 닿는 소리인지는</b> 설명에 없어요.<span class="m">0:00~0:03 · 0:02.1에 -21 (0.1초 단위)</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand pick" data-doan-id="snd-235498" data-layer="flip" data-src="https://cdn.freesound.org/previews/235/235498_4255182-hq.mp3" data-gain="1.6" data-short="큰 유리병 · 나무 탁자">
+        <span class="no">2</span>
+        <span class="name"><b>glass jar_set on table_2.wav</b><a href="https://freesound.org/people/ekfink/sounds/235498/">ekfink · #235498</a><small>1.2초 · CC0 · 큰 유리병을 나무 탁자에 내려놓아요 · 1,213번 받았어요</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/235/235498_4255182-hq.mp3"></audio>
+        <span class="why"><b>유리 + 나무 탁자</b>, 장면과 재료가 같아요. 내려놓는 한 번만 있어서 자를 필요가 없어요. 모래시계 마개는 나무라 실제보다 쨍하게 들릴 수 있어요.<span class="m">-36 dBFS RMS · 최대 -26 (0.1초 단위)</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand" data-doan-id="snd-471914" data-layer="flip" data-src="https://cdn.freesound.org/previews/471/471914_3248005-hq.mp3" data-gain="2" data-start="0" data-len="0.9" data-short="유리잔 · 나무 탁자">
+        <span class="no">3</span>
+        <span class="name"><b>Glass: Putting down 1</b><a href="https://freesound.org/people/Sheyvan/sounds/471914/">Sheyvan · #471914</a><small>9초 · CC0 · 유리잔을 나무 탁자에 놓아요 · 3,843번 받았어요</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/471/471914_3248005-hq.mp3"></audio>
+        <span class="why">‘유리잔을 나무 탁자에 놓기’. 1초마다 한 번씩 <b>여러 번</b> 놓여 있어서 골라 쓸 수 있어요. 같이 듣기는 첫 번째(0:00, 0.9초)만 틀어요.<span class="m">-39 dBFS RMS · 놓을 때마다 최대 -27 ~ -30</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand" data-doan-id="snd-610391" data-layer="flip" data-src="https://cdn.freesound.org/previews/610/610391_10443988-hq.mp3" data-gain="1" data-start="0" data-len="1.8" data-short="유리잔 · 나무 탁자 · 부엌">
+        <span class="no">4</span>
+        <span class="name"><b>Glass on wood table - manipulation - handle - clink.wav</b><a href="https://freesound.org/people/ValentinPetiteau/sounds/610391/">ValentinPetiteau · #610391</a><small>5초 · CC0 · 유리잔을 들었다 나무 탁자에 놓아요</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/610/610391_10443988-hq.mp3"></audio>
+        <span class="why">‘나무에 닿는 작은 소리’. <b>부엌 울림</b>이 있다고 적혀 있어서 따뜻한 방보다 조금 넓게 들릴 수 있어요. 같이 듣기는 앞 1.8초만 틀어요.<span class="m">-36 dBFS RMS · 최대 -22 (0.1초 단위)</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand" data-doan-id="snd-218333" data-layer="flip" data-src="https://cdn.freesound.org/previews/218/218333_1480854-hq.mp3" data-gain="0.8" data-start="1.4" data-len="1.6" data-short="유리컵 들고 놓기 · 나무 탁자">
+        <span class="no">5</span>
+        <span class="name"><b>Glass cup pick up put down on wood table.wav</b><a href="https://freesound.org/people/SpliceSound/sounds/218333/">SpliceSound · #218333</a><small>15초 · CC0 · 유리컵을 들었다 나무 탁자에 놓기를 되풀이 · 6,904번 받았어요</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/218/218333_1480854-hq.mp3"></audio>
+        <span class="why">바탕이 아주 조용하고(-68) 놓는 소리가 또렷해요. 다섯 번쯤 놓아요. 같이 듣기는 0:01.4부터 1.6초만 틀어요.<span class="m">-32 dBFS RMS · 놓을 때 최대 -16 ~ -21</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+
+      <!-- ================= 끝 ================= -->
+      <h4><span class="layer-no">끝</span>마지막 알갱이, 또는 끝났다는 작은 나무 소리 (골라도 되고 안 써도 돼요)</h4>
+      <p class="rec-line"><b>추천 1번.</b> 줄기 1번과 같은 녹음의 끝, 모래가 잦아드는 10초예요. 줄기를 1번으로 고르면 같은 모래시계가 그대로 멎는 소리가 돼요. 끝을 또렷하게 알리고 싶으면 2번(나무 한 번 똑)을 아주 작게 써요.</p>
+      <div class="cand pick in-mix" data-doan-id="snd-825859-end" data-layer="end" data-src="https://cdn.freesound.org/previews/825/825859_13973196-hq.mp3" data-gain="3.2" data-start="36" data-len="10" data-short="장식용 모래시계 · 잦아드는 끝">
+        <span class="no">1</span>
+        <span class="name"><b>Hourglass - Sand flow light</b><a href="https://freesound.org/people/Vrymaa/sounds/825859/">Vrymaa · #825859</a><small>49초 · CC0 · 줄기 1번과 같은 녹음의 0:36~0:46</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/825/825859_13973196-hq.mp3"></audio>
+        <span class="why">흐름이 갈수록 작아지다 멎는 구간이에요. 마지막 알갱이가 떨어지는 소리인지, 녹음을 줄여 끝낸 건지는 설명에 없어요.<span class="m">0:36~0:46 · -44 → -58로 잦아들어요</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand" data-doan-id="snd-742356" data-layer="end" data-src="https://cdn.freesound.org/previews/742/742356_14357801-hq.mp3" data-gain="0.35" data-short="나무 한 번 똑">
+        <span class="no">2</span>
+        <span class="name"><b>SingleKnock_Wood</b><a href="https://freesound.org/people/NoisyRedFox/sounds/742356/">NoisyRedFox · #742356</a><small>0.2초 · CC0 · 나무를 한 번 두드려요</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/742/742356_14357801-hq.mp3"></audio>
+        <span class="why">설명은 ‘나무 두드리기’뿐이에요. <b>딱 한 번</b>이라 잘라 쓸 필요가 없어요. 무엇으로 두드렸는지는 안 적혀 있어요.<span class="m">-17 dBFS RMS · 최대 -1</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand" data-doan-id="snd-388269" data-layer="end" data-src="https://cdn.freesound.org/previews/388/388269_7282645-hq.mp3" data-gain="0.3" data-short="나무 탁자 똑">
+        <span class="no">3</span>
+        <span class="name"><b>Knocking on a wood table.wav</b><a href="https://freesound.org/people/Sami_Kullstr%C3%B6m/sounds/388269/">Sami_Kullström · #388269</a><small>0.3초 · CC0 · 나무 탁자를 두드려요</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/388/388269_7282645-hq.mp3"></audio>
+        <span class="why"><b>나무 탁자</b>라 장면과 맞아요. 휴대폰(갤럭시 J5)으로 녹음했고, 미리듣기에서 최대치를 넘는 곳이 있어서 찌그러져 들릴 수 있어요.<span class="m">-17 dBFS RMS · 최대 +2.7 (넘쳐요)</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand" data-doan-id="snd-454222" data-layer="end" data-src="https://cdn.freesound.org/previews/454/454222_612689-hq.mp3" data-gain="0.25" data-short="맥주잔 · 나무 탁자 쿵">
+        <span class="no">4</span>
+        <span class="name"><b>thud pint glass beer down on table wood knock door Vows.flac</b><a href="https://freesound.org/people/kyles/sounds/454222/">kyles · #454222</a><small>0.4초 · CC0 · 맥주잔을 나무 탁자에 쿵 · 1,329번 받았어요</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/454/454222_612689-hq.mp3"></audio>
+        <span class="why">유리잔이 나무에 닿는 <b>낮은 쿵</b>이에요. 끝보다 뒤집기의 내려놓기로 써도 돼요. 크게 녹음돼 있어요.<span class="m">-14 dBFS RMS · 최대 0</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+
+      <!-- ================= 방 ================= -->
+      <h4><span class="layer-no">방</span>따뜻하고 어두운 방의 아주 작은 공기 소리 (골라도 되고 안 써도 돼요)</h4>
+      <p class="rec-line"><b>추천 1번.</b> ‘숲속 오두막 안’이라 나무 탁자 · 따뜻한 방과 결이 맞아요. 셋 다 아주 작아서 음량 30에서는 거의 안 들리는 게 맞아요. 이어폰으로 줄기를 끄고 들어 보세요.</p>
+      <div class="cand pick in-mix" data-doan-id="snd-744447" data-layer="room" data-src="https://cdn.freesound.org/previews/744/744447_14793871-hq.mp3" data-gain="1.6" data-short="숲속 오두막 안">
+        <span class="no">1</span>
+        <span class="name"><b>Soft Room Tone</b><a href="https://freesound.org/people/callmethefoo/sounds/744447/">callmethefoo · #744447</a><small>1분 37초 · CC0 · 숲속 오두막 안, 부드럽고 조용한 방 소리</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/744/744447_14793871-hq.mp3"></audio>
+        <span class="why">‘<b>숲속 오두막</b> 안에서 녹음한 부드럽고 조용한 방 소리’. 아주 고르게 이어져요(1초 단위 차이 3dB).<span class="m">-54 dBFS RMS · 0.5초 단위 -56 ~ -53</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand" data-doan-id="snd-637807" data-layer="room" data-src="https://cdn.freesound.org/previews/637/637807_612689-hq.mp3" data-gain="2.4" data-short="작은 방 · 아주 조용">
+        <span class="no">2</span>
+        <span class="name"><b>room tone small space dead quiet air tone.flac</b><a href="https://freesound.org/people/kyles/sounds/637807/">kyles · #637807</a><small>1분 56초 · CC0 · 작은 공간, 아주 조용한 공기 소리</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/637/637807_612689-hq.mp3"></audio>
+        <span class="why">‘작은 공간의 <b>죽은 듯 조용한</b> 공기 소리’. 셋 중 가장 고르고(차이 2dB) 가장 작아요.<span class="m">-58 dBFS RMS · 0.5초 단위 -59 ~ -57</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+      <div class="cand" data-doan-id="snd-146435" data-layer="room" data-src="https://cdn.freesound.org/previews/146/146435_336074-hq.mp3" data-gain="2" data-short="조용한 작업실">
+        <span class="no">3</span>
+        <span class="name"><b>room tone_M24</b><a href="https://freesound.org/people/pushkin/sounds/146435/">pushkin · #146435</a><small>1분 42초 · CC0 · 조용한 때의 녹음 작업실 · 3,628번 받았어요</small></span>
+        <audio controls preload="none" src="https://cdn.freesound.org/previews/146/146435_336074-hq.mp3"></audio>
+        <span class="why">녹음 부스 문을 열어 두고 녹음한 <b>작업실</b> 방 소리예요. 좋은 장비로 녹음했다고 적혀 있어요. 집보다는 작업실 공기일 수 있어요.<span class="m">-56 dBFS RMS · 0.5초 단위 -58 ~ -54</span></span>
+        <button class="use" type="button">같이 듣기에 넣기</button>
+      </div>
+    </div>
+
+    <aside class="notes listen-notes" data-doan-frame="sand-sound-next" data-doan-title="고른 다음">
+      <div class="not-in-code"><b>골랐어요 · 앱에 넣었어요</b>줄기 4번(설탕 붓기) · 사태 1번(유리 위를 미끄러지는 모래) · 뒤집기 0번 + 2번. <code>public/sounds/sand/</code> stream · slide · flip.m4a 로 잘라 넣고 <code>src/audio/sounds/sand.ts</code>에서 틀어요. 끝 · 방은 쓰지 않아요.</div>
+      <h4>고르면 이렇게 다듬어요</h4>
+      <ul>
+        <li><b>공통</b>: Freesound 미리듣기(hq mp3)에서 잘라요. 모노로 합치고, 크기를 고르게 한 뒤 pour.m4a 처럼 <b>-27 dBFS RMS</b> 에 맞추고 최대치를 눌러요. AAC 96 kbps <code>.m4a</code> 로 <code>public/sounds/sand/</code> 에 두고, 출처를 <code>public/sounds/CREDITS.md</code> 에 적어요.</li>
+        <li><b>줄기</b>: 고른 구간만 잘라요 (1번이면 0:24~0:37, 13초). 앱의 되풀이(LoopPlayer)가 무작위 구간을 교차 페이드로 이어 붙이니 끝을 맞출 필요는 없어요. 너무 짧으면 두 구간(0:01~0:14 · 0:24~0:37)을 이어 붙여요.</li>
+        <li><b>사태</b>: 1~3초짜리 서너 개로 잘라 한 파일에 붙여요 (지하철멍 booms.m4a 처럼). 사태가 날 때마다 하나를 골라 음높이 · 크기를 조금씩 바꿔 틀어요. 줄기보다 6~10dB 작게.</li>
+        <li><b>뒤집기</b>: 1~2.5초 한 번. 앞뒤 조용한 곳을 잘라 내고 끝을 0.2초 페이드. 뒤집기 애니메이션(1.8초) 시작에 맞춰 틀어요.</li>
+        <li><b>끝 · 방</b>: 끝은 한 번만, 방은 30~60초를 잘라 계속 되풀이. 방은 앱 음량을 아주 낮게(줄기보다 20dB 아래) 잡아요.</li>
+      </ul>
+      <h4>보드에서만 써요</h4>
+      <ul>
+        <li>후보, 같이 듣기, 왼쪽의 작은 모래시계는 보드에서만 써요 (.doan/assets/sand-listen.js · sand-hourglass.js). 같이 듣기는 잘라 내기 전 미리듣기를 틀어서 앱 소리와는 조금 달라요.</li>
+        <li>사태는 흐르는 동안 5~11초마다 하나씩 무작위로 나요. 모래시계 안의 실제 사태와 맞춘 건 아니에요.</li>
+        <li>소리 크기(dBFS)는 Freesound 미리듣기를 모노로 재서 적었어요. 원본 파일은 다를 수 있어요.</li>
+        <li>후보는 모두 각 소리 페이지에서 <b>CC0(Creative Commons 0)</b>임을 확인했어요. 지금 녹음 두 개도 CC0 예요.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<script src="../assets/sand-hourglass.js"></script>
+<script src="../assets/sand-listen.js"></script>
+</body>
+</html>

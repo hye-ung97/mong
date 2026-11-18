@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="doan:canvas" content="sand-v2">
+<meta name="doan:width" content="2800">
+<title>모래멍 v2 시안</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/mong.css">
+<link rel="stylesheet" href="../assets/fire-v2.css">
+<link rel="stylesheet" href="../assets/sand.css">
+<link rel="stylesheet" href="../assets/sand-v2.css">
+</head>
+<body class="board theme-sand s2-board">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- source: .doan/canvases/subway-fire.html (src/icons.ts 와 같은 아이콘) -->
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+    <symbol id="i-rain" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.24"/><path d="M16 14v6M8 14v6M12 16v6"/></symbol>
+    <symbol id="i-fish" viewBox="0 0 24 24"><path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z"/><path d="M18 12v.5"/><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"/><path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5 .23 6.5C6.58 18.03 7 16 7 13.33"/></symbol>
+    <symbol id="i-sand" viewBox="0 0 24 24"><path d="M6 2h12M6 22h12"/><path d="M7 2v4a5 5 0 0 0 2 4l3 2 3-2a5 5 0 0 0 2-4V2"/><path d="M7 22v-4a5 5 0 0 1 2-4l3-2 3 2a5 5 0 0 1 2 4v4"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3c.8 5.4 3.6 8.2 9 9-5.4.8-8.2 3.6-9 9-.8-5.4-3.6-8.2-9-9 5.4-.8 8.2-3.6 9-9z"/></symbol>
+    <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 2v20M3.3 7l17.4 10M20.7 7 3.3 17"/><path d="m9.5 3.5 2.5 2 2.5-2M9.5 20.5l2.5-2 2.5 2M3.6 10.6l3-1.1-.5-3.2M20.4 13.4l-3 1.1.5 3.2M3.6 13.4l3 1.1-.5 3.2M20.4 10.6l-3-1.1.5-3.2"/></symbol>
+    <symbol id="i-subway" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="15" rx="3.5"/><path d="M5 11h14"/><path d="M8.5 14.5h.01M15.5 14.5h.01"/><path d="m8 21 1.5-3M16 21l-1.5-3"/></symbol>
+    <!-- 새 아이콘 (코드에 없어요): 뒤집기 · 쓸어 내기 -->
+    <symbol id="i-flip" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></symbol>
+    <symbol id="i-sweep" viewBox="0 0 24 24"><path d="M4 8h16l-1.5 4h-13z"/><path d="M12 12v9"/><path d="M7 4.5h10"/></symbol>
+    <symbol id="i-status" viewBox="0 0 70 12">
+      <g fill="currentColor" stroke="none">
+        <rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4.5" y="6" width="3" height="6" rx="1"/><rect x="9" y="3.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="1" width="3" height="11" rx="1"/>
+        <path d="M30 3.2a10 10 0 0 1 13 0l-1.4 1.5a8 8 0 0 0-10.2 0zM32.4 5.9a6.4 6.4 0 0 1 8.2 0l-1.5 1.5a4.2 4.2 0 0 0-5.2 0zM36.5 11.5l-2.1-2.2a3 3 0 0 1 4.2 0z"/>
+        <rect x="49" y="1" width="18" height="10" rx="3" fill="none" stroke="currentColor" stroke-opacity=".45"/>
+        <rect x="51" y="3" width="14" height="6" rx="1.6"/>
+        <rect x="68" y="4.2" width="1.6" height="3.6" rx=".8" opacity=".45"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ================= 개요 ================= -->
+<section class="brief" data-doan-frame="s2-brief" data-doan-title="모래멍 v2 · 개요">
+  <div>
+    <div class="ov-brand"><span class="orb lg"></span>mong · 모래멍</div>
+    <h1>모래멍을<br>다시 그려 보기</h1>
+    <p class="lead">지금 모래멍은 어두운 화면에 색모래가 쌓이는 모습만 있어요. 다른 멍처럼 어디 앉아서 보는지 느껴지고, 모래가 어디서 와서 어디로 가는지 보이게 다섯 가지로 그려 봤어요.</p>
+    <div class="ov-meta"><span>디자인 시안 · 다섯 가지</span><span>2026.11.18</span><span>화면마다 끌고 눌러 볼 수 있어요</span></div>
+  </div>
+  <div>
+    <h3>지금 아쉬운 점</h3>
+    <ul class="changes" data-doan-id="s2-problems">
+      <li><em>자리</em><b>어디서 보는지 몰라요</b><span>불멍은 모닥불 앞, 비멍은 창가, 지하철멍은 객차 안이에요. 모래멍은 보랏빛 어둠뿐이라 유리 액자라는 게 화면에 안 보여요.</span></li>
+      <li><em>시작</em><b>모래가 허공에서 나와요</b><span>줄기가 탭 뒤, 화면 위 끝에서 그냥 시작해요. 끌어도 무엇을 움직이는지 손에 잡히지 않아요.</span></li>
+      <li><em>결</em><b>평평해요</b><span>알갱이 밝기만 조금씩 달라서, 가까이 보면 모래보다 색 막대 같아요. 봉우리에 빛과 그늘이 없어요.</span></li>
+      <li><em>끝</em><b>비우기가 기다려지지 않아요</b><span>가득 차면 바닥 틈으로 빠지고 다시 시작해요. 기다릴 만한 순간이 없어요.</span></li>
+    </ul>
+  </div>
+  <div>
+    <h3>다섯 가지</h3>
+    <table class="s2-cmp" data-doan-id="s2-compare">
+      <thead><tr><th></th><th>무엇을 보나</th><th>손으로</th><th>다 차면</th><th>만들 양</th></tr></thead>
+      <tbody>
+        <tr><td><span class="s2-k">A</span>빛을 들이기</td><td>지금 액자에 나무 테 · 깔때기 · 빛과 그늘</td><td>깔때기를 끌어요</td><td>지금처럼 틈으로</td><td class="size"><b>작아요</b> · 그리기만</td></tr>
+        <tr><td><span class="s2-k">B</span>모래시계</td><td>탁자 위 모래시계</td><td>기울여요 · 뒤집어요</td><td>뒤집혀요. 타이머가 돼요</td><td class="size"><b>보통</b></td></tr>
+        <tr><td><span class="s2-k">C</span>모래 그림 액자</td><td>물속에서 천천히 내려앉는 모래</td><td>기울여요</td><td>뒤집혀요</td><td class="size"><b>보통~큼</b></td></tr>
+        <tr><td><span class="s2-k">D</span>모래 진자</td><td>위에서 본 쟁반 위 무늬</td><td>잡았다 놓아 흔들어요</td><td>밀대로 쓸어요</td><td class="size"><b>커요</b> · 새 장면</td></tr>
+        <tr><td><span class="s2-k">E</span>유리병</td><td>해 질 녘 창가의 병</td><td>대롱을 끌어요</td><td>병이 창턱으로 가요</td><td class="size"><b>보통</b></td></tr>
+      </tbody>
+    </table>
+    <p class="rec" data-doan-id="s2-rec"><b>제안</b> A는 어느 쪽을 고르든 바탕이 돼요(빛과 그늘 · 모래가 나오는 곳 · 자리). 그 위에 하나를 더한다면 <b>B 모래시계</b>예요. 모래멍 아이콘이 이미 모래시계이고, 타이머와 하나가 되고, 모래시계 녹음도 이미 있어요. 물멍 · 눈멍처럼 모래멍 안에 <b>액자 · 모래시계</b> 두 장면을 두면 끌어서 붓는 손맛도 그대로 남아요.</p>
+    <h4>정해야 할 것</h4>
+    <ul class="asks" data-doan-id="s2-asks">
+      <li>한 가지로 바꿀지, 물멍처럼 모래멍 안에 장면을 둘 이상 둘지</li>
+      <li>새 색 묶음 ‘사막’ · ‘먹’을 넣을지, ‘사탕’은 뺄지</li>
+      <li>모래멍 색(연보라)을 그대로 둘지. 따뜻한 방이 되면 모래빛도 어울리지만 불멍 주황과 가까워요</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 01 여섯 칸 ================= -->
+<section class="row">
+  <div class="row-head"><span class="row-no">01</span><h2>지금과 다섯 가지</h2><p>모두 움직여요 · 화면을 끌거나 독 버튼을 눌러 보세요</p></div>
+  <div class="s2-cols">
+
+    <!-- 지금 -->
+    <div class="s2-col">
+      <div class="s2-head"><span class="s2-k now">지금</span><h3>지금 앱</h3><p>보랏빛 어둠 속에 색모래가 쌓여요</p></div>
+      <div class="screen phone theme-sand" data-doan-frame="s2-now" data-doan-implements="src/scenes/sand.ts" data-doan-title="지금 · 모래멍">
+        <canvas class="scene" data-sand data-palette="sunset" data-speed="0.6" data-floor="132" data-top="110" data-prefill="0.32"></canvas>
+        <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+        <div class="ui m-top">
+          <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+          <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a class="on" aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+        </div>
+        <div class="ui m-bottom">
+          <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>모래 소리 · <span data-stat="palette">노을</span></span><span>채움 <span data-stat="fill">0%</span></span></div>
+          <div class="dock glass">
+            <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+            <div class="seg">
+              <button data-sand-act="speed" data-value="0.3">솔솔</button>
+              <button class="on" data-sand-act="speed" data-value="0.6">보통</button>
+              <button data-sand-act="speed" data-value="1">콸콸</button>
+            </div>
+            <button class="icon-btn" aria-label="색 고르기"><span class="swatch pal-sunset" data-sand-swatch></span></button>
+          </div>
+        </div>
+        <div class="home-ind"></div>
+      </div>
+      <aside class="notes">
+        <div class="in-code"><b>지금 앱 그대로예요</b><code>src/scenes/sand.ts</code>와 같은 움직임을 보드에 옮긴 화면이에요.</div>
+        <h4>있는 것</h4>
+        <ul>
+          <li>속도 3단계 · 색 묶음 네 가지(노을 · 바다 · 숲 · 사탕)</li>
+          <li>끌면 줄기가 손을 따라와요. 손을 떼면 4초 뒤 다시 저절로 흔들려요</li>
+          <li>탭 아래까지 차면 2초 쉬었다가 받침 가운데 틈으로 7초 동안 빠져요</li>
+          <li>소리: 모래 붓는 녹음, 비울 때는 모래시계 녹음</li>
+        </ul>
+        <h4>보드에서</h4>
+        <ul><li>옆 화면들과 같이 끌어 보며 비교해 보세요</li></ul>
+      </aside>
+    </div>
+
+    <!-- A -->
+    <div class="s2-col">
+      <div class="s2-head"><span class="s2-k">A</span><h3>빛을 들이기</h3><p>지금 장면 그대로, 모래에 빛과 자리를</p></div>
+      <div class="screen phone theme-sand" data-doan-frame="s2-a" data-doan-title="A · 빛을 들이기">
+        <canvas class="scene" data-s2="refine" data-palette="desert" data-speed="0.6" data-floor="132" data-rail="116" data-prefill="0.34"></canvas>
+        <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+        <div class="ui m-top">
+          <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+          <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a class="on" aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+        </div>
+        <div class="ui m-bottom">
+          <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>모래 소리 · <span data-s2-stat="palette">사막</span></span><span>채움 <span data-s2-stat="fill">0%</span></span></div>
+          <div class="dock glass" data-doan-id="s2-a-dock">
+            <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+            <div class="seg">
+              <button data-s2-act="speed" data-value="0.3">솔솔</button>
+              <button class="on" data-s2-act="speed" data-value="0.6">보통</button>
+              <button data-s2-act="speed" data-value="1">콸콸</button>
+            </div>
+            <button class="icon-btn" aria-label="색 고르기" data-s2-act="cycle"><span class="swatch pal2-desert" data-s2-swatch></span></button>
+          </div>
+        </div>
+        <div class="home-ind"></div>
+      </div>
+      <aside class="notes">
+        <div class="not-in-code"><b>시안이에요. 코드에는 아직 없어요</b>장면 그리기만 바뀌고, 움직임과 조작은 지금과 같아요.</div>
+        <h4>무엇이 바뀌나</h4>
+        <ul>
+          <li><b>나무 테와 받침</b>으로 액자가 보여요. 방은 보라 대신 따뜻한 어둠, 왼쪽 위에 스탠드 불빛</li>
+          <li>탭 아래 가는 <b>레일에 놋쇠 깔때기</b>가 매달려 있고, 줄기는 깔때기에서 나와요. 입구에 지금 떨어지는 색이 보여요</li>
+          <li><b>빛과 그늘</b>: 쌓인 모래 맨 위 한 줄이 밝고, 왼쪽 위를 향한 비탈은 밝게, 등진 비탈은 어둡게, 깊은 곳은 살짝 어둡게</li>
+          <li>새 색 묶음 <b>사막</b>(모래빛 · 황토 · 적갈색)을 기본으로. 노을 · 바다 · 숲은 채도를 조금 낮췄어요</li>
+        </ul>
+        <h4>손으로</h4>
+        <ul><li>끌면 깔때기가 레일을 따라와요. 안내 문구는 <span class="copy">깔때기를 끌어 보세요</span> (새 문구)</li></ul>
+        <h4>만들 때</h4>
+        <ul>
+          <li><code>sand.ts</code>의 <code>layout()</code>(방 · 테 · 레일 · 받침)과 <code>draw()</code>(빛 · 깔때기)만 바꿔요. 쌓이는 규칙은 그대로예요</li>
+          <li>빛은 칸 높이 차이로 계산해서 그릴 때 곱해요. 저장하는 색은 그대로라 색 묶음과 섞이지 않아요</li>
+          <li>보드에서는 독 오른쪽 견본을 누를 때마다 다음 색 묶음으로 넘어가요(앱에서는 지금처럼 트레이가 열려요)</li>
+        </ul>
+        <h4>좋은 점 · 아쉬운 점</h4>
+        <ul>
+          <li class="plus">바로 넣을 수 있고, 나머지 넷의 바탕이 돼요</li>
+          <li class="minus">하는 일은 그대로라 새로움은 적어요</li>
+        </ul>
+      </aside>
+    </div>
+
+    <!-- B -->
+    <div class="s2-col">
+      <div class="s2-head"><span class="s2-k">B</span><h3>모래시계</h3><p>타이머가 곧 모래시계, 다 내려가면 뒤집어요</p></div>
+      <div class="screen phone theme-sand" data-doan-frame="s2-b" data-doan-title="B · 모래시계">
+        <canvas class="scene" data-s2="hourglass" data-palette="dusk" data-mode="loop" data-cycle="40" data-prefill="0.32"></canvas>
+        <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+        <div class="ui m-top">
+          <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+          <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a class="on" aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+        </div>
+        <div class="ui toast glass s2-toast" data-s2-toast><span class="dot"></span><span></span></div>
+        <div class="ui m-bottom">
+          <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>모래시계 소리 · <span data-s2-stat="mode">끝없이</span></span><span data-s2-stat="aside">뒤집기 0번</span></div>
+          <div class="dock glass" data-doan-id="s2-b-dock">
+            <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+            <div class="seg" data-doan-id="s2-b-seg">
+              <button data-s2-act="mode" data-value="15">15분</button>
+              <button data-s2-act="mode" data-value="30">30분</button>
+              <button class="on" data-s2-act="mode" data-value="loop">끝없이</button>
+            </div>
+            <button class="icon-btn" aria-label="뒤집기" data-s2-act="flip" data-doan-id="s2-b-flip"><svg class="ico"><use href="#i-flip"/></svg></button>
+          </div>
+        </div>
+        <div class="home-ind"></div>
+      </div>
+      <aside class="notes">
+        <div class="not-in-code"><b>시안이에요. 코드에는 아직 없어요</b>모래시계 장면, 독의 시간 고르기와 뒤집기 버튼, 뒤집기 아이콘이 새로 생겨요.</div>
+        <h4>무엇을 보나</h4>
+        <ul>
+          <li>탁자 위 커다란 모래시계. 위 칸의 색 띠가 가운데부터 꺼지며 빠지고, 아래에는 원뿔로 쌓여요</li>
+          <li>위 칸에서는 띠였던 색이 아래에서는 섞여 새 줄무늬가 돼요. 뒤집을 때마다 다시 섞여요</li>
+        </ul>
+        <h4>타이머와 하나</h4>
+        <ul>
+          <li><b>15분 · 30분</b>을 고르면 그 시간 동안 다 내려가요. 다 내려가면 지금 타이머처럼 소리가 줄며 끝나요</li>
+          <li><b>끝없이</b>면 다 내려갈 때마다 1.8초 동안 저절로 뒤집혀요</li>
+          <li>보드에서는 40초에 한 번 다 내려가요. 15분을 고르면 남은 시간이 그만큼 늘려서 보여요</li>
+        </ul>
+        <h4>손으로</h4>
+        <ul>
+          <li>끌면 모래시계가 9°까지 기울어 줄기가 한쪽으로 휘어 쌓여요. 놓으면 돌아와요</li>
+          <li>뒤집기 버튼은 언제든 돼요. 위아래 모래가 서로 자리를 바꿔요</li>
+        </ul>
+        <h4>만들 때</h4>
+        <ul>
+          <li>그릇 모양을 칸마다 바닥 · 천장으로 주면, 쌓기 · 빠지기는 지금 <code>land()</code> · <code>drain()</code>을 그대로 써요</li>
+          <li>소리: 이미 있는 모래시계 녹음(<code>sand/empty.m4a</code>)을 계속 깔아요</li>
+          <li>독: 속도 대신 시간. 지금 설정 시트의 타이머와 하나로 묶어야 해요</li>
+        </ul>
+        <h4>좋은 점 · 아쉬운 점</h4>
+        <ul>
+          <li class="plus">누구나 아는 물건이라 자리가 바로 느껴지고, 시간을 바라보는 멍이 돼요</li>
+          <li class="minus">줄기가 늘 가운데라 매번 원뿔 하나예요. 모래가 화면 가운데만 차지해요</li>
+        </ul>
+      </aside>
+    </div>
+
+    <!-- C -->
+    <div class="s2-col">
+      <div class="s2-head"><span class="s2-k">C</span><h3>모래 그림 액자</h3><p>물속에서 모래가 천천히 내려앉아 산이 돼요</p></div>
+      <div class="screen phone theme-sand" data-doan-frame="s2-c" data-doan-title="C · 모래 그림 액자">
+        <canvas class="scene" data-s2="frame" data-palette="ink" data-rate="160" data-prefill="0.5"></canvas>
+        <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+        <div class="ui m-top">
+          <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+          <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a class="on" aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+        </div>
+        <div class="ui m-bottom">
+          <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>물속 모래 소리 · <span data-s2-stat="palette">먹</span></span><span data-s2-stat="aside">뒤집기 0번</span></div>
+          <div class="dock glass" data-doan-id="s2-c-dock">
+            <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+            <div class="seg s2-pal" data-doan-id="s2-c-seg">
+              <button class="on" data-s2-act="palette" data-value="ink"><span class="swatch pal2-ink"></span>먹</button>
+              <button data-s2-act="palette" data-value="sea"><span class="swatch pal2-sea"></span>바다</button>
+              <button data-s2-act="palette" data-value="dusk"><span class="swatch pal2-dusk"></span>노을</button>
+            </div>
+            <button class="icon-btn" aria-label="뒤집기" data-s2-act="flip"><svg class="ico"><use href="#i-flip"/></svg></button>
+          </div>
+        </div>
+        <div class="home-ind"></div>
+      </div>
+      <aside class="notes">
+        <div class="not-in-code"><b>시안이에요. 코드에는 아직 없어요</b>물이 든 액자 장면, 독의 색 고르기(먹 · 바다 · 노을)와 뒤집기 버튼이 새로 생겨요.</div>
+        <h4>무엇을 보나</h4>
+        <ul>
+          <li>책상 위 물이 든 유리 액자. 위 칸 모래가 칸막이 구멍 다섯 개로 천천히 내려앉아 겹겹이 산이 돼요</li>
+          <li>물속이라 거의 같은 빠르기로 떨어지고, 줄기가 커튼처럼 위에서 아래로 물결쳐요. 어두운 알갱이가 조금 더 빨리 내려앉아요</li>
+          <li>쌓인 모래에서 기포가 빠져나와 올라가요</li>
+        </ul>
+        <h4>끝과 손</h4>
+        <ul>
+          <li>다 내려앉으면 3초 쉬었다가 2초 동안 뒤집혀요. 방금 만든 산이 다시 위 칸이 돼요</li>
+          <li>끌면 액자가 7°까지 기울어 커튼이 한쪽으로 쏠려요</li>
+          <li>색을 바꾸면 다른 액자가 돼요(닫힌 액자라 섞지 않아요)</li>
+          <li>보드에서는 1분쯤마다 뒤집혀요. 실제로는 한 번에 3~5분이 좋아요</li>
+        </ul>
+        <h4>만들 때</h4>
+        <ul>
+          <li>위 칸 · 구멍 · 천천히 떨어지기 · 기포 · 뒤집기. 쌓기 · 빠지기는 지금 코드를 써요</li>
+          <li>소리: 붓는 녹음을 물에 잠긴 듯 먹먹하게(로우패스) + 가끔 기포 소리</li>
+        </ul>
+        <h4>좋은 점 · 아쉬운 점</h4>
+        <ul>
+          <li class="plus">다섯 중 가장 느리고 고요해요. 볼 때마다 다른 풍경이 남아요</li>
+          <li class="minus">물빛 바탕이 다른 멍보다 밝아서 밤에는 눈부실 수 있어요</li>
+        </ul>
+      </aside>
+    </div>
+
+    <!-- D -->
+    <div class="s2-col">
+      <div class="s2-head"><span class="s2-k">D</span><h3>모래 진자</h3><p>흔들리는 깔때기가 쟁반에 무늬를 그려요</p></div>
+      <div class="screen phone theme-sand" data-doan-frame="s2-d" data-doan-title="D · 모래 진자">
+        <canvas class="scene" data-s2="pendulum" data-palette="dusk" data-speed="0.6" data-seconds="34"></canvas>
+        <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+        <div class="ui m-top">
+          <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+          <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a class="on" aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+        </div>
+        <div class="ui m-bottom">
+          <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>모래 흐르는 소리 · <span data-s2-stat="palette">노을</span></span><span data-s2-stat="aside">무늬 1번째</span></div>
+          <div class="dock glass" data-doan-id="s2-d-dock">
+            <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+            <div class="seg">
+              <button data-s2-act="speed" data-value="0.3">솔솔</button>
+              <button class="on" data-s2-act="speed" data-value="0.6">보통</button>
+              <button data-s2-act="speed" data-value="1">콸콸</button>
+            </div>
+            <button class="icon-btn" aria-label="쓸어 내기" data-s2-act="sweep" data-doan-id="s2-d-sweep"><svg class="ico"><use href="#i-sweep"/></svg></button>
+          </div>
+        </div>
+        <div class="home-ind"></div>
+      </div>
+      <aside class="notes">
+        <div class="not-in-code"><b>시안이에요. 코드에는 아직 없어요</b>쟁반 장면 전체, 쓸어 내기 버튼과 아이콘이 새로 생겨요.</div>
+        <h4>무엇을 보나</h4>
+        <ul>
+          <li>위에서 내려다본 둥근 쟁반. 줄에 매달린 깔때기가 흔들리며 모래를 흘려, 타원이 천천히 모양을 바꾸며 겹쳐요</li>
+          <li>빨리 지나는 곳은 가늘게, 방향을 트는 끝에서는 두껍게 쌓여요. 높이 차이로 빛과 그늘이 생겨 모래 결이 보여요</li>
+          <li>색은 지금처럼 시간에 따라 넘어가서 고리마다 색이 달라요</li>
+        </ul>
+        <h4>끝과 손</h4>
+        <ul>
+          <li>흔들림이 잦아들면 저절로 다시 밀어요(1분 20초쯤마다). 세 번 그리면 밀대가 쓸어 내요</li>
+          <li>깔때기를 잡고 끌면 손 따라 그려지고, 놓으면 그 자리에서 손이 가던 쪽으로 흔들려요</li>
+        </ul>
+        <h4>만들 때</h4>
+        <ul>
+          <li>새 장면이에요: 칸마다 높이 · 색, 빛 계산, 진자, 쓸기. 지금 코드에서 쓸 수 있는 건 색 묶음 정도예요</li>
+          <li>소리: 붓는 녹음을 작게 + 쓸 때는 눈멍의 빗자루 녹음</li>
+        </ul>
+        <h4>좋은 점 · 아쉬운 점</h4>
+        <ul>
+          <li class="plus">가장 새롭고, 무늬가 바뀌는 걸 끝없이 보게 돼요</li>
+          <li class="minus">쌓이는 모래가 아니라서, 모래멍을 바꾼다기보다 멍을 하나 새로 만드는 쪽에 가까워요</li>
+        </ul>
+      </aside>
+    </div>
+
+    <!-- E -->
+    <div class="s2-col">
+      <div class="s2-head"><span class="s2-k">E</span><h3>유리병</h3><p>한 병씩 채워 창턱에 세워 둬요</p></div>
+      <div class="screen phone theme-sand" data-doan-frame="s2-e" data-doan-title="E · 유리병">
+        <canvas class="scene" data-s2="bottle" data-palette="desert" data-speed="0.6" data-prefill="0.36" data-made="sea,dusk"></canvas>
+        <div class="statusbar"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+        <div class="ui m-top">
+          <button class="icon-btn glass" aria-label="홈으로"><svg class="ico"><use href="#i-home"/></svg></button>
+          <nav class="tabs icons glass" aria-label="장면"><a aria-label="불멍"><svg class="ico"><use href="#i-flame"/></svg></a><a aria-label="비멍"><svg class="ico"><use href="#i-rain"/></svg></a><a aria-label="물멍"><svg class="ico"><use href="#i-fish"/></svg></a><a class="on" aria-label="모래멍"><svg class="ico"><use href="#i-sand"/></svg></a><a aria-label="별멍"><svg class="ico"><use href="#i-star"/></svg></a><a aria-label="눈멍"><svg class="ico"><use href="#i-snow"/></svg></a><a aria-label="지하철멍"><svg class="ico"><use href="#i-subway"/></svg></a></nav>
+          <button class="icon-btn glass" aria-label="소리 끄기"><svg class="ico"><use href="#i-volume"/></svg></button>
+        </div>
+        <div class="ui m-bottom">
+          <div class="m-status"><span class="now"><span class="eq"><i></i><i></i><i></i><i></i></span>모래 소리 · <span data-s2-stat="palette">사막</span></span><span data-s2-stat="aside">오늘 만든 병 2</span></div>
+          <div class="dock glass" data-doan-id="s2-e-dock">
+            <button class="icon-btn" aria-label="설정"><svg class="ico"><use href="#i-sliders"/></svg></button>
+            <div class="seg">
+              <button data-s2-act="speed" data-value="0.3">솔솔</button>
+              <button class="on" data-s2-act="speed" data-value="0.6">보통</button>
+              <button data-s2-act="speed" data-value="1">콸콸</button>
+            </div>
+            <button class="icon-btn" aria-label="색 고르기" data-s2-act="cycle"><span class="swatch pal2-desert" data-s2-swatch></span></button>
+          </div>
+        </div>
+        <div class="home-ind"></div>
+      </div>
+      <aside class="notes">
+        <div class="not-in-code"><b>시안이에요. 코드에는 아직 없어요</b>창가 장면, 병 모양 그릇, 창턱의 다 찬 병, ‘오늘 만든 병’ 문구가 새로 생겨요.</div>
+        <h4>무엇을 보나</h4>
+        <ul>
+          <li>해 질 녘 창가의 유리병. 깔때기에 꽂은 가는 대롱이 병 안을 오가며 색모래를 깔아 물결무늬가 생겨요</li>
+          <li>창을 등진 병이라 유리 가장자리가 노을빛으로 밝아요</li>
+        </ul>
+        <h4>끝과 손</h4>
+        <ul>
+          <li>어깨까지 차면 코르크를 막고 창턱으로 옮겨져요. 새 병이 와요</li>
+          <li>오늘 만든 병이 창턱에 넷까지 서요. 밤 12시에 비워요(기기에 저장)</li>
+          <li>끌면 대롱 끝이 따라와요</li>
+          <li>보드에서는 보통 속도로 1분에 한 병. 실제로는 5분쯤이 좋아요</li>
+        </ul>
+        <h4>만들 때</h4>
+        <ul>
+          <li>병 모양 그릇은 B와 같은 방법(칸마다 바닥 · 천장). 다 찬 병은 그림으로 저장해 작게 그려요</li>
+          <li>소리: 붓는 녹음 + 코르크 ‘뽁’ · 병 놓는 ‘톡’은 새 녹음이 필요해요</li>
+        </ul>
+        <h4>좋은 점 · 아쉬운 점</h4>
+        <ul>
+          <li class="plus">오래 있을수록 남는 게 생겨서 다시 오고 싶어요</li>
+          <li class="minus">병이 화면 가운데만 차지해서 모래가 작아 보여요</li>
+        </ul>
+      </aside>
+    </div>
+
+  </div>
+</section>
+
+<script src="../assets/sand.js"></script>
+<script src="../assets/sand-v2.js"></script>
+</body>
+</html>

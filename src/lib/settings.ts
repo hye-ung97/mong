@@ -1,6 +1,6 @@
 import type { WoodKind } from '../scenes/fire';
 import { seasonNow, type Season } from '../scenes/pond';
-import type { SandPalette } from '../scenes/sand';
+import { DEFAULT_PALETTE, isSandMode, isSandPalette, type SandMode, type SandPalette } from '../scenes/sand';
 import type { StarPhase } from '../scenes/star';
 import type { GroupId, SceneId, SnowId, SubwayId, WaterId } from '../scenes/registry';
 
@@ -20,12 +20,10 @@ export interface Settings {
   autoTend: boolean;
   wood: WoodKind;
   water: WaterId;
-  /** 모래멍: how much sand falls (0.3 · 0.6 · 1), the colour set, and what happens when the frame is full. */
-  sandSpeed: number;
+  /** 모래멍 (모래시계): the sand's colour, how long one run takes, and whether 15분 · 30분 turn over again when done. */
   sandPalette: SandPalette;
-  sandAutoEmpty: boolean;
-  /** 모래멍: tilting the phone bends the stream. Off until the visitor turns it on. */
-  sandTilt: boolean;
+  sandMode: SandMode;
+  sandAutoflip: boolean;
   /** 별멍: the season (starts as the season outside), where the night starts, whether it stays there, fireflies, naming constellations. */
   starSeason: Season;
   starPhase: StarPhase;
@@ -62,10 +60,9 @@ const DEFAULTS: Settings = {
   autoTend: true,
   wood: 'oak',
   water: 'aquarium',
-  sandSpeed: 0.6,
-  sandPalette: 'sunset',
-  sandAutoEmpty: true,
-  sandTilt: false,
+  sandPalette: DEFAULT_PALETTE,
+  sandMode: 'loop',
+  sandAutoflip: false,
   starSeason: seasonNow(),
   starPhase: 'dusk',
   starHold: false,
@@ -98,7 +95,22 @@ export function settings(): Settings {
     unlocked: { ...(stored.unlocked ?? {}) },
     hints: [...(stored.hints ?? [])],
   };
+  migrateSand(cache);
   return cache;
+}
+
+/**
+ * 모래멍 became an hourglass (2026-11): the old colour sets map to the nearest new one (노을 → 노을, 바다 → 바다;
+ * 숲 and 사탕 have none and fall back to 노을), and the pouring settings (speed, auto-empty, phone tilt) are dropped.
+ */
+const OLD_SAND_PALETTES: Record<string, SandPalette> = { sunset: 'dusk', ocean: 'sea' };
+function migrateSand(s: Settings) {
+  const raw = s as unknown as Record<string, unknown>;
+  const pal = raw.sandPalette;
+  if (!isSandPalette(pal)) s.sandPalette = (typeof pal === 'string' && OLD_SAND_PALETTES[pal]) || DEFAULT_PALETTE;
+  if (!isSandMode(raw.sandMode)) s.sandMode = DEFAULTS.sandMode;
+  if (typeof raw.sandAutoflip !== 'boolean') s.sandAutoflip = DEFAULTS.sandAutoflip;
+  for (const old of ['sandSpeed', 'sandAutoEmpty', 'sandTilt']) delete raw[old];
 }
 
 export function save(patch: Partial<Settings>) {

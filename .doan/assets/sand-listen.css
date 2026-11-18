@@ -1,0 +1,58 @@
+/* 모래멍 소리 후보 보드 (sand-listen.js). subway-listen.css 와 같은 틀에 모래멍 색만 바꿨어요. 보드 전용이에요. */
+.sand-listen { flex: none; width: 1600px; padding: 32px; border-radius: 28px; background: var(--board-panel); border: 1px solid var(--board-line); font: 500 14px/1.55 var(--font); color: var(--board-ink); }
+.sand-listen > p { margin: 0 0 22px; max-width: 1000px; color: var(--board-dim); }
+.sand-listen > p b { color: var(--board-ink); font-weight: 650; }
+.sand-listen h4 { display: flex; align-items: baseline; gap: 12px; margin: 34px 0 4px; font: 700 15px/1.3 var(--font); color: var(--board-ink); }
+.sand-listen .layer-no { font: 700 12px/1 var(--font); letter-spacing: 0.06em; color: var(--sand-300); }
+.sand-listen .rec-line { margin: 6px 0 10px; padding: 10px 14px; border-radius: 12px; background: rgba(180, 151, 242, 0.08); border: 1px solid rgba(180, 151, 242, 0.28); color: var(--board-dim); }
+.sand-listen .rec-line b { color: var(--sand-300); font-weight: 700; }
+
+/* 같이 듣기: 작은 모래시계 + 층마다 고른 녹음 하나 + 음량 */
+.mix { display: grid; grid-template-columns: 220px 1fr; gap: 28px; padding: 22px; border-radius: 22px; background: rgba(180, 151, 242, 0.06); border: 1px solid rgba(180, 151, 242, 0.28); }
+.mix-mini { position: relative; width: 220px; height: 400px; border-radius: 22px; overflow: hidden; background: #000; }
+.mix-mini .screen.hg-mini { position: absolute; left: 0; top: 0; width: 440px; height: 800px; transform: scale(0.5); transform-origin: 0 0; box-shadow: none; }
+.mix-mini .mini-flip { position: absolute; z-index: 3; left: 50%; bottom: 14px; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border-radius: var(--r-pill); font: 700 13px/1 var(--font); color: var(--board-ink); background: rgba(20, 14, 30, 0.6); border: 1px solid rgba(255, 255, 255, 0.18); backdrop-filter: blur(8px); }
+.mix-mini .mini-flip .ico { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.mix-side { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.mix-head { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
+.mix-play { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: var(--r-pill); font: 700 15px/1 var(--font); color: var(--sand-900); background: linear-gradient(180deg, var(--sand-300), var(--sand-500)); }
+.mix-play .ico { width: 18px; height: 18px; fill: currentColor; stroke: none; }
+.mix-play[aria-pressed="true"] { color: var(--board-ink); background: rgba(255, 255, 255, 0.1); }
+.mix-hint { font: 500 13px/1.4 var(--font); color: var(--board-dim); }
+.mix-state { margin-left: auto; font: 500 12.5px/1.3 var(--font); color: var(--board-faint); }
+.mix-row { display: grid; grid-template-columns: 74px 1fr 64px 200px 44px; gap: 14px; align-items: center; padding: 10px 14px; border-radius: 14px; background: rgba(255, 255, 255, 0.04); transition: background 0.6s; }
+.mix-row.hit { animation: mix-hit 0.9s ease-out; }
+@keyframes mix-hit { from { background: rgba(180, 151, 242, 0.3); } to { background: rgba(255, 255, 255, 0.04); } }
+.mix-row b { font: 700 14px/1 var(--font); color: var(--sand-300); }
+.mix-row .mix-name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--board-ink); }
+.mix-row .mix-name small { margin-left: 8px; color: var(--board-faint); }
+.mix-row .mix-when { font: 500 12px/1.2 var(--font); color: var(--board-faint); }
+.mix-row [data-mix-once] { height: 28px; padding: 0 10px; border-radius: var(--r-pill); font: 600 12px/1 var(--font); color: var(--board-dim); background: rgba(255, 255, 255, 0.06); border: 1px solid var(--board-line); }
+.mix-row input[type="range"] { width: 200px; accent-color: var(--sand-500); }
+.mix-row .mix-vol { font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--board-faint); text-align: right; }
+.mix-row.off .mix-name { color: var(--board-faint); }
+
+/* 후보 줄 */
+.cand { display: grid; grid-template-columns: 34px 310px 330px 1fr 112px; gap: 20px; align-items: center; padding: 15px 0; border-top: 1px solid var(--board-line); }
+.cand .no { font: 700 15px/1 var(--font); color: var(--sand-300); }
+.cand .name b { display: block; margin-bottom: 4px; font: 700 15px/1.35 var(--font); color: var(--board-ink); }
+.cand .name a { color: var(--board-dim); font-size: 12.5px; text-decoration: underline; }
+.cand .name small { display: block; margin-top: 3px; font-size: 12.5px; color: var(--board-dim); }
+.cand audio { width: 330px; height: 36px; }
+.cand .why { min-width: 0; color: var(--board-dim); overflow-wrap: anywhere; }
+.cand .why b { color: var(--board-ink); font-weight: 650; }
+.cand .why .m { display: block; margin-top: 4px; font: 500 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--board-faint); }
+.cand.pick .no::after { content: "추천"; display: block; margin-top: 6px; font: 700 10px/1 var(--font); color: #ffd28a; }
+.cand.base .no { color: var(--board-faint); }
+.cand.base .no::after { content: "지금"; display: block; margin-top: 6px; font: 700 10px/1 var(--font); color: var(--board-faint); }
+.cand .use { height: 36px; padding: 0 12px; border-radius: var(--r-pill); font: 600 13px/1 var(--font); color: var(--board-dim); background: rgba(255, 255, 255, 0.06); border: 1px solid var(--board-line); white-space: nowrap; }
+.cand .use:hover { color: var(--board-ink); }
+.cand.in-mix { margin: 0 -14px; padding: 15px 14px; border-radius: 14px; border-top-color: transparent; background: rgba(180, 151, 242, 0.09); }
+.cand.in-mix + .cand { border-top-color: transparent; }
+.cand.in-mix .use { color: var(--sand-900); background: var(--sand-500); border-color: transparent; }
+
+/* 보드 틀: 후보 목록과 설명을 나란히 (2300px) */
+body.board.listen-board { width: 2300px; }
+.listen-board .row.first { margin-top: 0; }
+.notes.listen-notes { flex: none; width: 460px; }
+.notes.listen-notes .not-in-code { margin-bottom: 22px; }

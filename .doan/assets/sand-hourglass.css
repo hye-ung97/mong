@@ -1,0 +1,111 @@
+/* 모래멍 · 모래시계 디벨롭 시안 — mong.css · fire-v2.css · sand.css · sand-v2.css 위에 얹어요. 전부 시안에만 있어요. */
+
+canvas[data-hg] { touch-action: none; cursor: grab; }
+canvas[data-hg]:active { cursor: grabbing; }
+
+/* ---------- 모래 색 견본 (sand-hourglass.js 의 PAL 과 같은 색) ----------
+   한 가지 색은 알갱이 점을 얹은 동그라미, 색 띠는 위에서 아래로 쌓인 다섯 색 */
+.hg-chip {
+  display: block; flex: none; width: 26px; height: 26px; border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), inset -3px -4px 8px rgba(0, 0, 0, 0.28);
+}
+.hg-chip.one, .hg-desert, .hg-white, .hg-black, .hg-rose {
+  background:
+    radial-gradient(circle at 30% 34%, var(--s-glint) 0 0.8px, transparent 1.3px) 0 0 / 5px 5px,
+    radial-gradient(circle at 70% 60%, var(--s-speck) 0 0.7px, transparent 1.2px) 1px 2px / 7px 6px,
+    radial-gradient(circle at 36% 30%, var(--s-hi), var(--s-base) 56%, var(--s-lo));
+}
+.hg-dune, .hg-dusk, .hg-sea {
+  background:
+    radial-gradient(circle at 30% 34%, rgba(255, 255, 255, 0.35) 0 0.7px, transparent 1.2px) 0 0 / 5px 5px,
+    linear-gradient(180deg, var(--c1) 0 20%, var(--c2) 20% 40%, var(--c3) 40% 60%, var(--c4) 60% 80%, var(--c5) 80%);
+}
+.hg-desert { --s-hi: #ecd8b2; --s-base: #dec294; --s-lo: #b8976a; --s-speck: #5c4636; --s-glint: #fff7e4; }
+.hg-white { --s-hi: #f8f5ee; --s-base: #ece7da; --s-lo: #c8c0b0; --s-speck: #766e66; --s-glint: #ffffff; }
+.hg-black { --s-hi: #6a6460; --s-base: #403c3a; --s-lo: #242120; --s-speck: #121010; --s-glint: #ece8e0; }
+.hg-rose { --s-hi: #f0c4ba; --s-base: #e2a69c; --s-lo: #b67c76; --s-speck: #764446; --s-glint: #ffeee8; }
+.hg-dune { --c1: #f0e2c4; --c2: #dab47c; --c3: #c08054; --c4: #8e5e42; --c5: #584840; }
+.hg-dusk { --c1: #f4d092; --c2: #ea986c; --c3: #cc6274; --c4: #84589c; --c5: #404278; }
+.hg-sea { --c1: #ece8d8; --c2: #98d0c6; --c3: #4e9aac; --c4: #306292; --c5: #1e365c; }
+
+/* ---------- 독: 색 · 시간 · 뒤집기 ---------- */
+.hg-dock .icon-btn.hg-pick { position: relative; }
+.hg-dock .icon-btn.hg-pick .hg-chip { width: 28px; height: 28px; }
+.hg-dock .icon-btn.hg-pick.on { background: var(--ui-active); box-shadow: inset 0 0 0 1.5px var(--accent-soft); }
+.hg-dock .seg button { font-size: 13.5px; }
+
+/* ---------- 색 고르기 트레이 (독 바로 위에 열려요) ---------- */
+.hg-tray {
+  display: none;
+  padding: 16px 16px 14px;
+  border-radius: 26px;
+}
+.hg-tray.open { display: block; animation: hg-up 0.32s var(--ease); }
+@keyframes hg-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.hg-tray-head { display: flex; align-items: baseline; justify-content: space-between; margin: 0 4px 12px; }
+.hg-tray-head b { font: 700 15px/1 var(--font); }
+.hg-tray-head span { font: 500 12px/1 var(--font); color: var(--ui-faint); }
+.hg-tray h5 { margin: 0 4px 8px; font: 600 11.5px/1 var(--font); letter-spacing: 0.04em; color: var(--ui-dim); }
+.hg-sw { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 12px; }
+.hg-sw:last-child { margin-bottom: 0; }
+.hg-sw button {
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  padding: 10px 0 9px; border-radius: 16px;
+  font: 600 12px/1 var(--font); color: var(--ui-dim);
+}
+.hg-sw button .hg-chip { width: 34px; height: 34px; }
+.hg-sw button.on { background: var(--ui-active); color: var(--ui-ink); }
+.hg-sw button.on .hg-chip { box-shadow: 0 0 0 2px rgba(20, 18, 17, 0.9), 0 0 0 3.5px var(--accent-soft), inset -3px -4px 8px rgba(0, 0, 0, 0.28); }
+
+.hg-toast { opacity: 0; transition: opacity 0.4s var(--ease); pointer-events: none; }
+.hg-toast.show { opacity: 1; }
+
+/* ---------- 보드 ---------- */
+.hg-board .brief { grid-template-columns: 1fr 1.25fr 1.1fr; }
+.hg-board .brief h4 { margin: 26px 0 10px; font: 700 13px/1 var(--font); letter-spacing: 0.06em; color: var(--sand-300); }
+.hg-board .brief .asks { margin: 0; padding-left: 18px; font: 500 14px/1.6 var(--font); color: var(--board-ink); }
+.hg-board .brief .asks li { margin-bottom: 6px; }
+.hg-board .brief .asks li::marker { color: var(--sand-500); }
+.hg-board .changes { grid-template-columns: 1fr; gap: 10px; }
+.hg-board .changes li { padding: 15px 18px; }
+
+.hg-cols { display: grid; grid-template-columns: repeat(3, 390px) 1fr; column-gap: 64px; align-items: start; }
+.hg-col { display: flex; flex-direction: column; gap: 28px; }
+.hg-head { min-height: 84px; }
+.hg-head h3 { margin: 0 0 6px; font: 700 24px/1.25 var(--font); letter-spacing: -0.02em; }
+.hg-head p { margin: 0; font: 500 15px/1.5 var(--font); color: var(--board-dim); }
+.hg-col .notes { width: 390px; }
+.hg-col .notes .not-in-code { margin-bottom: 22px; }
+.hg-side .notes { width: auto; max-width: 620px; }
+.hg-side .notes .not-in-code { margin-bottom: 22px; }
+
+.hg-palette-table { width: 100%; border-collapse: collapse; font: 500 13.5px/1.5 var(--font); margin-bottom: 26px; }
+.hg-palette-table td { padding: 9px 12px 9px 0; border-top: 1px solid var(--board-line); color: var(--board-dim); vertical-align: middle; }
+.hg-palette-table td:first-child { width: 40px; }
+.hg-palette-table td:nth-child(2) { color: var(--board-ink); font-weight: 650; white-space: nowrap; }
+.hg-palette-table .tag { display: inline-block; padding: 2px 7px; border-radius: 6px; background: rgba(180, 151, 242, 0.14); color: var(--sand-300); font: 600 11px/1.4 var(--font); }
+
+/* ---------- 트레이 아래쪽 설정 ---------- */
+.hg-tray-sep { height: 1px; margin: 14px 4px 14px; background: var(--ui-line, rgba(255, 255, 255, 0.1)); }
+.hg-tray .hg-vol { margin: 0 4px 12px; grid-template-columns: 20px 70px 1fr 28px; font-size: 13px; }
+.hg-tray .hg-auto { width: 100%; margin: 0; padding: 11px 12px 11px 14px; text-align: left; color: var(--ui-ink); }
+.hg-tray .hg-auto b { font-size: 13.5px; }
+.switch.off { background: rgba(255, 255, 255, 0.18); }
+.switch.off::after { right: auto; left: 3px; }
+
+/* ---------- 데스크톱 ---------- */
+.hg-desk-row { display: grid; grid-template-columns: repeat(2, 1280px); column-gap: 64px; align-items: start; }
+.hg-desk-row .hg-head { min-height: 0; }
+.desk .d-top .tabs.seven a { padding: 0 13px; }
+.desk .hg-toast { top: auto; bottom: 120px; }
+.hg-d-dock .hg-pick { gap: 10px; padding-left: 10px; }
+.hg-d-dock .hg-pick .hg-chip { width: 28px; height: 28px; }
+.hg-d-dock .hg-pick.on { background: var(--ui-active); box-shadow: inset 0 0 0 1.5px var(--accent-soft); }
+.hg-d-dock .seg { width: 250px; }
+.hg-d-dock .seg button { font-size: 14px; }
+.hg-d-dock .vol .slider { width: 90px; }
+.desk .hg-tray.hg-desk-tray { bottom: 112px; left: 50%; width: 400px; margin-left: -330px; }
+.desk .hg-tray.open { display: block; }
+.hg-desk-notes { width: auto; max-width: 900px; margin-top: 32px; }
+.hg-desk-notes .not-in-code { margin-bottom: 22px; }
+.hg-kbd { margin-left: 2px; padding: 3px 6px; border-radius: 6px; background: rgba(255, 255, 255, 0.08); box-shadow: inset 0 0 0 1px var(--ui-line, rgba(255, 255, 255, 0.12)); font: 600 11px/1 var(--font); color: var(--ui-faint); }

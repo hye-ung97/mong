@@ -38,6 +38,8 @@ const PATHS = {
   subway: '<rect x="5" y="3" width="14" height="15" rx="3.5"/><path d="M5 11h14"/><path d="M8.5 14.5h.01M15.5 14.5h.01"/><path d="m8 21 1.5-3M16 21l-1.5-3"/>',
   spark: '<circle cx="12" cy="12" r="1.6"/><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4M5.3 5.3l2.8 2.8M15.9 15.9l2.8 2.8M5.3 18.7l2.8-2.8M15.9 8.1l2.8-2.8"/>',
   people: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+  /* 모래멍: turn the hourglass over */
+  flip: '<path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/>',
   x: '<path d="M18 6 6 18M6 6l12 12"/>',
   chev: '<path d="m6 15 6-6 6 6"/>',
   /* Toss mini app: a locked 멍, the free 멍 in the unlock sheet, the ad button (drawn filled), a note in the sheet */

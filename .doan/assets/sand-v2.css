@@ -1,0 +1,63 @@
+/* 모래멍 v2 시안 — mong.css · fire-v2.css(개요 틀) · sand.css(견본 · 모래멍 색) 위에 얹어요. 전부 시안에만 있어요. */
+
+/* 폰 탭: 일곱 멍은 아이콘으로 (지하철멍 보드 · 지금 앱과 같아요) */
+.tabs.icons { gap: 0; padding: 4px; }
+.tabs.icons a { flex: none; padding: 0 7px; }
+.tabs.icons a .ico { width: 18px; height: 18px; }
+.tabs.icons a.on::before { display: none; }
+.tabs.icons a.on { color: var(--accent-soft); background: color-mix(in srgb, var(--accent) 22%, transparent); }
+
+/* 색 묶음 견본 (sand-v2.js 의 PAL 과 같은 색). 사막 · 먹은 새 묶음이에요 */
+.pal2-desert { --c1: #f0e2c4; --c2: #dab47c; --c3: #c08054; --c4: #8e5e42; --c5: #584840; }
+.pal2-dusk { --c1: #f4d092; --c2: #ea986c; --c3: #cc6274; --c4: #84589c; --c5: #404278; }
+.pal2-sea { --c1: #ece8d8; --c2: #98d0c6; --c3: #4e9aac; --c4: #306292; --c5: #1e365c; }
+.pal2-ink { --c1: #eeece4; --c2: #848482; --c3: #1e1e22; --c4: #c8c6be; --c5: #42444a; }
+.pal2-forest { --c1: #ece2b4; --c2: #b6d076; --c3: #62a264; --c4: #367666; --c5: #865e42; }
+
+/* 끌 수 있는 장면 */
+canvas[data-s2] { touch-action: none; cursor: grab; }
+canvas[data-s2]:active { cursor: grabbing; }
+
+/* 독 */
+.dock .icon-btn.on { background: color-mix(in srgb, var(--accent) 30%, transparent); color: var(--accent-soft); }
+.seg.s2-pal button { display: flex; align-items: center; justify-content: center; gap: 7px; }
+.seg.s2-pal .swatch { width: 16px; height: 16px; }
+.seg.s2-pal button.on .swatch { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25); }
+
+/* 장면이 알려 주는 말 (모래시계 타이머 끝) */
+.s2-toast { opacity: 0; transition: opacity 0.4s var(--ease); pointer-events: none; }
+.s2-toast.show { opacity: 1; }
+
+/* ---------- 개요 ---------- */
+.s2-board .brief { grid-template-columns: 0.95fr 1.15fr 1.6fr; }
+.s2-board .brief h4 { margin: 26px 0 10px; font: 700 13px/1 var(--font); letter-spacing: 0.06em; color: var(--sand-300); }
+.s2-board .brief .asks { margin: 0; padding-left: 18px; font: 500 14px/1.6 var(--font); color: var(--board-ink); }
+.s2-board .brief .asks li { margin-bottom: 6px; }
+.s2-board .brief .asks li::marker { color: var(--sand-500); }
+.s2-board .changes { grid-template-columns: 1fr; gap: 10px; }
+.s2-board .changes li { padding: 15px 18px; }
+
+.s2-cmp { width: 100%; border-collapse: collapse; font: 500 13.5px/1.5 var(--font); }
+.s2-cmp th { text-align: left; padding: 0 12px 10px 0; font: 600 12px/1 var(--font); color: var(--board-faint); white-space: nowrap; }
+.s2-cmp td { padding: 11px 12px 11px 0; border-top: 1px solid var(--board-line); vertical-align: top; color: var(--board-dim); }
+.s2-cmp td:first-child { color: var(--board-ink); font-weight: 700; white-space: nowrap; }
+.s2-cmp td.size { white-space: nowrap; }
+.s2-cmp td.size b { color: var(--board-ink); font-weight: 650; }
+.s2-k { display: inline-grid; place-items: center; width: 22px; height: 22px; margin-right: 8px; border-radius: 7px; background: rgba(180, 151, 242, 0.16); color: var(--sand-300); font: 700 12px/1 var(--font); vertical-align: 1px; }
+.s2-k.now { background: rgba(255, 255, 255, 0.08); color: var(--board-dim); }
+.s2-board .rec { margin-top: 22px; background: rgba(180, 151, 242, 0.08); border-color: rgba(180, 151, 242, 0.35); }
+.s2-board .rec b { color: var(--sand-300); }
+
+/* ---------- 여섯 칸: 지금 + A~E ---------- */
+.s2-cols { display: grid; grid-template-columns: repeat(6, 390px); column-gap: 60px; align-items: start; }
+.s2-col { display: flex; flex-direction: column; gap: 28px; }
+.s2-head { min-height: 104px; }
+.s2-head .s2-k { width: 30px; height: 30px; margin: 0; border-radius: 9px; font-size: 15px; }
+.s2-head h3 { margin: 12px 0 6px; font: 700 24px/1.25 var(--font); letter-spacing: -0.02em; }
+.s2-head p { margin: 0; font: 500 15px/1.5 var(--font); color: var(--board-dim); }
+.s2-col .notes { width: 390px; }
+.s2-col .notes .not-in-code, .s2-col .notes .in-code { margin-bottom: 22px; }
+.s2-col .notes .plus::marker { color: var(--sand-300); }
+.s2-col .notes .minus { color: var(--board-dim); }
+.s2-col .notes .minus::marker { color: var(--board-faint); }
+.s2-col .notes .copy { display: inline-block; padding: 1px 7px; border-radius: 6px; background: rgba(255, 255, 255, 0.06); font-weight: 600; color: var(--board-ink); }
